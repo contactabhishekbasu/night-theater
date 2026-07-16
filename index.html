@@ -93,9 +93,9 @@
           <article class="decision reveal"><span class="decision-num">Decision 03</span><h3>Use ML to order attention.</h3><p>The quality model prioritizes review work. Discrimination and calibration are evaluated, but the model remains a scout, not a referee.</p></article>
         </div>
         <div class="outcome-strip reveal" aria-label="Current product outcomes">
-          <div class="outcome"><strong>86</strong><span>Review dossiers carrying figures and machine records</span></div>
-          <div class="outcome"><strong>70</strong><span>Exported light-curve tables with about 3,510 rows</span></div>
-          <div class="outcome"><strong>4</strong><span>Evaluation cycles logged, with one under the frozen v2 protocol</span></div>
+          <div class="outcome"><strong data-stat="dossiers">108</strong><span>Review dossiers carrying figures and machine records</span></div>
+          <div class="outcome"><strong data-stat="lc_csvs">118</strong><span>Exported light-curve tables with <span data-stat="lc_rows">5,914</span> flux rows</span></div>
+          <div class="outcome"><strong data-stat="cycles">4</strong><span>Evaluation cycles logged, with <span data-stat="v2_cycles">1</span> under the frozen v2 protocol</span></div>
           <div class="outcome"><strong>1</strong><span>Deliberate human gate before contribution</span></div>
         </div>
       </div>
@@ -192,17 +192,17 @@
       <div class="container">
         <div class="section-head reveal">
           <div><p class="eyebrow">06 · Dataset specification</p><h2 class="title">Built from real observing nights.</h2></div>
-          <p class="lead">A dated operational snapshot of source frames, reductions, exports, diagnostics, models, and reports.</p>
+          <p class="lead">A dated operational snapshot of source frames, reductions, exports, diagnostics, models, and reports. <span class="meta" data-stat="as_of_line">As of 16 Jul 2026 · refreshed weekly</span></p>
         </div>
         <div class="dataset-grid reveal">
           <article class="data"><strong>17 GB</strong><span>Research corpus currently on disk</span></article>
-          <article class="data"><strong>8,571</strong><span>FITS source frames preserved</span></article>
-          <article class="data"><strong>70</strong><span>Exported light-curve CSVs · ~3,510 flux rows</span></article>
-          <article class="data"><strong>86</strong><span>Review PDFs with figures and machine records</span></article>
-          <article class="data"><strong>14</strong><span>Canonical exoplanet targets</span></article>
-          <article class="data"><strong>2017→26</strong><span>Observation-night span represented in review</span></article>
-          <article class="data"><strong>1,931</strong><span>Playback frames in the Night Theater export</span></article>
-          <article class="data"><strong>11</strong><span>Features used by the quality model</span></article>
+          <article class="data"><strong data-stat="fits_frames">10,354</strong><span>FITS source frames preserved</span></article>
+          <article class="data"><strong data-stat="lc_csvs">118</strong><span>Exported light-curve CSVs · <span data-stat="lc_rows">5,914</span> flux rows</span></article>
+          <article class="data"><strong data-stat="dossiers">108</strong><span>Review dossiers with figures and machine records</span></article>
+          <article class="data"><strong data-stat="targets">15</strong><span>Canonical exoplanet targets</span></article>
+          <article class="data"><strong data-stat="span">2017→26</strong><span>Observation-night span represented in review</span></article>
+          <article class="data"><strong data-stat="playback">3,583</strong><span>Playback frames in the Night Theater export</span></article>
+          <article class="data"><strong data-stat="features">13</strong><span>Features used by the quality model</span></article>
         </div>
         <div class="lineage reveal" aria-label="Dataset lineage">
           <div><span>Source</span><strong>FITS frames</strong></div><div><span>Track</span><strong>Star centroids</strong></div><div><span>Reduce</span><strong>Flux + fit</strong></div><div><span>Explain</span><strong>Six diagnostics</strong></div><div><span>Decide</span><strong>Human dossier</strong></div>
@@ -243,10 +243,10 @@
             <h3>Useful challenger. No promotion.</h3>
             <p>The model helps order the review queue. It never approves a dossier. On the stricter target-held-out test, it trails both the incumbent rules and the best single feature.</p>
             <div class="eval-metrics" aria-label="Current model metrics">
-              <div class="eval-metric"><strong>.872</strong><span>Grouped AUC</span><small>Ranking quality on unseen targets</small></div>
-              <div class="eval-metric"><strong>.065</strong><span>ECE</span><small>Probability mismatch, lower is better</small></div>
-              <div class="eval-metric"><strong>.002</strong><span>Leakage gap</span><small>Random .874 minus grouped .872</small></div>
-              <div class="eval-metric"><strong>102</strong><span>Labeled runs</span><small>30 usable and 72 not usable</small></div>
+              <div class="eval-metric"><strong data-stat="auc" data-fmt="dot3">.872</strong><span>Grouped AUC</span><small>Ranking quality on unseen targets</small></div>
+              <div class="eval-metric"><strong data-stat="ece" data-fmt="dot3">.065</strong><span>ECE</span><small>Probability mismatch, lower is better</small></div>
+              <div class="eval-metric"><strong data-stat="gap" data-fmt="dot3">.002</strong><span>Leakage gap</span><small data-stat="gap_note">Random .874 minus grouped .872</small></div>
+              <div class="eval-metric"><strong data-stat="labeled">114</strong><span>Labeled runs</span><small data-stat="usable_split">33 usable and 81 not usable</small></div>
             </div>
           </article>
 
@@ -331,5 +331,35 @@
     <button class="capture-lightbox-nav capture-lightbox-next" type="button" data-lightbox-next aria-label="Next telescope image">›</button>
   </div>
   <script src="assets/landing/portfolio.js" defer></script>
+  <script>
+  /* Live-stat hydration: the weekly publisher writes landing-stats.json from
+     ground truth; hardcoded values are the graceful fallback. Text-only swaps —
+     no layout or design changes. */
+  (function () {
+    var TH = function (n) { return Number(n).toLocaleString("en-US"); };
+    var D3 = function (n) { var v = Number(n); return (v < 1 ? String(v.toFixed(3)).replace(/^0/, "") : v.toFixed(3)); };
+    fetch("landing-stats.json").then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (s) {
+        if (!s) return;
+        var direct = { dossiers: TH, lc_csvs: TH, lc_rows: TH, cycles: TH, v2_cycles: TH,
+                       fits_frames: TH, targets: TH, playback: TH, features: TH,
+                       labeled: TH, auc: D3, ece: D3, gap: D3 };
+        Object.keys(direct).forEach(function (k) {
+          if (s[k] == null) return;
+          document.querySelectorAll('[data-stat="' + k + '"]').forEach(function (el) {
+            el.textContent = direct[k](s[k]);
+          });
+        });
+        var span = document.querySelector('[data-stat="span"]');
+        if (span && s.span) span.textContent = s.span;
+        var gn = document.querySelector('[data-stat="gap_note"]');
+        if (gn && s.auc_random) gn.textContent = "Random " + D3(s.auc_random) + " minus grouped " + D3(s.auc);
+        var us = document.querySelector('[data-stat="usable_split"]');
+        if (us && s.usable != null) us.textContent = TH(s.usable) + " usable and " + TH(s.not_usable) + " not usable";
+        var ao = document.querySelector('[data-stat="as_of_line"]');
+        if (ao && s.as_of) ao.textContent = "As of " + s.as_of + " · refreshed weekly";
+      }).catch(function () { /* fallback: corrected hardcoded values stand */ });
+  })();
+  </script>
 </body>
 </html>
