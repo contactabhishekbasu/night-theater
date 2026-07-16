@@ -95,7 +95,7 @@
         <div class="outcome-strip reveal" aria-label="Current product outcomes">
           <div class="outcome"><strong>86</strong><span>Review dossiers carrying figures and machine records</span></div>
           <div class="outcome"><strong>70</strong><span>Exported light-curve tables with about 3,510 rows</span></div>
-          <div class="outcome"><strong>3</strong><span>Quality-model training cycles made comparable</span></div>
+          <div class="outcome"><strong>4</strong><span>Evaluation cycles logged, with one under the frozen v2 protocol</span></div>
           <div class="outcome"><strong>1</strong><span>Deliberate human gate before contribution</span></div>
         </div>
       </div>
@@ -231,42 +231,66 @@
 
     <section class="section section--data-bg" id="model">
       <video class="section-backdrop" data-section-video data-src="assets/landing/backgrounds/m106-galaxy.mp4" muted loop playsinline preload="none" poster="assets/landing/personal/m106-galaxy-card.jpg" aria-hidden="true"></video>
-      <p class="section-backdrop-tag"><span>Personal telescope</span>M106 · 10 Jul 2026</p>
+      <p class="section-backdrop-tag"><span>Real capture backdrop</span>M106 · 10 Jul 2026</p>
       <div class="container">
         <div class="section-head reveal">
-          <div><p class="eyebrow">08 · Model evaluation</p><h2 class="title">Useful probabilities, not flattering scores.</h2></div>
-          <p class="lead">Adding more varied negative examples made ranking harder and calibration better, the right trade for prioritizing human attention.</p>
+          <div><p class="eyebrow">08 · Model evaluation</p><h2 class="title">Trust begins with the harder split.</h2></div>
+          <p class="lead">The frozen v2 protocol asks whether the model can rank reductions from an unseen target. It is useful, calibrated, and not ready to replace the rules.</p>
         </div>
-        <div class="model-layout">
-          <article class="model-copy reveal"><p class="meta">Three training cycles</p><h3>A scout for review, never the judge.</h3><p>AUC declined as the validation set became more realistic. Expected calibration error improved, so the displayed probabilities became more honest.</p><div class="metric-row"><div class="metric"><strong>.891</strong><span>Latest AUC</span></div><div class="metric"><strong>.130</strong><span>Latest ECE</span></div><div class="metric"><strong>11</strong><span>Input features</span></div></div></article>
-          <div class="model-chart reveal">
-            <p class="meta model-chart-label">Out-of-fold metric history</p>
-            <svg viewBox="0 0 680 470" role="img" aria-labelledby="model-title model-desc">
-              <title id="model-title">Quality-model performance over three training cycles</title>
-              <desc id="model-desc">AUC decreases from 0.967 to 0.891 while expected calibration error improves from 0.224 to 0.130.</desc>
-              <g fill="none" stroke="#2c2c2a"><line x1="64" y1="68" x2="630" y2="68"/><line x1="64" y1="220" x2="630" y2="220"/><line x1="64" y1="372" x2="630" y2="372"/></g>
-              <g fill="#898781" font-family="monospace" font-size="12"><text x="18" y="72">1.0</text><text x="18" y="224">0.5</text><text x="32" y="376">0</text><text x="76" y="414">CYCLE 1</text><text x="292" y="414">CYCLE 2</text><text x="508" y="414">CYCLE 3</text></g>
-              <path d="M112 78 L338 87 L564 101" fill="none" stroke="#3987e5" stroke-width="5"/>
-              <path d="M112 304 L338 329 L564 333" fill="none" stroke="#199e70" stroke-width="5"/>
-              <g fill="#3987e5"><circle cx="112" cy="78" r="7"/><circle cx="338" cy="87" r="7"/><circle cx="564" cy="101" r="7"/></g>
-              <g fill="#199e70"><circle cx="112" cy="304" r="7"/><circle cx="338" cy="329" r="7"/><circle cx="564" cy="333" r="7"/></g>
-              <g fill="#c3c2b7" font-family="monospace" font-size="13"><text x="86" y="55">AUC .967</text><text x="312" y="64">.938</text><text x="538" y="78">.891</text><text x="78" y="288">ECE .224</text><text x="312" y="313">.141</text><text x="538" y="317">.130</text></g>
-            </svg>
-            <div class="model-legend" aria-label="Chart metric legend">
-              <div><span class="model-key model-key--auc" aria-hidden="true"></span><p><strong>AUC</strong><small>Ranking quality · higher is better</small></p></div>
-              <div><span class="model-key model-key--ece" aria-hidden="true"></span><p><strong>ECE</strong><small>Probability error · lower is better</small></p></div>
+        <div class="eval-summary">
+          <article class="eval-verdict reveal">
+            <div class="eval-verdict-top"><p class="meta">Frozen protocol v2 · cycle 4</p><span class="eval-status">Rules remain authoritative</span></div>
+            <h3>Useful challenger. No promotion.</h3>
+            <p>The model helps order the review queue. It never approves a dossier. On the stricter target-held-out test, it trails both the incumbent rules and the best single feature.</p>
+            <div class="eval-metrics" aria-label="Current model metrics">
+              <div class="eval-metric"><strong>.872</strong><span>Grouped AUC</span><small>Ranking quality on unseen targets</small></div>
+              <div class="eval-metric"><strong>.065</strong><span>ECE</span><small>Probability mismatch, lower is better</small></div>
+              <div class="eval-metric"><strong>.002</strong><span>Leakage gap</span><small>Random .874 minus grouped .872</small></div>
+              <div class="eval-metric"><strong>102</strong><span>Labeled runs</span><small>30 usable and 72 not usable</small></div>
             </div>
-            <div class="model-method">
-              <div class="model-method-head"><p class="meta">How the evaluation works</p><span>Cycle 3 · 70 labeled runs · 15 usable</span></div>
-              <ol class="model-method-steps">
-                <li><span>01 · Label</span><p><strong>Define known outcomes.</strong> Each reduction is scored against a published ephemeris. Human review decisions are used when available.</p></li>
-                <li><span>02 · Validate</span><p><strong>Test on held-out rows.</strong> Stratified five-fold validation keeps each scored row out of the training fold that predicts it.</p></li>
-                <li><span>03 · Calibrate</span><p><strong>Make confidence interpretable.</strong> A logistic model reads 11 quality features. Sigmoid calibration shapes its probability, and ECE measures the average gap across 10 probability bins.</p></li>
-              </ol>
-              <p class="model-readout"><strong>Read the result</strong> AUC remains useful at .891. ECE improved 42% from .224 to .130, but it is still above the .100 confidence gate. The model prioritizes review; a person decides.</p>
+          </article>
+
+          <article class="eval-baselines reveal" aria-labelledby="baseline-title">
+            <div class="eval-panel-head"><div><p class="meta">Grouped out-of-fold AUC</p><h3 id="baseline-title">The challenger must beat what already works.</h3></div><span>Higher is better</span></div>
+            <div class="eval-bars" role="img" aria-label="Grouped AUC comparison. Incumbent rules 0.927. Best single feature 0.899. Scatter threshold 0.880. Challenger model 0.872. Chance 0.500.">
+              <div class="eval-bar eval-bar--champion"><div><span>Incumbent rules</span><strong>.927</strong></div><i style="--score:92.7%"></i><small>Current champion</small></div>
+              <div class="eval-bar"><div><span>Best single feature</span><strong>.899</strong></div><i style="--score:89.9%"></i><small>Depth signal-to-noise</small></div>
+              <div class="eval-bar"><div><span>Scatter threshold</span><strong>.880</strong></div><i style="--score:88%"></i><small>Interpretable quality cut</small></div>
+              <div class="eval-bar eval-bar--challenger"><div><span>Challenger model</span><strong>.872</strong></div><i style="--score:87.2%"></i><small>13 features · gradient boosting</small></div>
+              <div class="eval-bar eval-bar--chance"><div><span>Chance</span><strong>.500</strong></div><i style="--score:50%"></i><small>Discrimination floor</small></div>
             </div>
+            <p class="eval-caveat">This is a deliberately hard comparison. The rules can use duration deviation, while v2 excludes that field and three other label-defining fields from the learned model.</p>
+          </article>
+        </div>
+
+        <div class="eval-explain reveal">
+          <div class="eval-explain-head"><div><p class="meta">How the evaluation works</p><h3>Hold out the target, then test the claim.</h3></div><p>Earlier v1 cycles used a different split and calibration method. They remain in the audit trail, but they are not trendlined against v2.</p></div>
+          <ol class="eval-steps">
+            <li><span>01 · Label</span><p><strong>Ask one product question.</strong> Is this reduction usable for submission? Human-approved, accurate, and marginal runs are positive examples.</p></li>
+            <li><span>02 · Group</span><p><strong>Keep each target together.</strong> Sixteen targets are split as groups, so a target seen in training cannot reappear in its test fold.</p></li>
+            <li><span>03 · Compare</span><p><strong>Log every baseline.</strong> The challenger must be compared with chance, a scatter cut, the best single feature, and the incumbent rules.</p></li>
+            <li><span>04 · Calibrate</span><p><strong>Check confidence, not only rank.</strong> ECE is .065 across three bins. Brier score is .107 with a 95% interval from .080 to .137.</p></li>
+          </ol>
+        </div>
+
+        <div class="eval-gates reveal" aria-labelledby="gate-title">
+          <div class="eval-gate-intro"><p class="meta">Promotion decision</p><h3 id="gate-title">Two gates pass. Two gates hold.</h3><p>A model may sharpen the recommendation line, but promotion is always a human decision.</p></div>
+          <div class="eval-gate-list">
+            <div class="eval-gate eval-gate--pass"><span>Pass</span><p><strong>Enough positive examples</strong>30 usable runs, above the minimum of 25.</p></div>
+            <div class="eval-gate eval-gate--pass"><span>Pass</span><p><strong>Calibration threshold</strong>ECE .065, below the .100 trust gate.</p></div>
+            <div class="eval-gate eval-gate--hold"><span>Hold</span><p><strong>Stability over time</strong>One v2 cycle is logged. Three consecutive stable cycles are required.</p></div>
+            <div class="eval-gate eval-gate--hold"><span>Hold</span><p><strong>Beat the champion</strong>Grouped AUC .872 remains below the rules at .927.</p></div>
           </div>
         </div>
+
+        <div class="eval-assets-head reveal"><div><p class="meta">Evaluation artifacts</p><h3>Inspect the evidence behind the decision.</h3></div><p>AUC asks whether usable runs rank above unusable ones. Precision and recall show the cost of finding them. Reliability asks whether a stated probability matches what happened.</p></div>
+        <div class="eval-assets">
+          <figure class="eval-asset reveal"><a href="eval/roc.png"><img src="eval/roc.png" loading="lazy" alt="ROC chart comparing the challenger with rules and single-feature baselines"></a><figcaption><strong>Ranking across thresholds</strong><span>ROC · grouped out-of-fold predictions</span></figcaption></figure>
+          <figure class="eval-asset reveal"><a href="eval/pr.png"><img src="eval/pr.png" loading="lazy" alt="Precision recall chart comparing the challenger with evaluation baselines"></a><figcaption><strong>Finding usable runs</strong><span>Precision and recall · positive means usable</span></figcaption></figure>
+          <figure class="eval-asset reveal"><a href="eval/reliability.png"><img src="eval/reliability.png" loading="lazy" alt="Reliability chart comparing predicted probabilities with observed usable-run frequency"></a><figcaption><strong>Probability honesty</strong><span>ECE .065 · Brier .107</span></figcaption></figure>
+          <figure class="eval-asset reveal"><a href="eval/importances.png"><img src="eval/importances.png" loading="lazy" alt="Permutation importance chart for the thirteen challenger model features"></a><figcaption><strong>What changes the ranking</strong><span>Scatter and depth signal-to-noise lead</span></figcaption></figure>
+        </div>
+        <div class="eval-actions reveal"><a class="button button--solid" href="eval/">Open the complete evaluation ↗</a><a class="button" href="docs/EVAL-PROTOCOL-V2.md">Read the frozen protocol ↗</a></div>
       </div>
     </section>
 
