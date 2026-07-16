@@ -1,0 +1,132 @@
+{
+  "id": "deep-bench_TRES-3_240306",
+  "target": "TrES-3b",
+  "night": "2024-03-06",
+  "verdict": "NON-DETECTION",
+  "run_no": "R-0120",
+  "disposition": "Benchmark / validation run \u2014 automated verdict NON-DETECTION. Not submitted to any science database; shown for pipeline transparency.",
+  "params": [
+    {
+      "name": "Mid-transit time (Tc)",
+      "fit": "2460375.9249",
+      "sigma": "0.0018",
+      "unit": "BJD_TDB",
+      "prior": null,
+      "published": null,
+      "is_midtime": true,
+      "sigma_inflated_min": 3.17
+    },
+    {
+      "name": "Rp/R*",
+      "fit": "0.196",
+      "sigma": "0.057",
+      "prior": "0.15731 \u00b1 0.00046",
+      "published": 0.16309
+    },
+    {
+      "name": "Inclination",
+      "fit": "86.89",
+      "sigma": "2.89",
+      "unit": "\u00b0",
+      "prior": "82.0 \u00b1 0.3",
+      "published": 82.0
+    },
+    {
+      "name": "a/R*",
+      "fit": null,
+      "sigma": null,
+      "prior": "6.0 \u00b1 0.75",
+      "published": null
+    },
+    {
+      "name": "Period",
+      "fit": null,
+      "sigma": null,
+      "unit": "d",
+      "prior": "1.30618627 \u00b1 1.2e-08",
+      "published": 1.306186314
+    },
+    {
+      "name": "Airmass a1",
+      "fit": "1.53",
+      "sigma": "0.48"
+    },
+    {
+      "name": "Airmass a2",
+      "fit": "-0.359",
+      "sigma": "0.086"
+    }
+  ],
+  "metrics": {
+    "scatter_pct": 24.65,
+    "depth_snr": 2.8,
+    "rprs_z": 0.47,
+    "dur_z": 1.73,
+    "oc_minutes": -5.2,
+    "oc_sigma": 1.64,
+    "beta_rednoise": 1.039,
+    "chi2_rescale": 1.177
+  },
+  "limb_darkening": [
+    {
+      "coeff": "u0",
+      "value": "2.03",
+      "err": "0.017",
+      "source": "LDTk"
+    },
+    {
+      "coeff": "u1",
+      "value": "-3.595",
+      "err": "0.071",
+      "source": "LDTk"
+    },
+    {
+      "coeff": "u2",
+      "value": "4.052",
+      "err": "0.094",
+      "source": "LDTk"
+    },
+    {
+      "coeff": "u3",
+      "value": "-1.488",
+      "err": "0.04",
+      "source": "LDTk"
+    }
+  ],
+  "observation": {
+    "frames": 69,
+    "exposure_s": 60.0,
+    "binning": "1x1",
+    "filter": "CV",
+    "aperture": "3.98",
+    "annulus": "4.68",
+    "comps": 3,
+    "telescope": "MicroObservatory (MObs)",
+    "cadence_s": 180,
+    "airmass_range": "1.14\u20132.68"
+  },
+  "crosscheck": {
+    "in_oec": true,
+    "flags": [],
+    "period_oec": 1.30618608,
+    "period_rel_diff": 0.0,
+    "coord_sep_arcsec": 0.0,
+    "rprs_oec": 0.1542
+  },
+  "provenance": {
+    "seed": 1270218082,
+    "dataset_sha256": "6ca213c245224ea6aad6756e0e49bd5f00bde603c1d2f6c7bbe6ecd6ed49e499",
+    "audit_head": "49116fadeb2ac18e4cf84f2be8f29615850642589c00adb29dc1d57e817a2d0f",
+    "exotic": "4.3.1",
+    "ultranest": "3.6.5",
+    "inits_sha256": "4f1d424c56cf9d7bee269e0e2e701c39437fe20b27a51380c8392c8b1d401291",
+    "config_snapshot_sha256": "a7e225c9d2e630a844d2de4a2f21a47be7cb64465294b6aac8c25145faef1991",
+    "runtime_s": 190.2,
+    "host": "mac-mini-m1-8gb"
+  },
+  "aavso": {
+    "name": "AAVSO_TrES-3 b_2024-03-06.txt",
+    "text": "#TYPE=EXOPLANET\n#OBSCODE=ABGA\n#SECONDARY_OBSCODES=MOBS\n#SOFTWARE=EXOTIC v4.3.1\n#DELIM=,\n#DATE_TYPE=BJD_TDB\n#OBSTYPE=CCD\n#STAR_NAME=TrES-3\n#EXOPLANET_NAME=TrES-3 b\n#BINNING=2x2\n#EXPOSURE_TIME=60.0\n#COMP_STAR-XC={\"ra\": null, \"dec\": null, \"x\": \"618\", \"y\": \"454\"}\n#NOTES=MicroObservatory Cecilia public archive; pipeline test \u2014 not for submission\n#DETREND_PARAMETERS=AIRMASS, AIRMASS CORRECTION FUNCTION\n#MEASUREMENT_TYPE=Rnflux\n#FILTER=CV\n#FILTER-XC={\"name\": \"CV\", \"desc\": \"MObs CV\", \"fwhm\": [{\"value\": \"350.0\", \"units\": \"nm\"}, {\"value\": \"850.0\", \"units\": \"nm\"}]}\n#PRIORS=Period=1.30618627 +/- 1.2e-08,Rp/R*=0.15731 +/- 0.00046,a/R*=6.0 +/- 0.75,inc=82.0 +/- 0.3,ecc=0.043,u0=2.03 +/- 0.017,u1=-3.595 +/- 0.071,u2=4.052 +/- 0.094,u3=-1.488 +/- 0.04\n#PRIORS-XC={\"Period\": {\"value\": \"1.30618627\", \"uncertainty\": \"1.2e-08\", \"units\": \"days\"}, \"Rp/R*\": {\"value\": \"0.15731\", \"uncertainty\": \"0.00046\"}, \"a/R*\": {\"value\": \"6.0\", \"uncertainty\": \"0.75\"}, \"inc\": {\"value\": \"82.0\", \"uncertainty\": \"0.3\", \"units\": \"degrees\"}, \"ecc\": {\"value\": \"0.043\", \"uncertainty\": null}, \"u0\": {\"value\": \"2.03\", \"uncertainty\": \"0.017\"}, \"u1\": {\"value\": \"-3.595\", \"uncertainty\": \"0.071\"}, \"u2\": {\"value\": \"4.052\", \"uncertainty\": \"0.094\"}, \"u3\": {\"value\": \"-1.488\", \"uncertainty\": \"0.04\"}}\n#RESULTS=Tc=2460375.9249 +/- 0.0018,Rp/R*=0.196 +/- 0.057,inc=86.89 +/- 2.89,Am1=1.53 +/- 0.48,Am2=-0.359 +/- 0.086\n#RESULTS-XC={\"Tc\": {\"value\": \"2460375.9249\", \"uncertainty\": \"0.0018\", \"units\": \"BJD_TDB\"}, \"Rp/R*\": {\"value\": \"0.196\", \"uncertainty\": \"0.057\"}, \"inc\": {\"value\": \"86.89\", \"uncertainty\": \"2.89\"}, \"Am1\": {\"value\": \"1.53\", \"uncertainty\": \"0.48\"}, \"Am2\": {\"value\": \"-0.359\", \"uncertainty\": \"0.086\"}, \"Duration\": {\"value\": \"0.08\", \"uncertainty\": \"0.011\", \"units\": \"days\"}}\n# EXOTIC is developed by Exoplanet Watch (exoplanets.nasa.gov/exoplanet-watch/), a citizen science project managed by NASA's Jet Propulsion Laboratory on behalf of NASA's Universe of Learning. This work is supported by NASA under award number NNX16AC65A to the Space Telescope Science Institute.\n# Use of this data is governed by the AAVSO Data Usage Guidelines: aavso.org/data-usage-guidelines\n#DATE,DIFF,ERR,DETREND_1,DETREND_2\n2460375.85915225,0.7960294,0.1745125,2.6804711,0.5858162\n2460375.861239,0.777388,0.1764484,2.6185333,0.5989761\n2460375.86331489,0.5702312,0.1783163,2.5594099,0.6118137\n2460375.8695678,0.2089639,0.1835284,2.3976555,0.6483594\n2460375.87165643,0.9935802,0.1851464,2.3483734,0.6599219\n2460375.87373336,1.0394941,0.1867029,2.3013696,0.6711419\n2460375.87789771,1.0,0.1896749,2.2126999,0.6928297\n2460375.8799861,1.1206345,0.1910965,2.1707768,0.7033264\n2460375.88415108,0.6717041,0.1937768,2.0925777,0.7233326\n2460375.89248152,0.2491937,0.198664,1.9527328,0.7605396\n2460375.89664819,0.6901886,0.2008835,1.8903546,0.7777473\n2460375.90081343,0.5108432,0.2029736,1.8322392,0.7941293\n2460375.90498825,0.2141755,0.204944,1.7779998,0.8097298\n2460375.90706695,0.5445244,0.2058785,1.7524565,0.8171824\n2460375.91539757,0.5787328,0.2093745,1.6579178,0.8453672\n2460375.91748599,0.8705809,0.210187,1.6361745,0.8519858\n2460375.91957403,0.7305413,0.2109806,1.6150135,0.8584769\n2460375.92373807,0.6481278,0.2124933,1.574903,0.8709168\n2460375.92999207,1.0367848,0.2146099,1.5192568,0.888474\n2460375.93206866,0.9709828,0.2152726,1.5019446,0.8940081\n2460375.93415596,0.2578055,0.2159254,1.4849453,0.8994758\n2460375.94457526,0.6281934,0.218915,1.4077421,0.9247311\n2460375.94665264,1.3411938,0.2194626,1.3937155,0.9293952\n2460375.94874152,0.9637879,0.2200015,1.3799477,0.933996\n2460375.95081806,0.9119959,0.220521,1.3667048,0.938443\n2460375.95290632,0.9754767,0.2210314,1.3537251,0.9428221\n2460375.95498431,0.9988307,0.2215228,1.3412574,0.9470477\n2460375.95707258,0.9698267,0.2220072,1.328993,0.9512229\n2460375.9591601,0.9363597,0.222476,1.3171508,0.9552718\n2460375.96123572,1.2861037,0.2229296,1.3057133,0.9591987\n2460375.96332449,1.0055864,0.2233754,1.2944969,0.9630654\n2460375.96540061,0.9710687,0.2238055,1.283699,0.9668025\n2460375.96748989,1.1448164,0.2242287,1.273091,0.970488\n2460375.96957733,1.0056211,0.2246383,1.2628439,0.9740615\n2460375.97165423,0.7880429,0.2250348,1.2529436,0.9775266\n2460375.97374219,1.1265573,0.2254244,1.2432323,0.9809374\n2460375.97581878,1.022009,0.2258001,1.2338812,0.984233\n2460375.97790668,1.0847043,0.2261693,1.2247088,0.9874764\n2460375.97999494,1.0467032,0.2265272,1.2158325,0.9906252\n2460375.98207066,1.1004156,0.2268729,1.2072707,0.993672\n2460375.9904116,0.9489192,0.2281732,1.1751844,1.0051739\n2460375.99457601,1.0718648,0.2287699,1.1605205,1.0104746\n2460375.99665173,1.0403868,0.229054,1.1535515,1.0130035\n2460375.99874283,0.772563,0.2293329,1.1467204,1.0154886\n2460376.00081907,0.9685339,0.2296011,1.1401589,1.0178813\n"
+  },
+  "pdf": "deep-bench_TRES-3_240306/report.pdf"
+}
