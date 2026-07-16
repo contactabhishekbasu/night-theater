@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scientific Report &amp; Review — Night Theater</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/theater.css">
+<script>
+  /* set the manual theme before first paint to avoid a flash */
+  try {
+    var t = localStorage.getItem("theater-theme");
+    if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+  } catch (e) {}
+</script>
+<style>
+  /* ---- Page-2-specific layout (shared tokens/components live in theater.css) ---- */
+  body { min-height: 100vh; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: var(--sp-4);
+    padding: var(--sp-3) var(--sp-4);
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--grid);
+  }
+  .topbar h1 { font-size: 15px; margin: 0; letter-spacing: .01em; }
+  .topbar .spacer { flex: 1; }
+  .topbar a.nav { font-size: 13px; color: var(--sec); }
+  .topbar a.nav:hover { color: var(--blue); }
+  .icon-btn {
+    background: transparent; border: 1px solid var(--grid); color: var(--ink);
+    border-radius: var(--r-1); padding: 6px 10px; cursor: pointer; font-size: 13px;
+  }
+  .icon-btn:hover { border-color: var(--blue); }
+
+  #offline { display: none; margin: var(--sp-3) var(--sp-4) 0; }
+  #offline.show { display: flex; }
+
+  .app { display: flex; align-items: flex-start; gap: 0; }
+
+  /* ---- left rail ---- */
+  aside.rail {
+    width: 288px; flex: none; position: sticky; top: 53px;
+    height: calc(100vh - 53px); overflow-y: auto;
+    border-right: 1px solid var(--grid); padding: var(--sp-4) var(--sp-3);
+    background: var(--plane);
+  }
+  aside.rail .rail-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: var(--sp-3);
+  }
+  aside.rail .rail-head h2 {
+    font-size: 12px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--muted); margin: 0;
+  }
+  .queue-row {
+    display: grid; grid-template-columns: 1fr auto; gap: 3px var(--sp-2);
+    align-items: center; padding: var(--sp-2) var(--sp-2);
+    border-radius: var(--r-1); cursor: pointer; margin-bottom: 2px;
+    border: 1px solid transparent;
+  }
+  .queue-row:hover { background: color-mix(in srgb, var(--blue) 8%, transparent); }
+  .queue-row.sel { background: color-mix(in srgb, var(--blue) 12%, transparent);
+                   border-color: color-mix(in srgb, var(--blue) 35%, transparent); }
+  .queue-row .qt { font-weight: 600; font-size: 13px; }
+  .queue-row .qn { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+  .queue-row .qmeta { grid-column: 1 / -1; display: flex; align-items: center;
+                      gap: var(--sp-2); flex-wrap: wrap; }
+  .rail-group-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em;
+                      color: var(--muted); margin: var(--sp-3) 0 var(--sp-2) 2px; }
+
+  /* mobile rail toggle */
+  #railToggle { display: none; }
+
+  /* ---- main ---- */
+  main.main { flex: 1; min-width: 0; padding: var(--sp-4) var(--sp-4) 120px; }
+
+  .header-band {
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3);
+    padding: var(--sp-4); margin-bottom: var(--sp-4);
+    background: var(--surface); border: 1px solid var(--grid); border-radius: var(--r-2);
+    box-shadow: var(--shadow-1);
+  }
+  .header-band .tgt { font-size: 22px; font-weight: 650; }
+  .header-band .night { font-family: var(--font-mono); color: var(--sec); font-size: 14px; }
+  .header-band .rno { font-family: var(--font-mono); color: var(--blue); font-weight: 600; }
+  .header-band .dot { color: var(--muted); }
+  .header-band .disposition {
+    flex-basis: 100%; color: var(--sec); font-size: 13px; margin-top: 2px;
+  }
+
+  section.block { margin-bottom: var(--sp-5); }
+  section.block > h2 {
+    font-size: 12px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 var(--sp-3);
+  }
+
+  /* figure grid */
+  .hero { margin-bottom: var(--sp-3); }
+  .fig-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--sp-3);
+  }
+
+  /* tables: each scrolls horizontally inside its own container */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--grid); border-radius: var(--r-2);
+                background: var(--surface); box-shadow: var(--shadow-1); }
+  .table-wrap + .table-wrap { margin-top: var(--sp-3); }
+  .table-title { font-size: 12px; letter-spacing: .04em; text-transform: uppercase;
+                 color: var(--muted); padding: var(--sp-3) var(--sp-3) 0; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+              gap: var(--sp-3); }
+
+  /* AAVSO artifact */
+  details.aavso { background: var(--surface); border: 1px solid var(--grid);
+                  border-radius: var(--r-2); box-shadow: var(--shadow-1); }
+  details.aavso > summary {
+    cursor: pointer; padding: var(--sp-3) var(--sp-4); font-weight: 600; font-size: 13px;
+    display: flex; align-items: center; gap: var(--sp-2); list-style: none;
+  }
+  details.aavso > summary::-webkit-details-marker { display: none; }
+  details.aavso > summary::before { content: "▸"; color: var(--muted); }
+  details.aavso[open] > summary::before { content: "▾"; }
+  details.aavso .body { padding: 0 var(--sp-4) var(--sp-4); }
+  pre.artifact {
+    background: var(--plane); border: 1px solid var(--grid); border-radius: var(--r-1);
+    padding: var(--sp-3); font-family: var(--font-mono); font-size: 11.5px; line-height: 1.5;
+    overflow-x: auto; max-height: 460px; white-space: pre; margin: var(--sp-2) 0 0;
+  }
+  .copy-btn { font-size: 12px; }
+
+  /* sticky gate */
+  .gate {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 15;
+    display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap;
+    padding: var(--sp-3) var(--sp-4);
+    background: color-mix(in srgb, var(--surface) 94%, transparent);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--grid);
+    box-shadow: 0 -8px 28px rgba(0,0,0,.22);
+  }
+  .gate .reason {
+    flex: 1; min-width: 180px;
+    background: var(--plane); color: var(--ink);
+    border: 1px solid var(--grid); border-radius: var(--r-1);
+    padding: 8px 10px; font: 13px var(--font-sans); resize: none; height: 38px;
+  }
+  .gate .reason:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+  .gate .gate-state { font-size: 12.5px; color: var(--muted); }
+  .gate .grow { flex: 1; }
+
+  /* lightbox */
+  dialog.lightbox {
+    border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 94vh;
+  }
+  dialog.lightbox::backdrop { background: rgba(0,0,0,.82); }
+  dialog.lightbox img { max-width: 96vw; max-height: 82vh; display: block;
+                        border-radius: var(--r-1); }
+  dialog.lightbox .lb-cap { color: var(--ink-media); font-size: 12.5px; margin-top: var(--sp-2);
+                            font-family: var(--font-mono); text-align: center; }
+  dialog.lightbox .lb-close {
+    position: absolute; top: -6px; right: -6px; background: var(--surface);
+    color: var(--ink); border: 1px solid var(--grid); border-radius: 50%;
+    width: 34px; height: 34px; cursor: pointer; font-size: 18px;
+  }
+  dialog.lightbox .lb-inner { position: relative; }
+
+  /* empty / loading states */
+  .placeholder { color: var(--muted); text-align: center; padding: 60px var(--sp-4); }
+  .placeholder code { font-family: var(--font-mono); color: var(--sec);
+                      background: var(--surface); padding: 2px 6px; border-radius: 4px;
+                      border: 1px solid var(--grid); }
+  .placeholder h2 { color: var(--ink); }
+
+  /* responsive: collapse the rail on narrow screens */
+  @media (max-width: 820px) {
+    #railToggle { display: inline-block; }
+    aside.rail {
+      position: fixed; top: 53px; left: 0; z-index: 18;
+      width: min(320px, 88vw); height: calc(100vh - 53px);
+      transform: translateX(-102%); transition: transform .3s ease;
+      box-shadow: var(--shadow-2);
+    }
+    aside.rail.open { transform: none; }
+    main.main { padding-bottom: 150px; }
+    .header-band .tgt { font-size: 19px; }
+  }
+
+  /* scoring-state LED alias (token, not hex) — used by the color legend */
+  .led.led-aqua { --_c: var(--aqua); }
+
+  /* F5 — two-step armed Approve: the armed state borrows the --warn tokens */
+  .btn--approve.armed {
+    background: var(--warn); border-color: var(--warn); color: var(--ink-on-fill);
+  }
+
+  /* F6 — compact collapsible color legend */
+  .explain-details {
+    background: var(--surface); border: 1px solid var(--grid);
+    border-radius: var(--r-1); margin-bottom: var(--sp-3);
+  }
+  .explain-details > summary {
+    cursor: pointer; list-style: none;
+    padding: var(--sp-2) var(--sp-3);
+    font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted);
+  }
+  .explain-details > summary::-webkit-details-marker { display: none; }
+  .explain-details > summary::before { content: "▸ "; color: var(--muted); }
+  .explain-details[open] > summary::before { content: "▾ "; }
+  .explain-details > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 3px; }
+  .legend-body { padding: 0 var(--sp-3) var(--sp-3); display: grid; gap: var(--sp-3); }
+  .legend-title { font-size: 10px; letter-spacing: .05em; text-transform: uppercase;
+                  color: var(--muted); margin-bottom: var(--sp-1); }
+  .legend-item { display: flex; align-items: center; gap: var(--sp-2); margin: 4px 0; font-size: var(--fs-12); }
+  .legend-led  { display: inline-flex; align-items: center; gap: 6px; min-width: 92px;
+                 font-family: var(--font-mono); font-size: var(--fs-11); color: var(--sec); }
+  .legend-desc { color: var(--sec); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button id="railToggle" class="icon-btn" aria-label="Toggle review queue">☰</button>
+  <h1>Scientific Report &amp; Review</h1>
+  <div class="spacer"></div>
+  <a class="nav" href="../status/">← Live Pipeline</a>
+  <a class="nav" href="../eval/">Evaluation</a>
+  <button id="themeBtn" class="icon-btn" aria-label="Toggle light / dark theme" title="Toggle theme">◐</button>
+</div>
+
+<div id="offline" class="banner crit">
+  <span class="led crit" aria-hidden="true"></span>
+  <span>Review API offline (<span class="mono">localhost:8323</span>). Decisions can’t be recorded — start
+  <span class="mono">scripts/review_server.py</span> to enable Approve / Redo / Reject.</span>
+</div>
+
+<div class="app">
+  <aside class="rail" id="rail">
+    <div class="rail-head">
+      <h2>Review Queue</h2>
+      <span class="mono" id="queueCount" style="font-size:11px;color:var(--muted)"></span>
+    </div>
+
+    <details class="explain-details">
+      <summary>Color legend</summary>
+      <div class="legend-body">
+        <div>
+          <div class="legend-title">Benchmark verdict</div>
+          <div class="legend-item"><span class="badge-verdict sm" data-verdict="ACCURATE">ACCURATE</span><span class="legend-desc">agrees with published</span></div>
+          <div class="legend-item"><span class="badge-verdict sm" data-verdict="MARGINAL">MARGINAL</span><span class="legend-desc">2–3σ from published</span></div>
+          <div class="legend-item"><span class="badge-verdict sm" data-verdict="NOISY-CONSISTENT">NOISY-CONSISTENT</span><span class="legend-desc">right value, unusable precision</span></div>
+          <div class="legend-item"><span class="badge-verdict sm" data-verdict="NON-DETECTION">NON-DETECTION</span><span class="legend-desc">transit below the noise</span></div>
+          <div class="legend-item"><span class="badge-verdict sm" data-verdict="INACCURATE">INACCURATE</span><span class="legend-desc">disagrees with published</span></div>
+        </div>
+        <div>
+          <div class="legend-title">Worker state</div>
+          <div class="legend-item"><span class="legend-led"><span class="led idle" aria-hidden="true"></span> idle</span><span class="legend-desc">no work assigned</span></div>
+          <div class="legend-item"><span class="legend-led"><span class="led active" aria-hidden="true"></span> active</span><span class="legend-desc">probing / fetching / fitting</span></div>
+          <div class="legend-item"><span class="legend-led"><span class="led led-aqua" aria-hidden="true"></span> scoring</span><span class="legend-desc">grading against published</span></div>
+          <div class="legend-item"><span class="legend-led"><span class="led warn" aria-hidden="true"></span> warn</span><span class="legend-desc">retiring / caution</span></div>
+          <div class="legend-item"><span class="legend-led"><span class="led crit" aria-hidden="true"></span> stale</span><span class="legend-desc">no heartbeat &gt;2 min</span></div>
+          <div class="legend-item"><span class="legend-led"><span class="led throttled" aria-hidden="true"></span> throttled</span><span class="legend-desc">archive breaker open</span></div>
+        </div>
+      </div>
+    </details>
+
+    <div id="queue"></div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="placeholder" id="boot"><span class="mono">loading…</span></div>
+  </main>
+</div>
+
+<div class="gate" id="gate" hidden>
+  <button class="btn btn--approve" id="btnApprove">Approve</button>
+  <button class="btn btn--redo"    id="btnRedo">Redo</button>
+  <button class="btn btn--reject"  id="btnReject">Reject</button>
+  <textarea class="reason" id="reason" placeholder="Reason (required to Redo or Reject)…" rows="1"></textarea>
+  <span class="gate-state" id="gateState"></span>
+  <a class="btn btn--ghost" id="pdfLink" href="#" target="_blank" rel="noopener" hidden>Download PDF</a>
+</div>
+
+<dialog class="lightbox" id="lightbox">
+  <div class="lb-inner">
+    <button class="lb-close" id="lbClose" aria-label="Close">×</button>
+    <img id="lbImg" alt="">
+    <div class="lb-cap mono" id="lbCap"></div>
+  </div>
+</dialog>
+
+<script>
+"use strict";
+/* =========================================================================
+   Page 2 — scientific report & review.
+   Data sources (all relative, served from http://localhost:8321/review/):
+     ./index.json               — queue of reviewable runs (bundle builder output)
+     <id>/manifest.json         — figure grid for a run
+     <id>/report.json           — tables + AAVSO artifact for a run
+   Decision API (cross-origin, hardcoded — CORS allow-origin is localhost:8321):
+     POST http://localhost:8323/api/decision  {record,decision,reason}
+   Every interpolated string is escaped via esc()/escAttr().
+   ========================================================================= */
+
+const REVIEW_API = "http://localhost:8323";
+
+/* ---------- escaping ---------- */
+function esc(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+const escAttr = esc;
+/* build a same-origin asset URL, encoding each path segment (filenames have spaces) */
+function assetURL(id, file) {
+  const segs = String(file).split("/").map(encodeURIComponent).join("/");
+  return "./" + encodeURIComponent(id) + "/" + segs;
+}
+const DASH = "—";
+const show = v => (v === null || v === undefined || v === "" || (typeof v === "number" && !isFinite(v))) ? DASH : v;
+
+/* ---------- verdict helpers ---------- */
+const VERDICTS = ["ACCURATE","MARGINAL","NOISY-CONSISTENT","NON-DETECTION","INACCURATE","RUN-FAILED"];
+function verdictBadge(v, small) {
+  const val = VERDICTS.includes(v) ? v : (v || "");
+  if (!val) return "";
+  return `<span class="badge-verdict${small ? " sm" : ""}" data-verdict="${escAttr(val)}">${esc(val)}</span>`;
+}
+/* map a review status to a decision pill */
+const DECIDED = new Set(["approved","rejected","redo-requested"]);
+function decisionPill(status) {
+  if (!status) return `<span class="pill pending">awaiting review</span>`;
+  if (status === "approved") return `<span class="pill approved">✓ approved</span>`;
+  if (status === "rejected") return `<span class="pill rejected">✕ rejected</span>`;
+  if (status === "redo-requested") return `<span class="pill redo">↻ redo requested</span>`;
+  return `<span class="pill">${esc(status)}</span>`;
+}
+function isDecided(status) { return DECIDED.has(String(status || "")); }
+
+/* ---------- app state ---------- */
+const state = {
+  index: [],            // rows from index.json
+  decisions: {},        // id -> review status (from API /api/queue, overlaid on clicks)
+  apiOnline: false,
+  currentId: null,
+  report: null,         // current report.json
+  manifest: null,       // current manifest.json
+};
+
+/* ---------- boot ---------- */
+async function boot() {
+  let idx;
+  try {
+    const r = await fetch("./index.json?" + Date.now());
+    if (!r.ok) throw new Error("http " + r.status);
+    idx = await r.json();
+  } catch (e) {
+    return renderEmptyState();
+  }
+  state.index = Array.isArray(idx) ? idx : (idx.runs || []);
+  if (!state.index.length) return renderEmptyState();
+
+  await refreshDecisions();     // best-effort overlay from the review API
+  renderQueue();
+
+  const fromHash = decodeURIComponent((location.hash || "").replace(/^#/, ""));
+  const pick = state.index.find(r => r.id === fromHash)
+            || firstUndecided()
+            || state.index[0];
+  if (pick) loadBundle(pick.id);
+}
+
+function firstUndecided() {
+  return sortedIndex().find(r => !isDecided(decisionOf(r)));
+}
+function decisionOf(row) {
+  return state.decisions[row.id] || row.decision || row.status || null;
+}
+/* undecided first, then by run number / id descending (newest-ish first) */
+function sortedIndex() {
+  return state.index.slice().sort((a, b) => {
+    const da = isDecided(decisionOf(a)) ? 1 : 0;
+    const db = isDecided(decisionOf(b)) ? 1 : 0;
+    if (da !== db) return da - db;
+    return String(b.run_no || b.id).localeCompare(String(a.run_no || a.id));
+  });
+}
+
+async function refreshDecisions() {
+  try {
+    const r = await fetch(REVIEW_API + "/api/queue", { cache: "no-store" });
+    if (!r.ok) throw new Error("http " + r.status);
+    const rows = await r.json();
+    state.apiOnline = true;
+    setOffline(false);
+    for (const row of rows) {
+      const st = (row.review && row.review.status) || null;
+      if (st) state.decisions[row.id] = st;
+    }
+  } catch (e) {
+    state.apiOnline = false;
+    setOffline(true);
+  }
+}
+function setOffline(on) {
+  document.getElementById("offline").classList.toggle("show", !!on);
+}
+
+/* ---------- queue rail ---------- */
+function renderQueue() {
+  const rows = sortedIndex();
+  const undecided = rows.filter(r => !isDecided(decisionOf(r)));
+  document.getElementById("queueCount").textContent =
+    `${undecided.length}/${rows.length} pending`;
+
+  const parts = [];
+  let lastGroup = null;
+  for (const r of rows) {
+    const group = isDecided(decisionOf(r)) ? "Decided" : "Awaiting review";
+    if (group !== lastGroup) { parts.push(`<div class="rail-group-label">${group}</div>`); lastGroup = group; }
+    parts.push(queueRowHTML(r));
+  }
+  document.getElementById("queue").innerHTML = parts.join("");
+}
+function queueRowHTML(r) {
+  const sel = r.id === state.currentId ? " sel" : "";
+  const night = show(r.night);
+  const rno = r.run_no ? `<span class="qn">${esc(r.run_no)}</span>` : "";
+  return `<div class="queue-row${sel}" data-id="${escAttr(r.id)}" role="button" tabindex="0"
+        aria-label="${escAttr("Open review for " + show(r.target) + " " + night)}">
+      <span class="qt">${esc(show(r.target))}</span>${rno}
+      <span class="qn">${esc(night)}</span>
+      <span class="qmeta">${verdictBadge(r.verdict, true)}${decisionPill(decisionOf(r))}</span>
+    </div>`;
+}
+document.getElementById("queue").addEventListener("click", (e) => {
+  const row = e.target.closest(".queue-row");
+  if (row) { loadBundle(row.dataset.id); closeRailMobile(); }
+});
+/* F1 — keyboard: Enter/Space on a focused queue row loads its bundle */
+document.getElementById("queue").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const row = e.target.closest(".queue-row");
+  if (row) { e.preventDefault(); loadBundle(row.dataset.id); closeRailMobile(); }
+});
+
+/* ---------- load a run bundle ---------- */
+async function loadBundle(id) {
+  state.currentId = id;
+  location.hash = "#" + encodeURIComponent(id);
+  renderQueue();
+  const main = document.getElementById("main");
+  main.innerHTML = `<div class="placeholder"><span class="mono">loading ${esc(id)}…</span></div>`;
+
+  const [manifest, report] = await Promise.all([
+    fetchJSON(assetURL(id, "manifest.json")),
+    fetchJSON(assetURL(id, "report.json")),
+  ]);
+  state.manifest = manifest;
+  state.report = report;
+
+  if (!manifest && !report) {
+    main.innerHTML = `<div class="placeholder"><h2>Bundle not found</h2>
+      <p>No <code>manifest.json</code> or <code>report.json</code> under
+      <code>${esc(id)}/</code>. Re-run <code>report_bundle.py</code> for this run.</p></div>`;
+    document.getElementById("gate").hidden = true;
+    return;
+  }
+  renderRun(id, manifest || {}, report || {});
+}
+async function fetchJSON(url) {
+  try { const r = await fetch(url + "?" + Date.now()); return r.ok ? await r.json() : null; }
+  catch (e) { return null; }
+}
+
+/* ---------- render a run ---------- */
+function renderRun(id, manifest, rep) {
+  const row = state.index.find(r => r.id === id) || {};
+  const target = rep.target || row.target || id;
+  const night = rep.night || row.night || "";
+  const verdict = rep.verdict || row.verdict || "";
+  const runNo = rep.run_no || row.run_no || "";
+  const disposition = rep.disposition || defaultDisposition(verdict, decisionOf(row));
+
+  const html = [];
+  /* header band */
+  html.push(`<div class="header-band">
+    <span class="tgt">${esc(target)}</span>
+    ${night ? `<span class="dot">·</span><span class="night">${esc(night)}</span>` : ""}
+    ${verdict ? `<span class="dot">·</span>${verdictBadge(verdict)}` : ""}
+    ${runNo ? `<span class="dot">·</span><span class="rno">${esc(runNo)}</span>` : ""}
+    <span class="dot">·</span>${decisionPill(decisionOf(row))}
+    <div class="disposition">${esc(disposition)}</div>
+  </div>`);
+
+  html.push(renderFigures(id, manifest));
+  html.push(renderTables(rep));
+  html.push(renderAAVSO(rep));
+
+  document.getElementById("main").innerHTML = html.join("");
+  wireExplainers();
+  wireFigureClicks(id, manifest);
+  wireAAVSOCopy();
+  renderGate(id, rep, row);
+}
+
+function defaultDisposition(verdict, status) {
+  const v = verdict || "unscored";
+  if (status === "approved") return `Approved for submission — benchmark ${v}.`;
+  if (status === "rejected") return `Rejected at human review — benchmark ${v}.`;
+  if (status === "redo-requested") return `Redo requested — benchmark ${v}.`;
+  return `Awaiting human decision — automated benchmark verdict ${v}.`;
+}
+
+/* ---------- figures ---------- */
+function renderFigures(id, manifest) {
+  const figs = (manifest.figures || []).slice();
+  if (!figs.length) return "";
+  const heroIdx = figs.findIndex(f => f.role === "hero" || f.id === "fig01" || f.n === 1);
+  const hero = heroIdx >= 0 ? figs.splice(heroIdx, 1)[0] : figs.shift();
+
+  const out = [`<section class="block"><h2>Figures</h2>`];
+  out.push(`<div class="hero">${figureCardHTML(id, hero, true)}</div>`);
+  out.push(`<p class="section-title">Corner plot / posterior
+      <span class="why" data-explain="corner" role="button" tabindex="0">why it matters ▾</span></p>`);
+  out.push(`<div class="explain" id="explain-corner">${EXPLAIN.corner}</div>`);
+  out.push(`<div class="fig-grid">`);
+  for (const f of figs) out.push(figureCardHTML(id, f, false));
+  out.push(`</div></section>`);
+  return out.join("");
+}
+function figureCardHTML(id, f, hero) {
+  if (!f) return "";
+  const n = f.n != null ? f.n : "";
+  const cap = f.caption || f.title || "";
+  const label = `<b>Figure ${esc(n)}</b>${cap ? " — " + esc(cap) : ""}`;
+  if (f.missing || !f.file) {
+    const reason = f.missing_reason || "figure not produced for this run";
+    return `<figure class="figure-card missing">
+        <div class="thumb">not available</div>
+        <figcaption><div class="cap">${label}</div>
+          <div class="sha">${esc(reason)}</div></figcaption>
+      </figure>`;
+  }
+  const sha = f.sha256 ? String(f.sha256).slice(0, 16) : "";
+  const url = assetURL(id, f.file);
+  return `<figure class="figure-card" data-fig="${escAttr(f.file)}"
+        data-cap="${escAttr("Figure " + n + (cap ? " — " + cap : ""))}">
+      <div class="thumb" role="button" tabindex="0" aria-label="${escAttr("Enlarge figure " + n)}"><img loading="lazy" src="${escAttr(url)}" alt="${escAttr(cap)}"></div>
+      <figcaption><div class="cap">${label}</div>
+        ${sha ? `<div class="sha">SHA-256 ${esc(sha)}…</div>` : ""}</figcaption>
+    </figure>`;
+}
+function wireFigureClicks(id) {
+  document.querySelectorAll(".figure-card:not(.missing)").forEach(card => {
+    const thumb = card.querySelector(".thumb");
+    const open = () => openLightbox(assetURL(id, card.dataset.fig), card.dataset.cap);
+    thumb.addEventListener("click", open);
+    /* F1 — keyboard: Enter/Space opens the lightbox from a focused thumb */
+    thumb.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
+    });
+  });
+}
+
+/* ---------- tables ---------- */
+function renderTables(rep) {
+  const out = [`<section class="block"><h2>Measurements</h2>`];
+  out.push(paramsTable(rep));
+  out.push(metricsBlock(rep));
+  out.push(limbDarkTable(rep));
+  out.push(observationTable(rep));
+  out.push(crosscheckTable(rep));
+  out.push(provenanceTable(rep));
+  out.push(`</section>`);
+  return out.join("");
+}
+
+/* (a) Fitted parameters — Parameter | Fit ±σ | Prior | Published (ExoClock) */
+function paramsTable(rep) {
+  const rows = rep.params || [];
+  if (!rows.length) return "";
+  const body = rows.map(p => {
+    const isMid = p.is_midtime || /mid.?transit|tmid/i.test(p.name || "");
+    let fitCell;
+    if (isMid) {
+      const white = fmtPM(p.fit, p.sigma, p.unit, p.sigma_min);
+      const infl = p.sigma_inflated != null || p.sigma_inflated_min != null
+        ? `<div class="sub">red-noise σ <b style="color:var(--ink)">± ${esc(show(p.sigma_inflated_min != null ? p.sigma_inflated_min + " min" : p.sigma_inflated))}</b></div>`
+        : "";
+      fitCell = white + infl;
+    } else {
+      fitCell = fmtPM(p.fit, p.sigma, p.unit);
+    }
+    return `<tr><td class="label">${esc(show(p.name))}</td>
+        <td class="num">${fitCell}</td>
+        <td class="num">${esc(show(p.prior))}</td>
+        <td class="num">${esc(show(p.published))}</td></tr>`;
+  }).join("");
+  return `<div class="table-wrap"><div class="table-title">Fitted parameters</div>
+    <table class="data-table"><thead><tr>
+      <th>Parameter</th><th class="num">Fit ± σ</th><th class="num">Prior</th>
+      <th class="num">Published (ExoClock)</th></tr></thead>
+    <tbody>${body}</tbody></table></div>`;
+}
+function fmtPM(val, sig, unit, sigMin) {
+  if (val == null && sig == null) return DASH;
+  let s = esc(show(val));
+  if (sig != null && sig !== "") s += ` ± ${esc(sig)}`;
+  if (unit) s += ` <span class="sub">${esc(unit)}</span>`;
+  if (sigMin != null && sigMin !== "") s += ` <span class="sub">(± ${esc(sigMin)} min)</span>`;
+  return s;
+}
+
+/* (b) Detection & timing metrics */
+function metricsBlock(rep) {
+  const m = rep.metrics || {};
+  const cells = [
+    ["Residual scatter", m.scatter_pct, "%"],
+    ["Depth SNR", m.depth_snr, ""],
+    ["Rp/R* deviation", m.rprs_z, "σ"],
+    ["Duration deviation", m.dur_z, "σ"],
+    ["O−C", m.oc_minutes, "min"],
+    ["O−C significance", m.oc_sigma, "σ"],
+    ["β (red noise)", m.beta_rednoise, ""],
+    ["χ² rescale", m.chi2_rescale, ""],
+  ];
+  if (cells.every(c => c[1] == null)) return "";
+  const tiles = cells.map(([l, v, u]) => `<div class="stat-tile">
+      <div class="l">${esc(l)}</div>
+      <div class="v">${esc(show(v))}${u ? ` <span class="u">${esc(u)}</span>` : ""}</div>
+    </div>`).join("");
+  return `<div style="margin-top:var(--sp-3)">
+      <p class="section-title">Detection &amp; timing
+        <span class="why" data-explain="rms" role="button" tabindex="0">red noise &amp; timing ▾</span>
+        <span class="why" data-explain="oc" role="button" tabindex="0">O−C ▾</span></p>
+      <div class="explain" id="explain-rms">${EXPLAIN.rms}</div>
+      <div class="explain" id="explain-oc">${EXPLAIN.oc}</div>
+      <div class="stat-row">${tiles}</div>
+    </div>`;
+}
+
+/* (c) Limb darkening u0–u3 */
+function limbDarkTable(rep) {
+  const ld = rep.limb_darkening || rep.limbdark || [];
+  if (!ld.length) return "";
+  const body = ld.map(c => `<tr><td class="label">${esc(show(c.coeff || c.name))}</td>
+      <td class="num">${esc(show(c.value))}</td>
+      <td class="num">${esc(show(c.err != null ? "± " + c.err : ""))}</td>
+      <td class="label">${esc(show(c.source || "LDTk"))}</td></tr>`).join("");
+  return `<div class="table-wrap"><div class="table-title">Limb darkening (nonlinear, Claret 4-param)</div>
+    <table class="data-table"><thead><tr>
+      <th>Coefficient</th><th class="num">Value</th><th class="num">σ</th><th>Source</th>
+    </tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
+/* (d) Observation metadata */
+function observationTable(rep) {
+  const o = rep.observation || {};
+  const pairs = [
+    ["Frames", o.frames], ["Cadence", fmtUnit(o.cadence_s, "s")],
+    ["Exposure", fmtUnit(o.exposure_s, "s")], ["Binning", o.binning],
+    ["Airmass range", o.airmass_range], ["Comparison stars", o.comps],
+    ["Filter", o.filter], ["Telescope", o.telescope],
+    ["Optimal aperture", o.aperture], ["Optimal annulus", o.annulus],
+  ].filter(p => p[1] != null && p[1] !== "");
+  if (!pairs.length) return "";
+  const body = pairs.map(([k, v]) => `<tr><td class="label">${esc(k)}</td>
+      <td class="num">${esc(show(v))}</td></tr>`).join("");
+  return `<div class="table-wrap"><div class="table-title">Observation metadata</div>
+    <table class="data-table"><tbody>${body}</tbody></table></div>`;
+}
+function fmtUnit(v, u) { return (v == null || v === "") ? null : v + " " + u; }
+
+/* (e) OEC catalog cross-check */
+function crosscheckTable(rep) {
+  const c = rep.crosscheck || rep.oec;
+  if (!c) return "";
+  let rows;
+  if (c.in_oec === false) {
+    rows = `<tr><td class="label">Open Exoplanet Catalogue</td>
+        <td>not in OEC — no independent cross-check available</td></tr>`;
+  } else {
+    const flags = c.flags || [];
+    const agree = flags.length === 0;
+    const verdictCell = agree
+      ? `<td class="agree">✓ ephemeris agrees with the independent catalogue</td>`
+      : `<td class="flag">⚠ ${flags.map(esc).join("; ")}</td>`;
+    rows = `<tr><td class="label">Agreement</td>${verdictCell}</tr>
+      <tr><td class="label">Period Δ (relative)</td><td class="num">${esc(show(c.period_rel_diff))}</td></tr>
+      <tr><td class="label">Coordinate separation</td><td class="num">${esc(show(c.coord_sep_arcsec != null ? c.coord_sep_arcsec + "″" : null))}</td></tr>`;
+  }
+  return `<div class="table-wrap"><div class="table-title">Catalog cross-check (Open Exoplanet Catalogue)</div>
+    <table class="data-table"><tbody>${rows}</tbody></table></div>`;
+}
+
+/* (f) Provenance */
+function provenanceTable(rep) {
+  const p = rep.provenance || {};
+  const pairs = [
+    ["Random seed", p.seed],
+    ["Dataset SHA-256", p.dataset_sha256],
+    ["Audit chain head", p.audit_head],
+    ["EXOTIC version", p.exotic],
+    ["UltraNest", p.ultranest],
+    ["Inits SHA-256", p.inits_sha256],
+    ["Config snapshot", p.config_snapshot_sha256],
+    ["Runtime", p.runtime_s != null ? p.runtime_s + " s" : null],
+    ["Peak RSS", p.max_rss_mb != null ? p.max_rss_mb + " MB" : null],
+    ["Host", p.host],
+  ].filter(x => x[1] != null && x[1] !== "");
+  if (!pairs.length) return "";
+  const body = pairs.map(([k, v]) => `<tr><td class="label">${esc(k)}</td>
+      <td class="mono" style="word-break:break-all">${esc(v)}</td></tr>`).join("");
+  return `<div class="table-wrap"><div class="table-title">Provenance &amp; reproducibility</div>
+    <table class="data-table"><tbody>${body}</tbody></table></div>`;
+}
+
+/* ---------- AAVSO artifact ---------- */
+function renderAAVSO(rep) {
+  const a = rep.aavso;
+  if (!a || !a.text) return "";
+  return `<section class="block"><h2>Submission artifact</h2>
+    <details class="aavso">
+      <summary>AAVSO upload text — <span class="mono">${esc(a.name || "AAVSO_*.txt")}</span>
+        <span class="grow"></span></summary>
+      <div class="body">
+        <button class="btn btn--ghost copy-btn" id="copyAavso">Copy to clipboard</button>
+        <pre class="artifact" id="aavsoText"></pre>
+      </div>
+    </details></section>`;
+}
+function wireAAVSOCopy() {
+  const rep = state.report || {};
+  const pre = document.getElementById("aavsoText");
+  if (pre && rep.aavso) pre.textContent = rep.aavso.text || "";  // textContent = no injection
+  const btn = document.getElementById("copyAavso");
+  if (btn) btn.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText((rep.aavso && rep.aavso.text) || ""); btn.textContent = "Copied ✓"; }
+    catch (e) { btn.textContent = "Copy failed"; }
+    setTimeout(() => { btn.textContent = "Copy to clipboard"; }, 1800);
+  });
+}
+
+/* ---------- gate ---------- */
+function renderGate(id, rep, row) {
+  const gate = document.getElementById("gate");
+  gate.hidden = false;
+  const status = decisionOf(row);
+  document.getElementById("gateState").innerHTML =
+    (state.apiOnline ? "" : `<span class="led crit" aria-hidden="true"></span> API offline · `) +
+    `state: ${decisionPill(status)}`;
+
+  /* PDF link — prefer an explicit href from the bundle; else reconstruct
+     the pdf_report.py name: reports/R-####_<target-with-dashes>.pdf */
+  const pdf = document.getElementById("pdfLink");
+  const href = rep.pdf || pdfHref(rep, row);
+  if (href) { pdf.hidden = false; pdf.href = href; }
+  else pdf.hidden = true;
+
+  /* F5 — Approve is two-step armed; Redo/Reject already require a reason */
+  disarmApprove();
+  document.getElementById("btnApprove").onclick = () => {
+    if (approveArmed()) { disarmApprove(); decide(id, "approve"); }
+    else armApprove();
+  };
+  document.getElementById("btnRedo").onclick    = () => decide(id, "redo");
+  document.getElementById("btnReject").onclick  = () => decide(id, "reject");
+}
+
+/* ---------- F5: two-step armed Approve ---------- */
+let approveTimer = null;
+function approveArmed() { return approveTimer !== null; }
+function armApprove() {
+  const b = document.getElementById("btnApprove");
+  if (!b) return;
+  b.classList.add("armed");
+  b.textContent = "Confirm approve?";
+  approveTimer = setTimeout(disarmApprove, 5000);
+}
+function disarmApprove() {
+  if (approveTimer) { clearTimeout(approveTimer); approveTimer = null; }
+  const b = document.getElementById("btnApprove");
+  if (b) { b.classList.remove("armed"); b.textContent = "Approve"; }
+}
+/* any interaction that isn't the Approve button itself disarms it */
+document.addEventListener("click", (e) => {
+  if (approveArmed() && !(e.target.closest && e.target.closest("#btnApprove"))) disarmApprove();
+}, true);
+document.getElementById("reason").addEventListener("input", disarmApprove);
+function pdfHref(rep, row) {
+  const rno = rep.run_no || row.run_no;
+  const target = rep.target || row.target;
+  if (!rno || !target) return null;
+  const dashed = String(target).replace(/\s+/g, "-");
+  return "../reports/" + encodeURIComponent(rno + "_" + dashed) + ".pdf";
+}
+
+async function decide(id, action) {
+  const reasonEl = document.getElementById("reason");
+  const reason = reasonEl.value.trim();
+  if ((action === "reject" || action === "redo") && !reason) {
+    reasonEl.focus();
+    reasonEl.style.borderColor = "var(--crit)";
+    document.getElementById("gateState").innerHTML =
+      `<span style="color:var(--crit)">A reason is required to ${esc(action)}.</span>`;
+    return;
+  }
+  reasonEl.style.borderColor = "";
+  setGateBusy(true);
+  try {
+    const r = await fetch(REVIEW_API + "/api/decision", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ record: id, decision: action, reason }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || ("http " + r.status));
+    state.apiOnline = true; setOffline(false);
+    /* optimistic update: record the new state + refresh row + header */
+    state.decisions[id] = data.status || statusFor(action);
+    reasonEl.value = "";
+    renderQueue();
+    const row = state.index.find(x => x.id === id) || {};
+    renderGate(id, state.report || {}, row);
+    updateHeaderPill(id);
+    document.getElementById("gateState").innerHTML =
+      `<span style="color:var(--good)">Recorded:</span> ${decisionPill(state.decisions[id])}`;
+  } catch (e) {
+    const offlineLike = /Failed to fetch|NetworkError|load failed/i.test(String(e.message));
+    if (offlineLike) { state.apiOnline = false; setOffline(true); }
+    document.getElementById("gateState").innerHTML =
+      `<span style="color:var(--crit)">Could not record decision: ${esc(e.message)}</span>`;
+  } finally {
+    setGateBusy(false);
+  }
+}
+function statusFor(a) { return a === "approve" ? "approved" : a === "reject" ? "rejected" : "redo-requested"; }
+function setGateBusy(b) {
+  ["btnApprove","btnRedo","btnReject"].forEach(i => { document.getElementById(i).disabled = b; });
+}
+function updateHeaderPill(id) {
+  const band = document.querySelector(".header-band");
+  if (!band) return;
+  const pill = band.querySelector(".pill");
+  if (pill) pill.outerHTML = decisionPill(state.decisions[id]);
+}
+
+/* ---------- lightbox ---------- */
+const lb = document.getElementById("lightbox");
+function openLightbox(src, cap) {
+  document.getElementById("lbImg").src = src;
+  document.getElementById("lbCap").textContent = cap || "";
+  if (typeof lb.showModal === "function") lb.showModal();
+}
+document.getElementById("lbClose").addEventListener("click", () => lb.close());
+lb.addEventListener("click", (e) => { if (e.target === lb) lb.close(); });   /* backdrop click */
+lb.addEventListener("close", () => { document.getElementById("lbImg").src = ""; });
+
+/* ---------- explainers (Page 1 .why/.explain pattern) ---------- */
+const EXPLAIN = {
+  corner: `The corner (triangle) plot shows the nested-sampling posterior for the four free
+    parameters — Rp/R*, mid-time, inclination and the airmass coefficient. Each off-diagonal
+    panel is a 2-D joint density: round, single-peaked blobs mean the parameters are well
+    constrained and independent, while tilted ellipses reveal covariance (e.g. depth trading
+    against inclination). A skewed or multi-modal mid-time marginal is the warning sign that the
+    transit time — the number we submit — is not cleanly determined, so read this before trusting σ.`,
+  rms: `Real photometry is not pure white noise: seeing, airmass and background drift correlate
+    point-to-point. The RMS-vs-bin plot bins the residuals and compares their scatter to the
+    ideal 1/√N white-noise fall-off. When binned scatter stays above that line, the ratio β
+    (Pont 2006) exceeds 1, and we multiply the mid-time error by β (and by a χ²≈1 rescale). This
+    turns EXOTIC's optimistic posterior σ into an honest uncertainty — the value that actually
+    carries into an AAVSO ephemeris weight.`,
+  oc: `The O−C ("observed minus calculated") diagram plots how far our measured mid-transit time
+    falls from the published ephemeris prediction, in minutes. A point near zero confirms the
+    ephemeris; a growing trend can signal period drift or a transit-timing variation. But an O−C
+    is only meaningful against its combined uncertainty — the red-noise-inflated fit error added
+    in quadrature with the forward-propagated ephemeris error. We flag an anomaly only when
+    |O−C| beats that honest combined σ, so a stale prior can't masquerade as a discovery.`,
+};
+function wireExplainers() {
+  document.querySelectorAll(".why[data-explain]").forEach(w => {
+    w.addEventListener("click", () => {
+      const el = document.getElementById("explain-" + w.dataset.explain);
+      if (el) el.classList.toggle("open");
+    });
+  });
+}
+/* F1 — keyboard: Enter/Space on a focused ".why" toggle fires its click handler
+   (mirrors the Page-1 status pattern) */
+document.addEventListener("keydown", (e) => {
+  if ((e.key === "Enter" || e.key === " ") && document.activeElement &&
+      document.activeElement.classList.contains("why")) {
+    e.preventDefault();
+    document.activeElement.click();
+  }
+});
+
+/* ---------- empty state ---------- */
+function renderEmptyState() {
+  document.getElementById("queue").innerHTML = "";
+  document.getElementById("queueCount").textContent = "";
+  document.getElementById("gate").hidden = true;
+  document.getElementById("main").innerHTML = `<div class="placeholder">
+    <h2>No reviewable runs yet</h2>
+    <p>The review index <code>./index.json</code> is missing or empty.</p>
+    <p>Build the review bundles with:</p>
+    <p><code>report_bundle.py --all-reviewable</code></p>
+  </div>`;
+}
+
+/* ---------- theme toggle + rail ---------- */
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const root = document.documentElement;
+  const cur = root.getAttribute("data-theme")
+    || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const next = cur === "dark" ? "light" : "dark";
+  root.setAttribute("data-theme", next);
+  try { localStorage.setItem("theater-theme", next); } catch (e) {}
+});
+document.getElementById("railToggle").addEventListener("click", () => {
+  document.getElementById("rail").classList.toggle("open");
+});
+function closeRailMobile() {
+  if (matchMedia("(max-width: 820px)").matches)
+    document.getElementById("rail").classList.remove("open");
+}
+
+/* deep-link when the hash changes */
+window.addEventListener("hashchange", () => {
+  const id = decodeURIComponent((location.hash || "").replace(/^#/, ""));
+  if (id && id !== state.currentId && state.index.find(r => r.id === id)) loadBundle(id);
+});
+
+boot();
+</script>
+</body>
+</html>

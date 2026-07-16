@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Model Evaluation — Night Theater</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/theater.css">
+<script>
+  /* set the manual theme before first paint to avoid a flash (shared with Pages 1 & 2) */
+  try {
+    var t = localStorage.getItem("theater-theme");
+    if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+  } catch (e) {}
+</script>
+<style>
+  /* ---- Page-3-specific layout only. Tokens + components live in theater.css. ---- */
+  body { min-height: 100vh; }
+  [hidden] { display: none !important; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 var(--sp-4) var(--sp-8); }
+
+  .topbar { flex-wrap: wrap; row-gap: var(--sp-2); }
+  .icon-btn {
+    background: transparent; border: 1px solid var(--grid); color: var(--ink);
+    border-radius: var(--radius-s); padding: 6px 10px; cursor: pointer;
+    font-size: var(--fs-13); line-height: 1;
+  }
+  .icon-btn:hover { border-color: var(--blue); }
+  .icon-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .topbar .nav + .nav { margin-left: var(--sp-3); }
+
+  .substrip { max-width: 1100px; margin: 0 auto; padding: var(--sp-2) var(--sp-4) 0;
+              font-size: var(--fs-12); color: var(--muted); }
+  .substrip .mono { color: var(--sec); }
+
+  section { margin-top: var(--sp-4); }
+  h2.section-title { margin: 0 0 var(--sp-3); }
+  .lede { color: var(--sec); font-size: 12.5px; margin: 0 0 var(--sp-3); max-width: 78ch; }
+
+  /* ---- headline scorecard ---- */
+  .scorecard { display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--sp-4);
+               align-items: stretch; }
+  @media (max-width: 760px) { .scorecard { grid-template-columns: 1fr; } }
+  .score-side { display: flex; flex-direction: column; gap: var(--sp-1); }
+  .score-role { font-size: var(--fs-11); text-transform: uppercase; letter-spacing: .06em;
+                color: var(--muted); }
+  .score-name { font-size: var(--fs-15); font-weight: 650; color: var(--ink); }
+  .score-auc { font-family: var(--font-data); font-variant-numeric: tabular-nums;
+               font-size: var(--fs-28); font-weight: 650; color: var(--ink); line-height: 1.1; }
+  .score-auc.challenger { color: var(--blue); }
+  .score-ci { font-family: var(--font-data); font-size: var(--fs-12); color: var(--sec); }
+  .score-note { font-size: var(--fs-11); color: var(--muted); line-height: 1.5; }
+  .score-vs { display: flex; align-items: center; justify-content: center;
+              color: var(--muted); font-size: var(--fs-12); font-weight: 650;
+              text-transform: uppercase; letter-spacing: .08em; }
+  @media (max-width: 760px) { .score-vs { padding: var(--sp-1) 0; } }
+
+  /* verdict badge — colour ALWAYS paired with a text label (amber = human gate holds) */
+  .gate-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: var(--radius-pill);
+    background: var(--warn); color: var(--ink-on-fill);
+    font: 650 var(--fs-13)/1.2 var(--font-ui); letter-spacing: .01em;
+  }
+  .gate-badge.promote { background: var(--good); }
+  .gate-badge::before { content: ""; width: 9px; height: 9px; border-radius: 50%;
+                        background: var(--ink-on-fill); flex: none; opacity: .8; }
+  .verdict-line { margin-top: var(--sp-3); color: var(--sec); font-size: 12.5px;
+                  line-height: 1.55; max-width: 82ch; }
+
+  /* ---- cycle-history SVG chart (recolours with the theme via token classes) ---- */
+  .chart-wrap { overflow-x: auto; }
+  svg.hist { display: block; width: 100%; height: auto; min-width: 460px; }
+  .ch-grid  { stroke: var(--grid); stroke-width: 1; }
+  .ch-axis  { stroke: var(--grid); stroke-width: 1.2; }
+  .ch-auc   { fill: none; stroke: var(--blue); stroke-width: 2.4;
+              stroke-linecap: round; stroke-linejoin: round; }
+  .ch-auc.v1 { stroke: var(--muted); stroke-width: 1.8; stroke-dasharray: 5 4; }
+  .ch-brier { fill: none; stroke: var(--aqua); stroke-width: 1.8;
+              stroke-dasharray: 2 3; stroke-linecap: round; }
+  .ch-pt    { fill: var(--blue); stroke: var(--surface); stroke-width: 1.5; }
+  .ch-pt.v1 { fill: var(--muted); }
+  .ch-ptb   { fill: var(--aqua); stroke: var(--surface); stroke-width: 1.2; }
+  .ch-break { stroke: var(--serious); stroke-width: 1.4; stroke-dasharray: 4 3; }
+  .ch-lbl   { fill: var(--muted); font: var(--fs-11) var(--font-data); }
+  .ch-lbl.mid { text-anchor: middle; }
+  .ch-lbl.end { text-anchor: end; }
+  .ch-note  { fill: var(--serious-txt); font: 600 var(--fs-11) var(--font-ui); }
+  .ch-cyclbl{ fill: var(--sec); font: var(--fs-11) var(--font-data); text-anchor: middle; }
+  .chart-legend { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-2);
+                  font-size: var(--fs-11); color: var(--muted); }
+  .chart-legend .sw { display: inline-block; width: 16px; height: 3px; border-radius: 2px;
+                      vertical-align: middle; margin-right: 5px; }
+  .sw.auc { background: var(--blue); } .sw.v1 { background: var(--muted); }
+  .sw.brier { background: var(--aqua); }
+
+  /* ---- figure grid (reuses .figure-card) ---- */
+  .fig-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+              gap: var(--sp-4); }
+  .figure-card a.figlink { display: block; cursor: zoom-in; }
+  .figure-card a.figlink:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+  .figure-card .thumb { background: var(--surface); }
+
+  /* ---- feature panel ---- */
+  .imp-row { display: grid; grid-template-columns: 132px 1fr 116px; gap: var(--sp-2);
+             align-items: center; margin: var(--sp-1) 0; font-size: var(--fs-12); }
+  .imp-row .name { color: var(--sec); font-family: var(--font-data); overflow: hidden;
+                   text-overflow: ellipsis; white-space: nowrap; }
+  .imp-row .bar { height: 8px; background: var(--grid); border-radius: var(--radius-pill);
+                  overflow: hidden; }
+  .imp-row .bar > i { display: block; height: 100%; background: var(--blue);
+                      border-radius: inherit; }
+  .imp-row .bar.zero > i { background: var(--muted); }
+  .imp-row .impute { font-family: var(--font-data); font-variant-numeric: tabular-nums;
+                     color: var(--muted); text-align: right; font-size: var(--fs-11); }
+  .imp-row .impute.high { color: var(--warn-txt); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+  @media (max-width: 820px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .kv { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .kv td { padding: 5px 0; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  .kv td:first-child { color: var(--muted); padding-right: var(--sp-3); white-space: nowrap; }
+  .kv td:last-child { text-align: right; }
+  .kv tr:last-child td { border-bottom: 0; }
+  .kv .wrap-val { word-break: break-all; text-align: left; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+  .tag { display: inline-block; font-family: var(--font-data); font-size: var(--fs-11);
+         padding: 2px 8px; border-radius: var(--radius-s); background: var(--base);
+         color: var(--ink); }
+  .tag.excl { background: color-mix(in srgb, var(--crit) 16%, var(--surface));
+              color: var(--crit-txt); }
+
+  /* ---- model card + reproduce ---- */
+  .md { font-size: 12.5px; line-height: 1.6; color: var(--sec); }
+  .md h1 { font-size: var(--fs-17); color: var(--ink); margin: var(--sp-3) 0 var(--sp-2); }
+  .md h2 { font-size: var(--fs-15); color: var(--ink); margin: var(--sp-4) 0 var(--sp-2);
+           padding-bottom: 4px; border-bottom: 1px solid var(--grid); }
+  .md h3 { font-size: var(--fs-13); color: var(--ink); margin: var(--sp-3) 0 var(--sp-1); }
+  .md p { margin: var(--sp-2) 0; }
+  .md ul { margin: var(--sp-1) 0 var(--sp-2); padding-left: 20px; }
+  .md li { margin: 3px 0; }
+  .md code { font-family: var(--font-data); font-size: 11.5px; color: var(--ink);
+             background: color-mix(in srgb, var(--muted) 14%, transparent);
+             padding: 1px 5px; border-radius: 4px; }
+  .md strong { color: var(--ink); font-weight: 650; }
+  details.card-md > summary {
+    cursor: pointer; font-size: var(--fs-13); font-weight: 650; color: var(--ink);
+    list-style: none;
+  }
+  details.card-md > summary::-webkit-details-marker { display: none; }
+  details.card-md > summary::before { content: "▸ "; color: var(--muted); }
+  details.card-md[open] > summary::before { content: "▾ "; }
+  details.card-md > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+  .repro { font: 12px/1.7 var(--font-data); background: var(--plane);
+           border: 1px solid var(--grid); border-radius: var(--radius-s);
+           padding: var(--sp-3); overflow-x: auto; color: var(--sec); white-space: pre; }
+  .lim-list { margin: 0; padding-left: 20px; }
+  .lim-list li { font-size: 12.5px; color: var(--sec); margin: var(--sp-2) 0; line-height: 1.55; }
+
+  .empty { text-align: center; padding: var(--sp-7) var(--sp-4); color: var(--muted); }
+  .empty code { font-family: var(--font-data); color: var(--ink);
+                background: color-mix(in srgb, var(--muted) 14%, transparent);
+                padding: 2px 6px; border-radius: 4px; }
+  .stale { color: var(--warn-txt); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Model Evaluation</h1>
+  <div class="spacer"></div>
+  <a class="nav" href="../status/">← Live Pipeline</a>
+  <a class="nav" href="../review/">Reports &amp; Review →</a>
+  <button id="themeBtn" class="icon-btn" aria-label="Toggle light / dark theme" title="Toggle theme">◐</button>
+</div>
+<div class="substrip">
+  Run-quality model · v2 evaluation protocol ·
+  <span id="generated" class="mono">—</span>
+</div>
+
+<div id="offline" class="banner crit" hidden>
+  <span class="led crit" aria-hidden="true"></span>
+  <span><b>eval-page.json unavailable.</b> Regenerate with
+  <code class="mono">.venv/bin/python scripts/eval_page.py</code></span>
+</div>
+
+<main class="wrap" id="main" aria-live="polite"></main>
+
+<script>
+/* ============================ helpers ============================ */
+const $ = (sel, el = document) => el.querySelector(sel);
+function esc(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+const fmt = (v, d = 3) => (v == null || Number.isNaN(v)) ? "—" : Number(v).toFixed(d);
+const pct = (v) => (v == null ? "—" : (100 * v).toFixed(1) + "%");
+
+/* ---- minimal, SAFE markdown -> html (escape FIRST, then a tiny subset) ---- */
+function mdToHtml(md) {
+  const lines = String(md).replace(/\r\n/g, "\n").split("\n");
+  let html = "", inList = false, para = [];
+  const flushP = () => { if (para.length) { html += "<p>" + inline(para.join(" ")) + "</p>"; para = []; } };
+  const flushL = () => { if (inList) { html += "</ul>"; inList = false; } };
+  function inline(t) {
+    // t is ALREADY escaped; only add safe emphasis/code/`inline`.
+    return t
+      .replace(/`([^`]+)`/g, (_, c) => "<code>" + c + "</code>")
+      .replace(/\*\*([^*]+)\*\*/g, (_, b) => "<strong>" + b + "</strong>");
+  }
+  for (const raw of lines) {
+    const line = esc(raw);                      // escape every line first
+    const t = line.trim();
+    let m;
+    if ((m = t.match(/^###\s+(.*)/))) { flushP(); flushL(); html += "<h3>" + inline(m[1]) + "</h3>"; }
+    else if ((m = t.match(/^##\s+(.*)/))) { flushP(); flushL(); html += "<h2>" + inline(m[1]) + "</h2>"; }
+    else if ((m = t.match(/^#\s+(.*)/))) { flushP(); flushL(); html += "<h1>" + inline(m[1]) + "</h1>"; }
+    else if ((m = t.match(/^[-*]\s+(.*)/))) {
+      flushP(); if (!inList) { html += "<ul>"; inList = true; } html += "<li>" + inline(m[1]) + "</li>";
+    } else if (t === "") { flushP(); flushL(); }
+    else { flushL(); para.push(line); }
+  }
+  flushP(); flushL();
+  return html;
+}
+
+/* ---- collapsible "why?" explainer (matches Pages 1 & 2) ---- */
+function why(id, text) {
+  return `<button class="why" aria-expanded="false" aria-controls="${id}"
+      onclick="toggleWhy(this,'${id}')">why?</button>
+    <div class="explain" id="${id}" role="region">${text}</div>`;
+}
+function toggleWhy(btn, id) {
+  const box = document.getElementById(id);
+  const open = box.classList.toggle("open");
+  btn.setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+/* ============================ sections ============================ */
+function renderHeadline(p) {
+  const c = p.headline.champion, ch = p.headline.challenger, v = p.headline.verdict;
+  const promote = v.beats_rules_grouped && v.beats_best_feature_grouped;
+  const badge = promote ? "CHALLENGER LEADS · HUMAN PROMOTION PENDING" : "RULES REMAIN AUTHORITATIVE";
+  const ci = (ch.ci95 && ch.ci95[0] != null) ? `[${fmt(ch.ci95[0])}, ${fmt(ch.ci95[1])}]` : "";
+  return `<section class="card" aria-label="Headline scorecard">
+    <h2 class="section-title">Champion vs challenger</h2>
+    <div class="scorecard">
+      <div class="score-side">
+        <span class="score-role">Champion · rules (authoritative)</span>
+        <span class="score-name">${esc(c.name)}</span>
+        <span class="score-auc">${fmt(c.auc)}</span>
+        <span class="score-ci">grouped-ranker AUC</span>
+        <span class="score-note">${esc(c.note)}</span>
+      </div>
+      <div class="score-vs">vs</div>
+      <div class="score-side">
+        <span class="score-role">Challenger · model (registry: challenger)</span>
+        <span class="score-name">${esc(ch.name)}</span>
+        <span class="score-auc challenger">${fmt(ch.auc)}</span>
+        <span class="score-ci">grouped-CV AUC · 95% CI ${ci}</span>
+        <span class="score-note">random-CV ${fmt(ch.random_auc)} · leakage gap ${fmt(ch.cv_auc_gap)}
+          · n=${ch.n_train ?? "—"} (${ch.n_pos ?? "—"} pos)</span>
+      </div>
+    </div>
+    <div style="margin-top:var(--sp-4)">
+      <span class="gate-badge ${promote ? "promote" : ""}">${esc(badge)}</span>
+    </div>
+    <p class="verdict-line">${esc(v.text)}
+      Promotion is a <strong style="color:var(--ink)">human act only</strong> — nothing is
+      submitted, and no model is promoted to champion, without a maintainer's decision.</p>
+  </section>`;
+}
+
+function renderHistory(p) {
+  const cy = p.cycles || [];
+  if (!cy.length) return "";
+  // geometry
+  const W = 720, H = 300, mL = 46, mR = 46, mT = 26, mB = 46;
+  const iw = W - mL - mR, ih = H - mT - mB;
+  const n = cy.length;
+  const x = (i) => mL + (n === 1 ? iw / 2 : (iw * i) / (n - 1));
+  const aLo = 0.5, aHi = 1.0;                       // AUC axis (left)
+  const yA = (a) => mT + ih * (1 - (a - aLo) / (aHi - aLo));
+  const briers = cy.map(c => c.brier).filter(b => b != null);
+  const bHi = briers.length ? Math.max(0.2, Math.ceil(Math.max(...briers) * 20) / 20) : 0.2;
+  const yB = (b) => mT + ih * (1 - b / bHi);         // Brier axis (right, 0..bHi)
+
+  let svg = `<svg class="hist" viewBox="0 0 ${W} ${H}" role="img"
+      aria-label="Cycle history of grouped AUC and Brier; cycles 1-3 are v1 (not comparable) and cycle 4 is v2.">`;
+  // gridlines + left AUC ticks
+  for (let a = 0.5; a <= 1.0001; a += 0.1) {
+    svg += `<line class="ch-grid" x1="${mL}" y1="${yA(a).toFixed(1)}" x2="${W - mR}" y2="${yA(a).toFixed(1)}"/>`;
+    svg += `<text class="ch-lbl end" x="${mL - 6}" y="${(yA(a) + 3).toFixed(1)}">${a.toFixed(1)}</text>`;
+  }
+  // right Brier ticks
+  for (let b = 0; b <= bHi + 1e-9; b += bHi / 2) {
+    svg += `<text class="ch-lbl" x="${W - mR + 6}" y="${(yB(b) + 3).toFixed(1)}">${b.toFixed(2)}</text>`;
+  }
+  // axes
+  svg += `<line class="ch-axis" x1="${mL}" y1="${mT}" x2="${mL}" y2="${H - mB}"/>`;
+  svg += `<line class="ch-axis" x1="${mL}" y1="${H - mB}" x2="${W - mR}" y2="${H - mB}"/>`;
+  // axis titles — placed ABOVE the top gridline so they never collide with the 1.0 /
+  // top-Brier tick labels
+  svg += `<text class="ch-lbl" x="${mL - 40}" y="${mT - 9}">AUC</text>`;
+  svg += `<text class="ch-lbl" x="${W - mR + 6}" y="${mT - 9}">Brier</text>`;
+
+  // protocol break: between last v1 and first v2 cycle
+  const firstV2 = cy.findIndex(c => c.comparable);
+  if (firstV2 > 0) {
+    const bx = (x(firstV2 - 1) + x(firstV2)) / 2;
+    svg += `<line class="ch-break" x1="${bx.toFixed(1)}" y1="${mT}" x2="${bx.toFixed(1)}" y2="${H - mB}"/>`;
+    svg += `<text class="ch-note mid" x="${bx.toFixed(1)}" y="${mT - 10}"
+        text-anchor="middle">v1 → v2 protocol break</text>`;
+  }
+
+  // AUC polylines — separate v1 and v2 segments so the dashed "not comparable" run
+  // is visually broken from the solid v2 line.
+  const seg = (pred, cls) => {
+    const pts = cy.map((c, i) => (pred(c) && c.auc != null) ? `${x(i).toFixed(1)},${yA(c.auc).toFixed(1)}` : null)
+      .filter(Boolean);
+    if (pts.length >= 2) svg += `<polyline class="ch-auc ${cls}" points="${pts.join(" ")}"/>`;
+  };
+  seg(c => !c.comparable, "v1");
+  seg(c => c.comparable, "");
+  // Brier polyline (all cycles)
+  const bpts = cy.map((c, i) => c.brier != null ? `${x(i).toFixed(1)},${yB(c.brier).toFixed(1)}` : null).filter(Boolean);
+  if (bpts.length >= 2) svg += `<polyline class="ch-brier" points="${bpts.join(" ")}"/>`;
+
+  // points + cycle labels
+  cy.forEach((c, i) => {
+    if (c.auc != null) {
+      svg += `<circle class="ch-pt ${c.comparable ? "" : "v1"}" cx="${x(i).toFixed(1)}"
+          cy="${yA(c.auc).toFixed(1)}" r="4"><title>cycle ${c.cycle} ${esc(c.protocol)} — ${c.auc_kind} AUC ${fmt(c.auc)}${c.note ? " — " + esc(c.note) : ""}</title></circle>`;
+    }
+    if (c.brier != null) {
+      svg += `<circle class="ch-ptb" cx="${x(i).toFixed(1)}" cy="${yB(c.brier).toFixed(1)}" r="3"><title>cycle ${c.cycle} Brier ${fmt(c.brier)}</title></circle>`;
+    }
+    svg += `<text class="ch-cyclbl" x="${x(i).toFixed(1)}" y="${H - mB + 16}">c${c.cycle}</text>`;
+    svg += `<text class="ch-cyclbl" x="${x(i).toFixed(1)}" y="${H - mB + 30}" style="fill:var(--muted)">${esc(c.protocol)}</text>`;
+  });
+  svg += `</svg>`;
+
+  const rows = cy.map(c => {
+    const cls = c.comparable ? "" : "class=\"stale\"";
+    return `<tr>
+      <td class="mono">c${c.cycle}</td><td class="mono">${esc(c.date)}</td>
+      <td>${esc(c.model)}</td><td class="mono">${esc(c.protocol)}</td>
+      <td class="num">${c.n_train}</td><td class="num">${fmt(c.auc)}</td>
+      <td class="num">${fmt(c.brier)}</td>
+      <td ${cls}>${c.comparable ? "comparable" : esc(c.note)}</td></tr>`;
+  }).join("");
+
+  return `<section class="card" aria-label="Cycle history">
+    <h2 class="section-title">Cycle history — grouped AUC &amp; Brier
+      ${why("why-hist", "Cycles 1–3 predate the v2 protocol <em>and</em> were trained on a "
+        + "feature table later found corrupted (benchmark.csv drift, fixed 2026-07-15). They "
+        + "used v1 metrics (random-CV per-fold AUC, 10-bin ECE) with no grouped AUC or CIs, so "
+        + "they are <strong>not comparable</strong> to the v2 cycle and are drawn muted/dashed. "
+        + "The vertical marker is the protocol break; only same-protocol cycles are joined.")}</h2>
+    <p class="lede">Headline discrimination (grouped-OOF AUC, higher is better) and calibration
+      (Brier, lower is better) per training cycle. v1 cycles are shown for continuity only.</p>
+    <div class="chart-wrap">${svg}</div>
+    <div class="chart-legend">
+      <span><span class="sw auc"></span>grouped AUC (v2)</span>
+      <span><span class="sw v1"></span>random-CV AUC (v1 — not comparable)</span>
+      <span><span class="sw brier"></span>Brier</span>
+    </div>
+    <table class="data-table" style="margin-top:var(--sp-3)">
+      <thead><tr><th>cycle</th><th>date</th><th>model</th><th>protocol</th>
+        <th class="num">n</th><th class="num">AUC</th><th class="num">Brier</th><th>comparability</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+  </section>`;
+}
+
+function figureCard(f, num, caption) {
+  if (!f || !f.present) {
+    const reason = (f && f.reason) || "figure not generated";
+    return `<figure class="figure-card missing">
+      <div class="thumb">${esc(caption)}<br>—<br>${esc(reason)}</div>
+      <figcaption><div class="cap"><b>Figure ${num}</b> — ${esc(caption)}</div>
+        <div class="sha">regenerate: .venv/bin/python scripts/eval_page.py</div></figcaption></figure>`;
+  }
+  const sha = f.sha256 ? esc(String(f.sha256).slice(0, 16)) + "…" : "";
+  return `<figure class="figure-card">
+    <a class="figlink" href="./${esc(f.file)}" target="_blank" rel="noopener"
+       aria-label="Open ${esc(caption)} full size">
+      <div class="thumb"><img src="./${esc(f.file)}" alt="${esc(caption)}" loading="lazy"></div></a>
+    <figcaption><div class="cap"><b>Figure ${num}</b> — ${esc(caption)}</div>
+      ${sha ? `<div class="sha">SHA-256 ${sha}</div>` : ""}</figcaption></figure>`;
+}
+
+function renderFigures(p) {
+  const F = p.figures || {};
+  const cal = p.calibration || {};
+  const brierCI = (cal.brier_ci && cal.brier_ci[0] != null)
+    ? ` (Brier ${fmt(cal.brier)} [${fmt(cal.brier_ci[0])}, ${fmt(cal.brier_ci[1])}])` : "";
+  return `<section class="card" aria-label="Discrimination and calibration figures">
+    <h2 class="section-title">Discrimination &amp; calibration — recomputed from the frozen protocol
+      ${why("why-fig", "These four figures are recomputed at build time from the same grouped "
+        + "out-of-fold path in <code>ml_features.py</code> that logs every cycle — predictions "
+        + "only, no retraining. Each PNG carries its SHA-256 so the figure on the page is "
+        + "provably the one this build produced.")}</h2>
+    <p class="lede">Challenger vs every logged baseline under grouped cross-validation (unseen
+      target at test time). ROC/PR overlay the incumbent rules, the best single feature and the
+      scatter-cut. The reliability curve is the small-n 3-bin calibration${brierCI}.</p>
+    <div class="fig-grid">
+      ${figureCard(F.roc, 1, "ROC — challenger vs logged baselines (grouped OOF)")}
+      ${figureCard(F.pr, 2, "Precision–Recall — positive = usable-for-submission run")}
+      ${figureCard(F.reliability, 3, "Reliability / calibration curve with Brier 95% CI")}
+      ${figureCard(F.importances, 4, "Permutation feature importances (challenger)")}
+    </div>
+  </section>`;
+}
+
+function renderBaselines(p) {
+  const rows = (p.baselines || []).map(b => `<tr>
+    <td class="label">${esc(b.name)}</td>
+    <td class="num">${fmt(b.auc)}</td>
+    <td class="sub">${esc(b.note)}</td></tr>`).join("");
+  return `<section class="card" aria-label="Baseline comparison">
+    <h2 class="section-title">Baselines — the bar the model must clear
+      ${why("why-base", "\"AUC 0.87\" means nothing in a vacuum. Every cycle logs the majority-class "
+        + "floor (0.5), the best single raw feature, the interpretable scatter cut, and the "
+        + "incumbent rules. Until the model beats the rules on <strong>grouped</strong> AUC "
+        + "<em>without</em> the excluded columns, the rules stay authoritative.")}</h2>
+    <table class="data-table">
+      <thead><tr><th>predictor</th><th class="num">AUC</th><th>reading</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+  </section>`;
+}
+
+function renderFeatures(p) {
+  const fs = p.features || [];
+  const maxImp = Math.max(0.0001, ...fs.map(f => (f.importance || 0)));
+  const rows = fs.map(f => {
+    const imp = f.importance == null ? 0 : f.importance;
+    const w = Math.max(0, (imp / maxImp) * 100);
+    const zero = imp <= 0.005 ? "zero" : "";
+    const impFrac = f.imputed_frac;
+    const hi = (impFrac != null && impFrac >= 0.10) ? "high" : "";
+    return `<div class="imp-row">
+      <span class="name" title="${esc(f.name)}">${esc(f.name)}</span>
+      <span class="bar ${zero}" role="img" aria-label="importance ${fmt(imp, 4)}"><i style="width:${w.toFixed(1)}%"></i></span>
+      <span class="impute ${hi}" title="fraction of rows median-imputed">${impFrac == null ? "—" : pct(impFrac)}</span>
+    </div>`;
+  }).join("");
+  const excl = (p.leakage.excluded_cols || []).map(c => `<span class="tag excl">${esc(c)}</span>`).join("");
+  return `<section class="card" aria-label="Feature panel">
+    <h2 class="section-title">Features — importance, imputation &amp; the leakage boundary
+      ${why("why-feat", "Bars are permutation importances (drop in grouped-fit ROC-AUC when a "
+        + "feature is shuffled) — a feature at zero is carried but unused. The right column is the "
+        + "fraction of rows median-imputed; a feature quietly going all-NaN (a broken emitter) "
+        + "shows up here. The excluded columns below are computed <em>from</em> the label and are "
+        + "forbidden as features — feeding them back would be direct label leakage.")}</h2>
+    <div class="grid2">
+      <div>
+        <p class="section-title" style="margin-bottom:var(--sp-2)">Importance · imputed fraction (13 features)</p>
+        ${rows}
+      </div>
+      <div>
+        <p class="section-title" style="margin-bottom:var(--sp-2)">Excluded (label leakage)</p>
+        <p class="lede">These are computed directly from the published truth in
+          <span class="mono">mo_benchmark.py</span>; the benchmark verdict — the training label —
+          is defined from them. They are never features.</p>
+        <div class="chips">${excl}</div>
+        <p class="lede" style="margin-top:var(--sp-3)"><span class="mono">coverage_frac</span> is a
+          non-leaky exception: derived only from our own observed phase and our own transit model,
+          never from published values.</p>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderLeakage(p) {
+  const l = p.leakage;
+  return `<section class="card" aria-label="Leakage audit">
+    <h2 class="section-title">Leakage audit — grouped vs random gap
+      ${why("why-leak", "The same handful of targets is observed many nights; a random split can "
+        + "put the same star on both sides and let the model memorise its quirks. Grouping folds "
+        + "by target holds a whole star out — the honest estimate of a <em>new</em> night. The "
+        + "gap (random − grouped) is the target-leakage estimate; keep it small.")}</h2>
+    <div class="grid2">
+      <table class="kv">
+        <tr><td>Random-CV AUC (pooled OOF)</td><td class="mono">${fmt(l.random)}</td></tr>
+        <tr><td>Grouped-CV AUC (headline)</td><td class="mono">${fmt(l.grouped)}</td></tr>
+        <tr><td>Leakage gap (random − grouped)</td><td class="mono">${fmt(l.gap)}</td></tr>
+        <tr><td>Grouping key</td><td class="mono">${esc(l.groups_are)}</td></tr>
+        <tr><td>Number of groups (targets)</td><td class="mono">${l.n_groups == null ? "—" : l.n_groups}</td></tr>
+      </table>
+      <p class="lede">A small gap (here <span class="mono">${fmt(l.gap)}</span>) means the model's
+        skill is not coming from having seen the same target on both sides of the split. A widening
+        gap in a future cycle is the first thing to investigate — it flags features that encode
+        target identity rather than transferable reduction quality.</p>
+    </div>
+  </section>`;
+}
+
+function renderLineage(p) {
+  const L = p.lineage;
+  const runs = L.mlflow_run_ids;
+  const runRow = runs && runs.length
+    ? `<tr><td>MLflow run ids</td><td class="wrap-val mono">${runs.map(esc).join("<br>")}</td></tr>`
+    : `<tr><td>MLflow run ids</td><td class="mono">— (tracking store not present)</td></tr>`;
+  return `<section class="card" aria-label="Dataset lineage">
+    <h2 class="section-title">Dataset lineage &amp; provenance</h2>
+    <table class="kv">
+      <tr><td>Dataset SHA-256</td><td class="wrap-val mono">${esc(L.dataset_sha256 || "—")}</td></tr>
+      <tr><td>Schema version</td><td class="mono">${L.schema_version ?? "—"}</td></tr>
+      <tr><td>Rows (n)</td><td class="mono">${L.n ?? "—"}</td></tr>
+      <tr><td>Class balance</td><td class="mono">${L.pos ?? "—"} pos / ${L.neg ?? "—"} neg${L.n ? " (" + pct((L.pos || 0) / L.n) + " positive)" : ""}</td></tr>
+      <tr><td>Rows dropped (all-NaN)</td><td class="mono">${L.n_rows_dropped_nan == null ? "—" : L.n_rows_dropped_nan}</td></tr>
+      <tr><td>Feature snapshot</td><td class="wrap-val mono">data/results/run-features.csv</td></tr>
+      ${runRow}
+    </table>
+  </section>`;
+}
+
+function renderModelCard(p) {
+  const md = p.model_card_html_or_md || "";
+  if (!md) return "";
+  return `<section class="card" aria-label="Model card">
+    <details class="card-md">
+      <summary>Model card — <span class="mono">docs/MODEL-CARD.md</span> (Mitchell et al. 2019 structure)</summary>
+      <div class="md">${mdToHtml(md)}</div>
+    </details>
+  </section>`;
+}
+
+function renderLimitations(p) {
+  const lim = (p.limitations || []).map(x => `<li>${esc(x)}</li>`).join("");
+  const cmds = (p.reproduce_cmds || []).map(esc).join("\n");
+  return `<section class="card" aria-label="Limitations and reproduction">
+    <h2 class="section-title">Honest limitations</h2>
+    <ul class="lim-list">${lim}</ul>
+    <p class="lede" style="margin-top:var(--sp-4)">Full protocol:
+      <a href="../../../docs/EVAL-PROTOCOL-V2.md">docs/EVAL-PROTOCOL-V2.md</a> (frozen).</p>
+    <h2 class="section-title" style="margin-top:var(--sp-4)">Reproduce this page</h2>
+    <div class="repro">${esc(cmds)}</div>
+  </section>`;
+}
+
+/* ============================ boot ============================ */
+function render(p) {
+  $("#generated").textContent = "generated " + (p.generated_utc || "—")
+    + (p.recomputed ? " · figures recomputed from frozen protocol" : " · figures from last build (table unavailable)");
+  $("#main").innerHTML = [
+    renderHeadline(p),
+    renderHistory(p),
+    renderFigures(p),
+    renderBaselines(p),
+    renderFeatures(p),
+    renderLeakage(p),
+    renderLineage(p),
+    renderModelCard(p),
+    renderLimitations(p),
+  ].join("");
+}
+
+function emptyState(msg) {
+  $("#offline").hidden = false;
+  $("#main").innerHTML = `<div class="empty card">
+    <h2>Evaluation data unavailable</h2>
+    <p>${esc(msg)}</p>
+    <p>Regenerate the page with:</p>
+    <p><code>.venv/bin/python scripts/eval_page.py</code></p>
+  </div>`;
+}
+
+fetch("./eval-page.json", { cache: "no-store" })
+  .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+  .then(render)
+  .catch(err => emptyState("Could not load ./eval-page.json (" + err.message + ")."));
+
+/* ---------- theme toggle (shared mechanism with Pages 1 & 2) ---------- */
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const root = document.documentElement;
+  const cur = root.getAttribute("data-theme")
+    || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const next = cur === "dark" ? "light" : "dark";
+  root.setAttribute("data-theme", next);
+  try { localStorage.setItem("theater-theme", next); } catch (e) {}
+});
+</script>
+</body>
+</html>

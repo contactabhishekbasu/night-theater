@@ -1,0 +1,637 @@
+/* ============================================================================
+   theater.css — Night Theater Design System  (v2)
+   Shared formal tokens + components for the citizen-science exoplanet pipeline.
+   Page 1 (status/) and Page 2 (review/) both import this.
+
+   Full documentation: docs/DESIGN-SYSTEM.md
+   Design language locked as "Night Theater Design System" — HIG-aligned
+   (clarity / deference / depth); semantic tokens over raw hex; 4pt spacing;
+   verdict + worker colors ALWAYS paired with a text label; dark-first with
+   prefers-color-scheme light + a manual [data-theme] override that wins both
+   ways; motion respects prefers-reduced-motion; body text >= 4.5:1 both themes.
+
+   v2 adds (all additive over v1 — no v1 token or class removed):
+     - text-legible status variants (--*-txt) so a status colour can be used as
+       small text on a surface and still clear WCAG AA in both themes;
+     - on-fill text tokens (--ink-on-fill / --ink-inverse / --on-throttled) and
+       --ink-media (text over always-black media);
+     - --throttled purple (worker throttled state) — --led-throttled now maps to
+       it (v1 pointed at --serious); --serious kept as the "elevated" tier;
+     - --sp-7/8, --radius-s/m/l, --shadow-3, --dur-fast/--dur-slow/--ease,
+       --fs-11..--fs-28 type ramp, --font-ui/--font-data canonical font stacks;
+     - components: .topbar .kpi-strip .worker-lane .role-chip .lane-rail .gauge
+       .queue-panel .deadletter-panel .sparkline .state-chip.
+   Contrast fixes vs v1 (kept locked hues everywhere they are used as fills/LEDs):
+     - light --muted #898781 -> #71706b   (label text 3.50 -> 4.83)
+     - light --blue  #2a78d6 -> #256dc4    (link  text 4.30 -> 5.03)
+     - verdict/button text now uses --ink-on-fill / --ink-inverse so overlaid
+       labels clear AA (e.g. ACCURATE 3.35 -> 5.42).
+
+   Theme model (dark-first, both directions win):
+     :root                                        -> DARK   (default)
+     @media (prefers-color-scheme:light) :root    -> LIGHT  (system preference)
+     :root[data-theme="light"]                    -> LIGHT  (manual, wins over OS)
+     :root[data-theme="dark"]                     -> DARK   (manual, wins over OS)
+   The [data-theme] selectors carry higher specificity than the bare :root used
+   inside the media query, so a manual choice always overrides the OS.
+   ========================================================================== */
+
+/* ---- DARK (default / dark-first) --------------------------------------------
+   The base :root also defines every THEME-INVARIANT token (fonts, spacing,
+   radii, motion, type ramp, LED aliases, on-fill/ media inks) exactly once;
+   the three theme blocks below only re-declare the THEME-AWARE colours. */
+:root {
+  /* neutrals */
+  --surface: #1a1a19;   /* card / panel */
+  --plane:   #0d0d0d;   /* page background */
+  --ink:     #ffffff;   /* primary text */
+  --sec:     #c3c2b7;   /* secondary text */
+  --muted:   #898781;   /* tertiary / labels */
+  --grid:    #2c2c2a;   /* hairlines, borders */
+  --base:    #383835;   /* neutral chip fill */
+
+  /* accents */
+  --blue:    #3987e5;   /* primary accent / links / active */
+  --aqua:    #199e70;   /* secondary accent / noisy-consistent */
+
+  /* status (fills + LEDs) */
+  --good:    #0ca30c;   /* ok / accurate */
+  --warn:    #fab219;   /* caution / marginal */
+  --serious: #ec835a;   /* elevated / attention (between warn and crit) */
+  --crit:    #d03b3b;   /* critical / failure */
+  --throttled:#8e6fd8;  /* worker throttled (breaker open) */
+
+  /* text-legible status variants — for a status colour used as SMALL TEXT on a
+     surface; clears >=4.5:1 in this theme. Fills/LEDs keep the base hues above. */
+  --good-txt:     #0ca30c;
+  --warn-txt:     #fab219;
+  --serious-txt:  #ec835a;
+  --crit-txt:     #e05a5a;
+  --aqua-txt:     #199e70;
+  --throttled-txt:#9d82df;
+
+  /* text drawn ON a filled chip/button (theme-aware only where the fill flips) */
+  --on-throttled: #16160f;   /* on the lighter dark-theme purple */
+
+  /* elevation */
+  --shadow-1: 0 1px 2px rgba(0,0,0,.28);
+  --shadow-2: 0 10px 32px rgba(0,0,0,.40);
+  --shadow-3: 0 24px 64px rgba(0,0,0,.55);
+
+  color-scheme: dark;
+
+  /* ---------- theme-invariant tokens (defined once) ---------- */
+
+  /* on-fill / media text */
+  --ink-on-fill: #16160f;   /* near-black: text on BRIGHT fills (good/warn/aqua) */
+  --ink-inverse: #ffffff;   /* white:      text on DARK fills   (crit)           */
+  --ink-media:   #dddddd;   /* text over always-black media (film / thumb / lightbox) */
+
+  /* status-LED semantic aliases (var() is late-bound, so these track the theme) */
+  --led-idle:      var(--muted);
+  --led-active:    var(--blue);
+  --led-ok:        var(--good);
+  --led-warn:      var(--warn);
+  --led-crit:      var(--crit);
+  --led-throttled: var(--throttled);   /* v1 pointed at --serious; now purple */
+
+  /* type — canonical stacks + legacy aliases (Page 2 uses --font-sans/-mono) */
+  --font-ui:   system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-data: ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Mono", Consolas, monospace;
+  --font-sans: var(--font-ui);
+  --font-mono: var(--font-data);
+
+  /* type ramp — 11 / 12 / 13 / 15 / 17 / 22 / 28 */
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-15: 15px;
+  --fs-17: 17px;
+  --fs-22: 22px;
+  --fs-28: 28px;
+
+  /* spacing scale — 4pt grid */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+
+  /* radii — canonical --radius-* with legacy --r-* aliases (Page 2 uses --r-*) */
+  --radius-s:    6px;
+  --radius-m:    10px;
+  --radius-l:    14px;
+  --radius-pill: 999px;
+  --r-1:    var(--radius-s);
+  --r-2:    var(--radius-m);
+  --r-3:    var(--radius-l);
+  --r-pill: var(--radius-pill);
+
+  /* motion — 150ms / 300ms, shared ease-out */
+  --dur-fast: 150ms;
+  --dur-slow: 300ms;
+  --ease: cubic-bezier(.2, .6, .35, 1);
+}
+
+/* ---- LIGHT via system preference (theme-aware colours only) ---------------- */
+@media (prefers-color-scheme: light) {
+  :root {
+    --surface: #fcfcfb;
+    --plane:   #f9f9f7;
+    --ink:     #0b0b0b;
+    --sec:     #52514e;
+    --muted:   #71706b;   /* darkened from #898781 for AA label contrast */
+    --grid:    #e1e0d9;
+    --base:    #c3c2b7;
+    --blue:    #256dc4;   /* darkened from #2a78d6 so link text clears AA */
+    --aqua:    #1baf7a;
+    --good:    #0ca30c;
+    --warn:    #fab219;
+    --serious: #ec835a;
+    --crit:    #d03b3b;
+    --throttled:#6f4fc4;
+
+    --good-txt:     #0a850a;
+    --warn-txt:     #9a6708;
+    --serious-txt:  #b0521f;
+    --crit-txt:     #d03b3b;
+    --aqua-txt:     #127f58;
+    --throttled-txt:#6f4fc4;
+
+    --on-throttled: #ffffff;   /* darker light-theme purple wants white text */
+
+    --shadow-1: 0 1px 2px rgba(20,20,18,.10);
+    --shadow-2: 0 10px 32px rgba(20,20,18,.16);
+    --shadow-3: 0 24px 64px rgba(20,20,18,.22);
+    color-scheme: light;
+  }
+}
+
+/* ---- Manual overrides (win over both the default AND the media query) ------ */
+:root[data-theme="light"] {
+  --surface: #fcfcfb;
+  --plane:   #f9f9f7;
+  --ink:     #0b0b0b;
+  --sec:     #52514e;
+  --muted:   #71706b;
+  --grid:    #e1e0d9;
+  --base:    #c3c2b7;
+  --blue:    #256dc4;
+  --aqua:    #1baf7a;
+  --good:    #0ca30c;
+  --warn:    #fab219;
+  --serious: #ec835a;
+  --crit:    #d03b3b;
+  --throttled:#6f4fc4;
+  --good-txt:     #0a850a;
+  --warn-txt:     #9a6708;
+  --serious-txt:  #b0521f;
+  --crit-txt:     #d03b3b;
+  --aqua-txt:     #127f58;
+  --throttled-txt:#6f4fc4;
+  --on-throttled: #ffffff;
+  --shadow-1: 0 1px 2px rgba(20,20,18,.10);
+  --shadow-2: 0 10px 32px rgba(20,20,18,.16);
+  --shadow-3: 0 24px 64px rgba(20,20,18,.22);
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --surface: #1a1a19;
+  --plane:   #0d0d0d;
+  --ink:     #ffffff;
+  --sec:     #c3c2b7;
+  --muted:   #898781;
+  --grid:    #2c2c2a;
+  --base:    #383835;
+  --blue:    #3987e5;
+  --aqua:    #199e70;
+  --good:    #0ca30c;
+  --warn:    #fab219;
+  --serious: #ec835a;
+  --crit:    #d03b3b;
+  --throttled:#8e6fd8;
+  --good-txt:     #0ca30c;
+  --warn-txt:     #fab219;
+  --serious-txt:  #ec835a;
+  --crit-txt:     #e05a5a;
+  --aqua-txt:     #199e70;
+  --throttled-txt:#9d82df;
+  --on-throttled: #16160f;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.28);
+  --shadow-2: 0 10px 32px rgba(0,0,0,.40);
+  --shadow-3: 0 24px 64px rgba(0,0,0,.55);
+  color-scheme: dark;
+}
+
+/* ============================ base ======================================= */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--plane);
+  color: var(--ink);
+  font: var(--fs-13)/1.55 var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3 { font-family: var(--font-ui); font-weight: 650; line-height: 1.2; }
+
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 2px; }
+
+/* .mono utility + universal tabular numerals for data */
+.mono { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+.num  { font-variant-numeric: tabular-nums; }
+
+/* shared focus ring for interactive elements that opt in via [tabindex] */
+[tabindex]:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* ============================ card ======================================= */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius-m);
+  padding: var(--sp-4);
+  box-shadow: var(--shadow-1);
+}
+.card > h2:first-child, .card > h3:first-child { margin-top: 0; }
+
+/* section heading with an inline "why?" explainer toggle (matches Page 1) */
+.section-title {
+  font-size: var(--fs-12); letter-spacing: .05em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 var(--sp-3);
+}
+.why {
+  cursor: pointer; color: var(--blue); font-weight: 400;
+  text-transform: none; letter-spacing: 0; margin-left: var(--sp-2);
+  font-size: var(--fs-12);
+}
+.why:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 3px; }
+.explain {
+  display: none;
+  background: color-mix(in srgb, var(--blue) 7%, var(--surface));
+  border-left: 3px solid var(--blue);
+  border-radius: var(--radius-s);
+  padding: var(--sp-3) var(--sp-3);
+  margin: var(--sp-2) 0 var(--sp-4);
+  font-size: 12.5px; line-height: 1.6; color: var(--sec);
+}
+.explain.open { display: block; animation: fadein var(--dur-slow) var(--ease); }
+@keyframes fadein { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+/* ============================ stat-tile ================================== */
+.stat-tile {
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius-s);
+  padding: var(--sp-3);
+  min-width: 0;
+}
+.stat-tile .l {
+  font-size: 10.5px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.stat-tile .v {
+  font-family: var(--font-data); font-variant-numeric: tabular-nums;
+  font-size: var(--fs-17); font-weight: 600; color: var(--ink); margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.stat-tile .u { font-size: var(--fs-11); color: var(--muted); font-weight: 400; }
+
+/* ============================ status LED ================================= */
+.led {
+  --_c: var(--led-idle);
+  display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--_c);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--_c) 22%, transparent);
+  vertical-align: middle; flex: none;
+}
+.led.idle      { --_c: var(--led-idle); box-shadow: none; opacity: .7; }
+.led.active    { --_c: var(--led-active); animation: pulse 1.6s ease-in-out infinite; }
+.led.ok        { --_c: var(--led-ok); }
+.led.warn      { --_c: var(--led-warn); }
+.led.crit      { --_c: var(--led-crit); animation: pulse 1.2s ease-in-out infinite; }
+.led.throttled { --_c: var(--led-throttled); }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--_c) 30%, transparent); }
+                   50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--_c) 8%, transparent); } }
+
+/* ============================ data-table ================================= */
+.data-table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--font-data); font-variant-numeric: tabular-nums;
+  font-size: 12.5px;
+}
+.data-table th {
+  text-align: left; font-weight: 600; color: var(--muted);
+  font-size: var(--fs-11); text-transform: uppercase; letter-spacing: .04em;
+  padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--grid);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--grid);
+  vertical-align: top;
+}
+.data-table tr:last-child td { border-bottom: 0; }
+.data-table tbody tr:hover { background: color-mix(in srgb, var(--blue) 7%, transparent); }
+.data-table td.num, .data-table th.num { text-align: right; }
+.data-table .label { color: var(--sec); font-family: var(--font-ui); }
+.data-table .sub { color: var(--muted); font-size: var(--fs-11); }
+.data-table td.agree { color: var(--good-txt); }   /* was --good: AA-safe as text */
+.data-table td.flag  { color: var(--crit-txt); }   /* was --crit: AA-safe as text */
+
+/* ============================ figure-card =============================== */
+.figure-card {
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.figure-card .thumb {
+  margin: 0; background: #000; cursor: zoom-in;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 120px;
+}
+.figure-card .thumb img { width: 100%; height: auto; display: block; }
+.figure-card figcaption {
+  padding: var(--sp-3); border-top: 1px solid var(--grid);
+}
+.figure-card .cap {
+  font-size: 12.5px; color: var(--ink); line-height: 1.4;
+}
+.figure-card .cap b { color: var(--blue); font-weight: 600; }
+.figure-card .sha {
+  margin-top: var(--sp-2);
+  font-family: var(--font-data); font-size: 10.5px; color: var(--muted);
+  word-break: break-all;
+}
+.figure-card.missing {
+  border-style: dashed;
+  background: color-mix(in srgb, var(--muted) 6%, var(--surface));
+}
+.figure-card.missing .thumb {
+  background: transparent; color: var(--muted); font-size: var(--fs-12);
+  min-height: 100px; text-align: center; padding: var(--sp-4);
+  font-family: var(--font-data); cursor: default;
+}
+
+/* ============================ badge-verdict ============================= */
+/* Verdict colour is ALWAYS carried with the text label (never colour-only).
+   Bright fills (good/warn/aqua) take --ink-on-fill; dark fills (crit) take
+   --ink-inverse; the neutral NON-DETECTION fill takes theme-aware --ink. */
+.badge-verdict {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 10px; border-radius: var(--radius-pill);
+  font: 600 var(--fs-12)/1.5 var(--font-ui); letter-spacing: .01em;
+  color: var(--ink); background: var(--base); white-space: nowrap;
+}
+.badge-verdict[data-verdict="ACCURATE"]        { background: var(--good); color: var(--ink-on-fill); }
+.badge-verdict[data-verdict="MARGINAL"]        { background: var(--warn); color: var(--ink-on-fill); }
+.badge-verdict[data-verdict="NOISY-CONSISTENT"]{ background: var(--aqua); color: var(--ink-on-fill); }
+.badge-verdict[data-verdict="NON-DETECTION"]   { background: var(--base); color: var(--ink); }
+.badge-verdict[data-verdict="INACCURATE"]      { background: var(--crit); color: var(--ink-inverse); }
+.badge-verdict[data-verdict="RUN-FAILED"]      { background: var(--crit); color: var(--ink-inverse); }
+.badge-verdict.sm { padding: 1px 8px; font-size: var(--fs-11); }
+
+/* decision pill (recorded human state) */
+.pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: var(--fs-11); padding: 1px 9px; border-radius: var(--radius-pill);
+  border: 1px solid var(--grid); color: var(--muted); background: transparent;
+  white-space: nowrap;
+}
+.pill.approved { color: var(--good-txt); border-color: color-mix(in srgb, var(--good) 55%, transparent); }
+.pill.rejected { color: var(--crit-txt); border-color: color-mix(in srgb, var(--crit) 55%, transparent); }
+.pill.redo     { color: var(--warn-txt); border-color: color-mix(in srgb, var(--warn) 55%, transparent); }
+.pill.pending  { color: var(--sec); }
+
+/* ============================ state-chip =============================== */
+/* Compact health/state indicator for the top bar (ok / throttled / breaker).
+   Colour is always paired with its text label. */
+.state-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font: 600 var(--fs-11)/1 var(--font-ui); letter-spacing: .03em;
+  padding: 3px 9px; border-radius: var(--radius-pill);
+  color: var(--sec); background: var(--base); white-space: nowrap;
+}
+.state-chip.ok        { color: var(--good-txt); background: color-mix(in srgb, var(--good) 14%, transparent); }
+.state-chip.throttled { color: var(--on-throttled); background: var(--throttled); }
+.state-chip.breaker   { color: var(--ink-inverse); background: var(--crit); }
+
+/* ============================ buttons =================================== */
+.btn {
+  font: 600 var(--fs-13)/1 var(--font-ui);
+  border: 1px solid var(--grid); background: var(--surface); color: var(--ink);
+  border-radius: var(--radius-s); padding: 9px 16px; cursor: pointer;
+  transition: filter var(--dur-fast), background var(--dur-fast), opacity var(--dur-fast);
+}
+.btn:hover { filter: brightness(1.06); }
+.btn:active { filter: brightness(.95); }
+.btn:disabled { opacity: .5; cursor: not-allowed; filter: none; }
+.btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.btn--approve { background: var(--good); border-color: var(--good); color: var(--ink-on-fill); }
+.btn--reject  { background: var(--crit); border-color: var(--crit); color: var(--ink-inverse); }
+.btn--redo    { background: var(--warn); border-color: var(--warn); color: var(--ink-on-fill); }
+.btn--ghost   { background: transparent; }
+
+/* ============================ banner =================================== */
+.banner {
+  display: flex; align-items: center; gap: var(--sp-2);
+  border-radius: var(--radius-s); padding: var(--sp-2) var(--sp-3);
+  font-size: 12.5px;
+}
+.banner.crit {
+  background: color-mix(in srgb, var(--crit) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--crit) 45%, transparent);
+  color: var(--ink);
+}
+.banner.ok {
+  background: color-mix(in srgb, var(--good) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--good) 45%, transparent);
+  color: var(--ink);
+}
+
+/* ============================ topbar =================================== */
+/* Page header band. Page 2 also defines .topbar locally (identical props); its
+   later same-specificity rules win, so this is a no-op there and the canonical
+   definition for Page 1 (Plan C) to adopt. */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--grid);
+}
+.topbar h1 { font-size: var(--fs-15); margin: 0; letter-spacing: .01em; }
+.topbar .spacer { flex: 1; }
+.topbar .nav { font-size: var(--fs-13); color: var(--sec); }
+.topbar .nav:hover { color: var(--blue); }
+
+/* ============================ kpi-strip =============================== */
+/* Responsive row of stat-tiles / gauges for summary KPIs (spec §7 header). */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--sp-3);
+}
+
+/* ============================ worker-lane ============================= */
+/* One row per live worker (A + W1..Wn). Maps to a WorkerRegistry slot:
+   LED · role-chip · id · target/night · stage rail · metric · uptime. */
+.worker-lane {
+  display: grid;
+  grid-template-columns: auto auto auto minmax(120px, 1.2fr) minmax(140px, 2fr) auto auto;
+  align-items: center; gap: var(--sp-2) var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--grid); border-radius: var(--radius-m);
+  background: var(--surface);
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.worker-lane + .worker-lane { margin-top: var(--sp-1); }
+.worker-lane.is-active {
+  border-color: color-mix(in srgb, var(--blue) 40%, var(--grid));
+  background: color-mix(in srgb, var(--blue) 6%, var(--surface));
+}
+.worker-lane.is-idle,
+.worker-lane.is-retiring { opacity: .55; }
+.worker-lane:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.worker-lane .wl-id     { font-family: var(--font-data); font-weight: 600; font-size: var(--fs-13); }
+.worker-lane .wl-target { font-weight: 600; font-size: var(--fs-13); min-width: 0;
+                          overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.worker-lane .wl-night  { font-family: var(--font-data); color: var(--sec);
+                          font-weight: 400; font-size: var(--fs-12); margin-left: var(--sp-2); }
+.worker-lane .wl-metric { font-family: var(--font-data); font-variant-numeric: tabular-nums;
+                          font-size: var(--fs-12); color: var(--ink); text-align: right; white-space: nowrap; }
+.worker-lane .wl-uptime { font-family: var(--font-data); font-variant-numeric: tabular-nums;
+                          font-size: var(--fs-11); color: var(--muted); text-align: right; white-space: nowrap; }
+/* narrow: drop uptime + metric columns into the target cell's wrap */
+@media (max-width: 720px) {
+  .worker-lane { grid-template-columns: auto auto auto 1fr auto; }
+  .worker-lane .wl-target { grid-column: 4 / -1; }
+  .worker-lane .lane-rail { grid-column: 1 / -1; }
+}
+
+/* role chip — differentiated by a leading dot AND the text label (not colour alone) */
+.role-chip {
+  display: inline-flex; align-items: center; gap: 5px; height: 18px;
+  padding: 0 8px 0 6px; border-radius: var(--radius-pill);
+  font: 600 var(--fs-11)/1 var(--font-ui); text-transform: uppercase; letter-spacing: .04em;
+  color: var(--ink); background: var(--base); white-space: nowrap;
+}
+.role-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex: none; }
+.role-chip.acquire::before { background: var(--aqua); }
+.role-chip.reduce::before  { background: var(--blue); }
+
+/* ============================ lane-rail =============================== */
+/* Compact per-lane progress bar. .indet = indeterminate (unknown ETA). */
+.lane-rail {
+  position: relative; height: 6px; background: var(--grid);
+  border-radius: var(--radius-pill); overflow: hidden;
+}
+.lane-rail > i {
+  display: block; height: 100%; border-radius: inherit;
+  background: var(--aqua); width: 0;
+  transition: width var(--dur-slow) var(--ease);
+}
+.lane-rail.is-active > i { background: var(--blue); }
+.lane-rail.is-done   > i { background: var(--good); opacity: .6; }
+.lane-rail.indet > i { width: 40%; animation: lane-sweep 1.3s var(--ease) infinite; }
+@keyframes lane-sweep { 0% { transform: translateX(-120%); } 100% { transform: translateX(320%); } }
+
+/* ============================ gauge =================================== */
+/* Small horizontal bar gauge for a bounded 0-100 quantity (mem / CPU). */
+.gauge {
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: center; gap: var(--sp-2); font-size: var(--fs-11);
+}
+.gauge .g-label { color: var(--muted); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.gauge .g-track { height: 6px; background: var(--grid); border-radius: var(--radius-pill); overflow: hidden; }
+.gauge .g-track > i {
+  display: block; height: 100%; border-radius: inherit;
+  background: var(--aqua); width: 0; transition: width var(--dur-slow) var(--ease);
+}
+.gauge .g-val { font-family: var(--font-data); font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap; }
+.gauge.warn .g-track > i { background: var(--warn); }
+.gauge.crit .g-track > i { background: var(--crit); }
+
+/* ============================ queue-panel ============================ */
+/* Upcoming nights, prospect-ordered (spec §7 / data-model queue.items). */
+.queue-panel {
+  border: 1px solid var(--grid); border-radius: var(--radius-m);
+  background: var(--surface); overflow: hidden;
+}
+.queue-panel .q-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--grid);
+  font-size: var(--fs-11); text-transform: uppercase; letter-spacing: .05em; color: var(--muted);
+}
+.queue-panel .q-item {
+  display: grid; grid-template-columns: 1fr auto; gap: 2px var(--sp-3); align-items: center;
+  padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--grid);
+}
+.queue-panel .q-item:last-child { border-bottom: 0; }
+.queue-panel .q-item:hover { background: color-mix(in srgb, var(--blue) 7%, transparent); }
+.queue-panel .q-target { font-weight: 600; font-size: var(--fs-13); }
+.queue-panel .q-night  { grid-row: 2; font-family: var(--font-data); font-size: var(--fs-11); color: var(--muted); }
+.queue-panel .q-eta    { grid-column: 2; grid-row: 1 / span 2; font-family: var(--font-data);
+                         font-variant-numeric: tabular-nums; font-size: var(--fs-12); color: var(--sec); text-align: right; }
+
+/* ============================ deadletter-panel ====================== */
+/* Barren / run-failed nights that will NOT be re-queued (spec §5.3, §5.5). */
+.deadletter-panel {
+  border: 1px solid color-mix(in srgb, var(--crit) 35%, var(--grid));
+  border-radius: var(--radius-m);
+  background: color-mix(in srgb, var(--crit) 5%, var(--surface));
+  overflow: hidden;
+}
+.deadletter-panel .dl-head {
+  display: flex; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid color-mix(in srgb, var(--crit) 25%, var(--grid));
+  font-size: var(--fs-11); text-transform: uppercase; letter-spacing: .05em; color: var(--crit-txt);
+}
+.deadletter-panel .dl-item {
+  display: grid; grid-template-columns: 1fr auto; gap: 2px var(--sp-3); align-items: baseline;
+  padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid color-mix(in srgb, var(--grid) 60%, transparent);
+}
+.deadletter-panel .dl-item:last-child { border-bottom: 0; }
+.deadletter-panel .dl-target { font-weight: 600; font-size: var(--fs-13); }
+.deadletter-panel .dl-reason { grid-row: 2; font-size: var(--fs-11); color: var(--crit-txt); }
+.deadletter-panel .dl-when   { grid-column: 2; font-family: var(--font-data);
+                               font-size: var(--fs-11); color: var(--muted); white-space: nowrap; }
+
+/* ============================ sparkline ============================== */
+/* Inline trend (throughput / probe-latency EWMA). Host an <svg><polyline> that
+   strokes currentColor; the container sets colour + box. */
+.sparkline {
+  display: inline-block; vertical-align: middle;
+  width: 72px; height: 20px; color: var(--blue);
+}
+.sparkline svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.sparkline polyline, .sparkline path { fill: none; stroke: currentColor; stroke-width: 1.5;
+                                       stroke-linecap: round; stroke-linejoin: round; }
+.sparkline .spark-area { fill: currentColor; opacity: .12; stroke: none; }
+.sparkline.warn { color: var(--warn); }
+.sparkline.crit { color: var(--crit); }
+
+/* ============================ reduced motion ========================= */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+
+  /* indeterminate rails: no sweep — show a static 50% bar + a "working" label.
+     (Same treatment applies whether the app also toggles a [data-motion] hook.) */
+  .lane-rail.indet { overflow: visible; }
+  .lane-rail.indet > i { width: 50%; transform: none; }
+  .lane-rail.indet::after {
+    content: "working"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font: 700 9px/1 var(--font-ui); text-transform: uppercase; letter-spacing: .1em;
+    color: var(--ink); background: color-mix(in srgb, var(--surface) 86%, transparent);
+    padding: 1px 5px; border-radius: var(--radius-pill); white-space: nowrap;
+  }
+}
