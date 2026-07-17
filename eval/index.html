@@ -168,13 +168,25 @@
 </head>
 <body>
 
-<div class="topbar">
-  <h1>Model Evaluation</h1>
-  <div class="spacer"></div>
-  <a class="nav" href="../">Case study</a>
-  <a class="nav" href="../status/">Live</a>
-  <a class="nav" href="../review/">Review</a>
-  <button id="themeBtn" class="icon-btn" aria-label="Toggle light / dark theme" title="Toggle theme">◐</button>
+<header class="site-header">
+  <a class="site-header__brand" href="../" aria-label="Home Observatory — case study home">
+    <img src="../assets/landing/home-observatory-mark.svg" alt="">
+    <span><strong>Home Observatory</strong><small>From observation to evidence</small></span>
+  </a>
+  <nav class="site-header__tabs" aria-label="Primary">
+    <a class="site-tab" href="../">Case study</a>
+    <a class="site-tab" href="../status/">Live</a>
+    <a class="site-tab" href="../review/">Review</a>
+    <a class="site-tab" href="../eval/" aria-current="page">Evaluation</a>
+  </nav>
+  <div class="site-header__tools">
+    <span class="snapshot-badge" id="snapshot-badge" title="This is the static weekly snapshot">snapshot</span>
+    <button id="themeBtn" class="icon-btn" aria-label="Toggle light / dark theme" title="Toggle theme">◐</button>
+  </div>
+</header>
+<div class="snapshot-ribbon" id="snapshot-ribbon" role="status">
+  <span class="led ok" aria-hidden="true"></span>
+  <span><strong>Static weekly snapshot</strong> — the live pipeline runs locally · captured <span class="num" id="snapshot-date">—</span></span>
 </div>
 <div class="substrip">
   Run-quality model · v2 evaluation protocol ·
@@ -522,7 +534,7 @@ function renderLineage(p) {
 function renderModelCard(p) {
   const md = p.model_card_html_or_md || "";
   if (!md) return "";
-  return `<section class="card" aria-label="Model card">
+  return `<section class="card" id="model-card" aria-label="Model card">
     <details class="card-md">
       <summary>Model card — <span class="mono">docs/MODEL-CARD.md</span> (Mitchell et al. 2019 structure)</summary>
       <div class="md">${mdToHtml(md)}</div>
@@ -564,16 +576,48 @@ function emptyState(msg) {
   $("#offline").hidden = false;
   $("#main").innerHTML = `<div class="empty card">
     <h2>Evaluation data unavailable</h2>
-    <p>${esc(msg)}</p>
-    <p>Regenerate the page with:</p>
-    <p><code>.venv/bin/python scripts/eval_page.py</code></p>
+    <div class="empty-dev">
+      <p>${esc(msg)}</p>
+      <p>Regenerate the page with:</p>
+      <p><code>.venv/bin/python scripts/eval_page.py</code></p>
+    </div>
+    <div class="empty-snapshot">
+      <p>The evaluation figures for this static weekly snapshot were not captured in
+      this build. The live evaluation runs locally alongside the pipeline.</p>
+    </div>
   </div>`;
 }
 
 fetch("./eval-page.json", { cache: "no-store" })
   .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-  .then(render)
+  .then(p => { render(p); if (location.hash === "#model-card") openModelCard(); })
   .catch(err => emptyState("Could not load ./eval-page.json (" + err.message + ")."));
+
+/* deep-link from the footer "Model card" appendix link opens the details panel */
+function openModelCard() {
+  const s = document.getElementById("model-card");
+  if (!s) return;
+  const d = s.querySelector("details");
+  if (d) d.open = true;
+  s.scrollIntoView({ block: "start" });
+}
+window.addEventListener("hashchange", () => { if (location.hash === "#model-card") openModelCard(); });
+
+/* ---------- static-snapshot detection (F8) ----------
+   The weekly publisher stamps progress.json with published_utc; localhost live
+   copies lack it. Presence => show the snapshot ribbon/badge and switch the
+   snapshot-safe empty states on. Path is ../status/progress.json from /eval/. */
+(function detectSnapshot() {
+  fetch("../status/progress.json", { cache: "no-store" })
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (!d || !d.published_utc) return;
+      document.documentElement.setAttribute("data-snapshot", "1");
+      const el = document.getElementById("snapshot-date");
+      if (el) el.textContent = String(d.published_utc).slice(0, 10);
+    })
+    .catch(() => {});
+})();
 
 /* ---------- theme toggle (shared mechanism with Pages 1 & 2) ---------- */
 document.getElementById("themeBtn").addEventListener("click", () => {
@@ -585,5 +629,17 @@ document.getElementById("themeBtn").addEventListener("click", () => {
   try { localStorage.setItem("theater-theme", next); } catch (e) {}
 });
 </script>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__label">Behind the scenes</p>
+    <nav class="site-footer__links" aria-label="Appendix">
+      <a href="../identity/">Identity decision</a>
+      <a href="../docs/EVAL-PROTOCOL-V2.md">EVAL protocol</a>
+      <a href="../eval/#model-card">Model card</a>
+      <a href="https://github.com/contactabhishekbasu/night-theater" target="_blank" rel="noopener">GitHub repo ↗</a>
+    </nav>
+  </div>
+</footer>
 </body>
 </html>

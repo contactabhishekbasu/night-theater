@@ -20,8 +20,10 @@
   [hidden] { display: none !important; }
   .wrap { max-width: 1180px; margin: 0 auto; padding: 0 var(--sp-4) var(--sp-6); }
 
-  /* ---- top bar (design-system .topbar; header telemetry is page layout) ---- */
-  .topbar { flex-wrap: wrap; row-gap: var(--sp-2); }
+  /* ---- telemetry bar (design-system .topbar; brand + tabs now live in the
+     sticky .site-header above it, separated per finding F12). The telemetry
+     row scrolls with the page so it does not double-stick under the header. ---- */
+  .topbar.telemetry-bar { position: static; top: auto; z-index: auto; flex-wrap: wrap; row-gap: var(--sp-2); }
   .icon-btn {
     background: transparent; border: 1px solid var(--grid); color: var(--ink);
     border-radius: var(--radius-s); padding: 6px 10px; cursor: pointer;
@@ -217,8 +219,30 @@
 </head>
 <body>
 
-<div class="topbar">
-  <h1>Live Pipeline</h1>
+<header class="site-header">
+  <a class="site-header__brand" href="../" aria-label="Home Observatory — case study home">
+    <img src="../assets/landing/home-observatory-mark.svg" alt="">
+    <span><strong>Home Observatory</strong><small>From observation to evidence</small></span>
+  </a>
+  <nav class="site-header__tabs" aria-label="Primary">
+    <a class="site-tab" href="../">Case study</a>
+    <a class="site-tab" href="../status/" aria-current="page">Live</a>
+    <a class="site-tab" href="../review/">Review</a>
+    <a class="site-tab" href="../eval/">Evaluation</a>
+  </nav>
+  <div class="site-header__tools">
+    <span class="snapshot-badge" id="snapshot-badge" title="This is the static weekly snapshot">snapshot</span>
+    <button id="themeBtn" class="icon-btn" aria-label="Toggle light / dark theme" title="Toggle theme">◐</button>
+  </div>
+</header>
+<div class="snapshot-ribbon" id="snapshot-ribbon" role="status">
+  <span class="led ok" aria-hidden="true"></span>
+  <span><strong>Static weekly snapshot</strong> — the live pipeline runs locally · captured <span class="num" id="snapshot-date">—</span></span>
+</div>
+<h1 class="sr-only">Live pipeline</h1>
+
+<!-- live telemetry, separated from brand + tabs per finding F12 -->
+<div class="topbar telemetry-bar" aria-label="Live pipeline telemetry">
   <span class="hb" id="hb-health" title="pipeline health">
     <span class="led idle" aria-hidden="true"></span><span class="hb-val">—</span>
   </span>
@@ -235,10 +259,6 @@
   <span id="hb-chip"></span>
   <div class="spacer"></div>
   <span class="hb-updated">updated <span class="num" id="updated">—</span><span id="staleness"></span></span>
-  <a class="nav" href="../">Case study</a>
-  <a class="nav" href="../review/">Review</a>
-  <a class="nav" href="../eval/">Evaluation</a>
-  <button id="themeBtn" class="icon-btn" aria-label="Toggle light / dark theme" title="Toggle theme">◐</button>
 </div>
 <div class="substrip"><span id="strategy">—</span> · MicroObservatory archive history 2017→</div>
 
@@ -907,8 +927,11 @@ async function loadQueue() {
   catch (e) {
     if (pc) pc.hidden = true;
     document.getElementById("queue").innerHTML =
-      '<span style="color:var(--muted)">review API offline — start the ' +
-      '<span class="mono">review_server.py</span> server (:8323) to enable approvals</span>';
+      '<span class="empty-dev" style="color:var(--muted)">review API offline — start the ' +
+      '<span class="mono">review_server.py</span> server (:8323) to enable approvals</span>' +
+      '<span class="empty-snapshot" style="color:var(--muted)">Live approvals run locally — ' +
+      'this static weekly snapshot shows the review queue read-only. ' +
+      'Open <a href="../review/">Review</a> for the captured dossiers.</span>';
     return;
   }
   if (pc) {                                            // F8 — pending-review count on the promoted card
@@ -1049,10 +1072,21 @@ document.addEventListener("keydown", e => {
 });
 
 /* ---------- main poll ---------- */
+/* static-snapshot detection (F8): the weekly publisher stamps progress.json with
+   published_utc; localhost live copies lack it. Presence => snapshot ribbon/badge
+   + snapshot-safe empty states (CSS keys off html[data-snapshot]). */
+function applySnapshot(d) {
+  if (!d || !d.published_utc || document.documentElement.hasAttribute("data-snapshot")) return;
+  document.documentElement.setAttribute("data-snapshot", "1");
+  const el = document.getElementById("snapshot-date");
+  if (el) el.textContent = String(d.published_utc).slice(0, 10);
+}
+
 async function refresh() {
   let d;
   try { d = await (await fetch("progress.json?" + Date.now())).json(); }
   catch (e) { return; }
+  applySnapshot(d);
   renderTopbar(d);
   renderLanes(d);
   renderTiles(d);
@@ -1070,5 +1104,17 @@ async function refresh() {
 refresh(); setInterval(refresh, 5000);
 loadQueue(); setInterval(loadQueue, 30000);
 </script>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__label">Behind the scenes</p>
+    <nav class="site-footer__links" aria-label="Appendix">
+      <a href="../identity/">Identity decision</a>
+      <a href="../docs/EVAL-PROTOCOL-V2.md">EVAL protocol</a>
+      <a href="../eval/#model-card">Model card</a>
+      <a href="https://github.com/contactabhishekbasu/night-theater" target="_blank" rel="noopener">GitHub repo ↗</a>
+    </nav>
+  </div>
+</footer>
 </body>
 </html>

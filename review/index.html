@@ -217,18 +217,35 @@
   .legend-led  { display: inline-flex; align-items: center; gap: 6px; min-width: 92px;
                  font-family: var(--font-mono); font-size: var(--fs-11); color: var(--sec); }
   .legend-desc { color: var(--sec); }
+
+  /* unified appendix footer sits below the app; pad it so the fixed decision
+     gate (position:fixed; bottom:0) never overlaps the appendix links */
+  .site-footer { padding-bottom: calc(var(--sp-5) + 96px); }
+  @media (max-width: 820px) { .site-footer { padding-bottom: calc(var(--sp-5) + 130px); } }
 </style>
 </head>
 <body>
 
-<div class="topbar">
+<header class="site-header">
   <button id="railToggle" class="icon-btn" aria-label="Toggle review queue">☰</button>
-  <h1>Scientific Report &amp; Review</h1>
-  <div class="spacer"></div>
-  <a class="nav" href="../">Case study</a>
-  <a class="nav" href="../status/">Live</a>
-  <a class="nav" href="../eval/">Evaluation</a>
-  <button id="themeBtn" class="icon-btn" aria-label="Toggle light / dark theme" title="Toggle theme">◐</button>
+  <a class="site-header__brand" href="../" aria-label="Home Observatory — case study home">
+    <img src="../assets/landing/home-observatory-mark.svg" alt="">
+    <span><strong>Home Observatory</strong><small>From observation to evidence</small></span>
+  </a>
+  <nav class="site-header__tabs" aria-label="Primary">
+    <a class="site-tab" href="../">Case study</a>
+    <a class="site-tab" href="../status/">Live</a>
+    <a class="site-tab" href="../review/" aria-current="page">Review</a>
+    <a class="site-tab" href="../eval/">Evaluation</a>
+  </nav>
+  <div class="site-header__tools">
+    <span class="snapshot-badge" id="snapshot-badge" title="This is the static weekly snapshot">snapshot</span>
+    <button id="themeBtn" class="icon-btn" aria-label="Toggle light / dark theme" title="Toggle theme">◐</button>
+  </div>
+</header>
+<div class="snapshot-ribbon" id="snapshot-ribbon" role="status">
+  <span class="led ok" aria-hidden="true"></span>
+  <span><strong>Static weekly snapshot</strong> — the live pipeline runs locally · captured <span class="num" id="snapshot-date">—</span></span>
 </div>
 
 <div id="offline" class="banner crit">
@@ -906,9 +923,15 @@ function renderEmptyState() {
   document.getElementById("gate").hidden = true;
   document.getElementById("main").innerHTML = `<div class="placeholder">
     <h2>No reviewable runs yet</h2>
-    <p>The review index <code>./index.json</code> is missing or empty.</p>
-    <p>Build the review bundles with:</p>
-    <p><code>report_bundle.py --all-reviewable</code></p>
+    <div class="empty-dev">
+      <p>The review index <code>./index.json</code> is missing or empty.</p>
+      <p>Build the review bundles with:</p>
+      <p><code>report_bundle.py --all-reviewable</code></p>
+    </div>
+    <div class="empty-snapshot">
+      <p>No review dossiers were bundled into this static weekly snapshot.
+      The live review queue runs locally alongside the pipeline.</p>
+    </div>
   </div>`;
 }
 
@@ -935,7 +958,36 @@ window.addEventListener("hashchange", () => {
   if (id && id !== state.currentId && state.index.find(r => r.id === id)) loadBundle(id);
 });
 
+/* ---------- static-snapshot detection (F8) ----------
+   The weekly publisher stamps progress.json with published_utc; localhost live
+   copies lack it. Presence => show the snapshot ribbon/badge, silence the local
+   decision-API offline banner, and switch the snapshot-safe empty state on.
+   Path is ../status/progress.json from /review/. */
+(function detectSnapshot() {
+  fetch("../status/progress.json", { cache: "no-store" })
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (!d || !d.published_utc) return;
+      document.documentElement.setAttribute("data-snapshot", "1");
+      const el = document.getElementById("snapshot-date");
+      if (el) el.textContent = String(d.published_utc).slice(0, 10);
+    })
+    .catch(() => {});
+})();
+
 boot();
 </script>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__label">Behind the scenes</p>
+    <nav class="site-footer__links" aria-label="Appendix">
+      <a href="../identity/">Identity decision</a>
+      <a href="../docs/EVAL-PROTOCOL-V2.md">EVAL protocol</a>
+      <a href="../eval/#model-card">Model card</a>
+      <a href="https://github.com/contactabhishekbasu/night-theater" target="_blank" rel="noopener">GitHub repo ↗</a>
+    </nav>
+  </div>
+</footer>
 </body>
 </html>

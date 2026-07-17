@@ -248,6 +248,13 @@ a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-ra
 .mono { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
 .num  { font-variant-numeric: tabular-nums; }
 
+/* visually-hidden (screen-reader only) — keeps a per-page <h1> for a11y while
+   the visible page identity is carried by the aria-current tab in .site-header */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
 /* shared focus ring for interactive elements that opt in via [tabindex] */
 [tabindex]:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
@@ -635,3 +642,102 @@ a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-ra
     padding: 1px 5px; border-radius: var(--radius-pill); white-space: nowrap;
   }
 }
+
+/* ============================================================================
+   UNIFIED SITE CHROME  (v2 — additive; nothing above is altered)
+   One header + one appendix footer shared by the three app pages (status /
+   review / eval). Implements the UX-REVIEW "unified navigation / IA model":
+   brand-home lockup (F1/F3) · four flat destination tabs with aria-current
+   (F4/F9/F10) · theme + snapshot tools · a persistent snapshot ribbon (F8)
+   and a "Behind the scenes" footer appendix (F6). Tokens only, zero raw hex.
+   The landing + identity carry the SAME markup skinned by portfolio.css so
+   their own aesthetic stays dominant; theater.css styles the app copies here.
+   ========================================================================== */
+
+/* ---- site-header: brand · tabs · tools ---------------------------------- */
+.site-header {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--grid);
+}
+.site-header__brand {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  flex: none; color: var(--ink); text-decoration: none;
+}
+.site-header__brand:hover { text-decoration: none; }
+.site-header__brand img { width: 26px; height: 26px; object-fit: contain; flex: none; }
+.site-header__brand strong { display: block; font-size: var(--fs-15); font-weight: 650; letter-spacing: .01em; line-height: 1.15; }
+.site-header__brand small  { display: block; font-size: var(--fs-11); color: var(--muted); font-weight: 400; letter-spacing: .01em; }
+.site-header__brand:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: var(--radius-s); }
+
+.site-header__tabs { display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-1); margin: 0; }
+.site-tab {
+  display: inline-flex; align-items: center; white-space: nowrap;
+  padding: 6px 12px; border-radius: var(--radius-s);
+  font: 600 var(--fs-13)/1 var(--font-ui); color: var(--sec); text-decoration: none;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.site-tab:hover { color: var(--ink); background: color-mix(in srgb, var(--blue) 8%, transparent); text-decoration: none; }
+.site-tab:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.site-tab[aria-current="page"] { color: var(--blue); background: color-mix(in srgb, var(--blue) 12%, transparent); }
+
+.site-header__tools { display: inline-flex; align-items: center; gap: var(--sp-2); margin-left: auto; flex: none; }
+
+/* snapshot badge (header tools slot) — only shown on the static public snapshot */
+.snapshot-badge {
+  display: none; align-items: center; gap: 5px; white-space: nowrap;
+  font: 600 var(--fs-11)/1 var(--font-ui); letter-spacing: .03em;
+  padding: 3px 9px; border-radius: var(--radius-pill);
+  color: var(--sec); background: var(--base);
+}
+html[data-snapshot] .snapshot-badge { display: inline-flex; }
+
+@media (max-width: 560px) {
+  .site-header__brand small { display: none; }   /* keep mark + name; drop tagline */
+}
+
+/* ---- snapshot-ribbon: persistent "this is a static capture" band --------- */
+.snapshot-ribbon {
+  display: none; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  background: color-mix(in srgb, var(--blue) 10%, var(--surface));
+  border-bottom: 1px solid color-mix(in srgb, var(--blue) 35%, var(--grid));
+  color: var(--sec); font-size: var(--fs-12);
+}
+html[data-snapshot] .snapshot-ribbon { display: flex; }
+.snapshot-ribbon strong { color: var(--ink); font-weight: 600; }
+.snapshot-ribbon .num { color: var(--sec); font-variant-numeric: tabular-nums; }
+
+/* ---- snapshot-safe empty states ----------------------------------------- */
+/* Declarative (race-free): whenever the snapshot detector stamps
+   html[data-snapshot], build-command hints hide and the snapshot note shows.
+   Empty-state markup carries BOTH .empty-dev (default) and .empty-snapshot. */
+.empty-snapshot { display: none; }
+html[data-snapshot] .empty-dev { display: none; }
+html[data-snapshot] .empty-snapshot { display: block; }
+/* on the static snapshot the local decision API is expectedly absent — silence
+   the "start the server" offline banners so the page never reads as broken. */
+html[data-snapshot] #offline { display: none !important; }
+
+/* ---- site-footer: "Behind the scenes" appendix -------------------------- */
+.site-footer {
+  margin-top: var(--sp-8);
+  border-top: 1px solid var(--grid);
+  padding: var(--sp-5) var(--sp-4);
+  background: var(--surface);
+}
+.site-footer__inner {
+  max-width: 1180px; margin: 0 auto;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2) var(--sp-4);
+}
+.site-footer__label {
+  flex: none; margin: 0;
+  font-size: var(--fs-11); text-transform: uppercase; letter-spacing: .05em; color: var(--muted);
+}
+.site-footer__links { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); margin: 0; }
+.site-footer__links a { font-size: var(--fs-13); color: var(--sec); }
+.site-footer__links a:hover { color: var(--blue); }

@@ -372,3 +372,40 @@ footer { padding: 36px 0; border-top: 1px solid var(--grid); background: var(--p
   .hero-media { display: none; }
   .optics-stage::after { animation: none; opacity: 0; }
 }
+
+/* ============================================================================
+   UNIFIED SITE CHROME — landing/identity bridge (UX-REVIEW navigation model)
+   The same four-destination header + "Behind the scenes" footer appendix that
+   theater.css gives the app pages, skinned in the landing's own mono aesthetic
+   so the portfolio look stays dominant (this page is intentionally fixed-dark;
+   there is no light-mode toggle here — see UX-REVIEW theme decision).
+   ========================================================================== */
+
+/* four flat tabs, aria-current marks the page you're on (F4/F9/F10) */
+.site-tabs { display: flex; align-items: center; gap: 4px; }
+.site-tab {
+  padding: 8px 11px; border-radius: 4px; white-space: nowrap;
+  color: var(--soft); font-family: var(--mono); font-size: 9px;
+  letter-spacing: .07em; text-transform: uppercase; text-decoration: none;
+  transition: color .2s ease, background .2s ease;
+}
+.site-tab:hover { color: var(--ink); background: rgba(57,135,229,.12); }
+.site-tab:focus-visible { color: var(--ink); outline: 2px solid var(--blue); outline-offset: 2px; }
+.site-tab[aria-current="page"] { color: var(--blue); background: rgba(57,135,229,.14); }
+
+/* footer appendix — Identity / EVAL protocol / Model card / repo (F6) */
+.appendix { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 18px; }
+.appendix-label { color: var(--muted); font-family: var(--mono); font-size: 9px;
+                  letter-spacing: .105em; text-transform: uppercase; }
+.appendix a { color: var(--soft); font-family: var(--mono); font-size: 9px;
+              letter-spacing: .07em; text-transform: uppercase; text-decoration: none; }
+.appendix a:hover, .appendix a:focus-visible { color: var(--ink); outline: none; }
+.appendix a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* at narrow widths the tabs wrap to their own row under the brand (the header
+   is position:absolute below 640px, so the taller lockup scrolls away cleanly) */
+@media (max-width: 640px) {
+  .nav-inner { flex-wrap: wrap; row-gap: 6px; min-height: 0; padding: 12px 0; }
+  .site-tabs { width: 100%; gap: 2px; }
+  .site-tab { padding: 7px 9px; }
+}
