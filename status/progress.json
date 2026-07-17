@@ -1,17 +1,17 @@
 {
- "stage": "scored",
- "target": "TRES-1",
- "night": "210727",
+ "stage": "probe",
+ "target": "HATP-16",
+ "night": "251119",
  "done": 1,
  "max_runs": 60,
- "tried_total": 707,
+ "tried_total": 708,
  "remaining_per_target": {
   "TRES-2": 0,
   "XO-1": 0,
   "HATP-32": 0,
   "WASP-12": 129,
   "WASP-2": 0,
-  "TRES-1": 7,
+  "TRES-1": 6,
   "HATP-16": 189,
   "WASP-3": 2,
   "KELT-16": 0,
@@ -31,20 +31,10 @@
   "HATP-55": 0,
   "WASP-135": 0
  },
- "stage_detail": "prior probing +58 min \u00b7 150 tested",
- "updated_utc": "2026-07-17T19:25:20+00:00",
+ "stage_detail": "probing +26 min \u00b7 60 tested",
+ "updated_utc": "2026-07-17T19:32:08+00:00",
  "last_verdict": "WASP-12 240215: ACCURATE",
  "events": [
-  {
-   "t": "2026-07-17T19:16:53+00:00",
-   "level": "info",
-   "msg": "TRES-3: oracle confirms 170/400 transit nights were observed"
-  },
-  {
-   "t": "2026-07-17T19:16:53+00:00",
-   "level": "info",
-   "msg": "TRES-2: oracle confirms 41/220 transit nights were observed"
-  },
   {
    "t": "2026-07-17T19:16:54+00:00",
    "level": "info",
@@ -184,6 +174,16 @@
    "t": "2026-07-17T19:25:20+00:00",
    "level": "info",
    "msg": "[W1] \u2192 WASP-12 240215: ACCURATE"
+  },
+  {
+   "t": "2026-07-17T19:31:16+00:00",
+   "level": "warn",
+   "msg": "oracle said observed but no frames (date edge?)"
+  },
+  {
+   "t": "2026-07-17T19:31:16+00:00",
+   "level": "info",
+   "msg": "[acquire] HATP-16 251119 mid 04:47UT alt 77\u00b0"
   }
  ],
  "model": {
@@ -237,24 +237,26 @@
   }
  },
  "strategy": "oracle-confirmed \u00b7 prospect-scored queue \u00b7 positives-first (Oct\u2013May) \u00b7 prefetch overlap",
- "schedule_remaining": 1618,
+ "schedule_remaining": 1617,
  "health": {
   "hiccups": 0,
   "inits_failed": 0,
   "run_failed": 0,
-  "gaia_cache": true
+  "gaia_cache": true,
+  "breaker_open": false,
+  "throttled": 0
  },
- "memory_free_pct": 40,
+ "memory_free_pct": 45,
  "kpis": {
   "stage_medians_s": {
-   "probe": 4,
+   "probe": 120,
    "walk": 150,
    "fetch": 150
   },
-  "nights_per_hour": 7.3,
-  "eta_hours": 1.9,
+  "nights_per_hour": 4.24,
+  "eta_hours": 53.3,
   "session_scored": 1,
-  "session_hours": 0.14
+  "session_hours": 0.24
  },
  "coverage": {
   "frames": [
@@ -534,37 +536,37 @@
    "id": "A",
    "role": "acquire",
    "state": "probe",
-   "target": "TRES-1",
-   "night": "210727",
+   "target": "HATP-16",
+   "night": "251119",
    "progress": {
     "indet": true,
-    "metric": 150,
-    "detail": "prior probing +58 min \u00b7 150 tested"
+    "metric": 60,
+    "detail": "probing +26 min \u00b7 60 tested"
    },
    "done_count": 0,
    "last_verdict": null,
-   "started_epoch": 1784316201.354639,
-   "started_utc": "2026-07-17T19:23:21+00:00",
-   "last_beat_epoch": 1784316319.36765,
-   "last_beat_utc": "2026-07-17T19:25:19+00:00",
-   "age_s": 0.7,
-   "uptime_s": 118.7,
+   "started_epoch": 1784316676.176399,
+   "started_utc": "2026-07-17T19:31:16+00:00",
+   "last_beat_epoch": 1784316722.995609,
+   "last_beat_utc": "2026-07-17T19:32:02+00:00",
+   "age_s": 5.6,
+   "uptime_s": 52.5,
    "steps": [
     {
      "step": "plan",
      "status": "done",
-     "elapsed_s": 0.3,
-     "metric": "alt 70\u00b0",
-     "detail": "oracle-confirmed"
+     "elapsed_s": 0.1,
+     "metric": "alt 77\u00b0",
+     "detail": "blind-probe"
     },
     {
      "step": "probe",
      "status": "now",
-     "elapsed_s": 118.4,
-     "metric": 150,
-     "detail": "prior probing +58 min \u00b7 150 tested",
+     "elapsed_s": 52.3,
+     "metric": 60,
+     "detail": "probing +26 min \u00b7 60 tested",
      "budget_p50_s": 180.9,
-     "budget_p90_s": 240.0
+     "budget_p90_s": 239.8
     },
     {
      "step": "walk",
@@ -603,7 +605,7 @@
    "last_beat_epoch": 1784316320.0356271,
    "last_beat_utc": "2026-07-17T19:25:20+00:00",
    "rss_mb": null,
-   "age_s": 0.0,
+   "age_s": 408.6,
    "uptime_s": null,
    "steps": [
     {
@@ -649,30 +651,19 @@
   "n_acquirers": 1,
   "targets_active": 1,
   "done": 1,
-  "throughput_per_hr": 7.3,
+  "throughput_per_hr": 4.24,
   "by_state": {
    "probe": 1,
    "idle": 1
   },
   "last_verdict": "WASP-12 240215: ACCURATE",
   "max_runs": 60,
-  "schedule_remaining": 1618,
-  "eta_hr": 1.9
+  "schedule_remaining": 1617,
+  "eta_hr": 53.3
  },
  "queue": {
-  "depth": 1618,
+  "depth": 1617,
   "items": [
-   {
-    "target": "TRES-1",
-    "night": "210727",
-    "prospect": 0.987,
-    "reasons": [
-     "prior +1 min known (n=28)",
-     "monsoon window (Jun\u2013Sep) \u2014 deprioritized",
-     "oracle-confirmed observed",
-     "alt 70\u00b0"
-    ]
-   },
    {
     "target": "HATP-16",
     "night": "251119",
@@ -745,16 +736,21 @@
      "oracle-confirmed observed",
      "alt 48\u00b0"
     ]
+   },
+   {
+    "target": "CoRoT-2",
+    "night": "220611",
+    "prospect": 0.811,
+    "reasons": [
+     "prior +1 min known (n=40)",
+     "monsoon window (Jun\u2013Sep) \u2014 deprioritized",
+     "oracle-confirmed observed",
+     "alt 59\u00b0"
+    ]
    }
   ]
  },
  "deadletter": [
-  {
-   "target": "WASP-12",
-   "night": "241002",
-   "reason": "barren: coarse search exhausted, healthy archive",
-   "utc": "2026-07-17T14:47:10+00:00"
-  },
   {
    "target": "HATP-32",
    "night": "200919",
@@ -868,23 +864,29 @@
    "night": "260222",
    "reason": "barren: coarse search exhausted, healthy archive",
    "utc": "2026-07-17T19:11:44+00:00"
+  },
+  {
+   "target": "TRES-1",
+   "night": "210727",
+   "reason": "barren: coarse search exhausted, healthy archive",
+   "utc": "2026-07-17T19:31:16+00:00"
   }
  ],
  "resources": {
-  "mem_free_pct": 41,
-  "cpu_load": 2.224,
+  "mem_free_pct": 39,
+  "cpu_load": 1.014,
   "n_reducers_target": 1,
   "raw_target": 1,
   "disk_free_gb": 216.0,
-  "film_cache_mb": 192.3
+  "film_cache_mb": 194.1
  },
  "deadletter_stats": {
-  "total": 195,
-  "tried_total": 198,
+  "total": 196,
+  "tried_total": 199,
   "by_day": {
    "2026-07-15": 21,
    "2026-07-16": 79,
-   "2026-07-17": 95
+   "2026-07-17": 96
   },
   "by_target": {
    "TRES-2": 10,
@@ -895,7 +897,7 @@
    "CoRoT-2": 13,
    "Qatar-10": 3,
    "WASP-2": 19,
-   "TRES-1": 20,
+   "TRES-1": 21,
    "WASP-135": 8,
    "TRES-3": 25,
    "HATP-16": 6,
@@ -906,12 +908,12 @@
    "HATP-23": 3,
    "WASP-43": 1
   },
-  "probe_cost_s_est": 35265.8
+  "probe_cost_s_est": 35446.6
  },
  "stage_budgets": {
   "probe": {
    "p50_s": 180.9,
-   "p90_s": 240.0
+   "p90_s": 239.8
   },
   "walk": {
    "p50_s": 133.5,
@@ -931,18 +933,28 @@
   }
  },
  "session": {
-  "scored": [],
-  "verdict_mix": {},
-  "science_grade_n": 0,
-  "labels_added": 0,
-  "positives_added": 0
+  "scored": [
+   {
+    "night": "240215",
+    "target": "WASP-12",
+    "oc_min": -3.5,
+    "verdict": "ACCURATE",
+    "record_id": "deep-bench_WASP-12_240215"
+   }
+  ],
+  "verdict_mix": {
+   "ACCURATE": 1
+  },
+  "science_grade_n": 1,
+  "labels_added": 1,
+  "positives_added": 1
  },
  "review": {
-  "pending_n": 284,
-  "oldest_age_s": 824276
+  "pending_n": 285,
+  "oldest_age_s": 824697
  },
  "film_stabilized": true,
  "date_shift": -1,
- "published_utc": "2026-07-17T19:25:21+00:00",
+ "published_utc": "2026-07-17T19:32:09+00:00",
  "snapshot_note": "weekly public snapshot \u2014 live dashboard runs privately"
 }
