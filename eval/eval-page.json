@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-07-17T17:49:57+00:00",
+  "generated_utc": "2026-07-17T19:15:42+00:00",
   "protocol_doc": "docs/EVAL-PROTOCOL-V2.md",
   "recomputed": true,
   "mlops_intro": "Every model here moves through a versioned MLOps loop: training cycles are logged and evaluated against frozen baselines, promotion to champion is a human act, the triage use-case rolls out shadow-first, and live scoreboards below track both use-cases against their training-time evaluation.",
@@ -130,28 +130,49 @@
     "banner": "shadow \u2014 not steering the queue; rollout is a human decision",
     "scoreboard": {
       "spearman_rank_corr": null,
-      "uplift_curve": [],
-      "hours_to_50pct_model": null,
-      "hours_to_50pct_actual": null,
-      "est_hours_saved_per_60": null,
-      "n": 0,
-      "caveat": "shadow \u2014 n=0 labeled shadow nights (<100); treat the uplift as provisional"
+      "uplift_curve": [
+        {
+          "k": 1,
+          "frac_effort": 0.3333,
+          "model": 0.0,
+          "actual": 0.0,
+          "random": 0.3333
+        },
+        {
+          "k": 2,
+          "frac_effort": 0.6667,
+          "model": 0.0,
+          "actual": 0.0,
+          "random": 0.6667
+        },
+        {
+          "k": 3,
+          "frac_effort": 1.0,
+          "model": 1.0,
+          "actual": 1.0,
+          "random": 1.0
+        }
+      ],
+      "hours_to_50pct_model": 0.36,
+      "hours_to_50pct_actual": 0.36,
+      "est_hours_saved_per_60": 0.0,
+      "n": 3,
+      "caveat": "shadow \u2014 n=3 labeled shadow nights (<100); treat the uplift as provisional"
     },
-    "n": 0,
-    "n_logged_shadow": 0,
+    "n": 3,
+    "n_logged_shadow": 13,
     "spearman_rank_corr": null,
-    "hours_to_50pct_model": null,
-    "hours_to_50pct_actual": null,
-    "est_hours_saved_per_60": null,
+    "hours_to_50pct_model": 0.36,
+    "hours_to_50pct_actual": 0.36,
+    "est_hours_saved_per_60": 0.0,
     "figure": {
       "file": "uplift.png",
-      "present": false,
-      "sha256": null,
-      "reason": "no labeled shadow uplift data yet (scoreboard.json triage.uplift_curve absent)"
+      "present": true,
+      "sha256": "ff81f435b63958cbef4c3f08d20e7733d776155148f43e8cf2bb6f091801f2d6"
     },
-    "state": "insufficient",
+    "state": "ok",
     "low_n_caveat": true,
-    "note": "no labeled shadow nights yet (n=0; 0 shadow predictions logged) \u2014 the acquirer logs a triage line for every night it commits to; uplift becomes measurable once those nights are reduced and labeled"
+    "note": null
   },
   "headline": {
     "champion": {
