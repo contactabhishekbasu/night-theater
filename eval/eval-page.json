@@ -1,14 +1,165 @@
 {
-  "generated_utc": "2026-07-17T12:35:51+00:00",
+  "generated_utc": "2026-07-17T17:49:57+00:00",
   "protocol_doc": "docs/EVAL-PROTOCOL-V2.md",
   "recomputed": true,
+  "mlops_intro": "Every model here moves through a versioned MLOps loop: training cycles are logged and evaluated against frozen baselines, promotion to champion is a human act, the triage use-case rolls out shadow-first, and live scoreboards below track both use-cases against their training-time evaluation.",
+  "model_registry": {
+    "champion": {
+      "version": "7",
+      "cycle": 10,
+      "trained_utc": "2026-07-17T17:38:38+00:00",
+      "promoted_utc": "2026-07-17T17:39:04+00:00",
+      "features": [
+        "n_frames",
+        "exposure_s",
+        "scatter_pct",
+        "depth_snr",
+        "rprs_rel_err",
+        "dur_rel_err",
+        "tmid_err_min",
+        "aperture_px",
+        "n_comps",
+        "resid_shapiro_p",
+        "resid_ljungbox_p",
+        "coverage_frac",
+        "beta_rednoise",
+        "median_cadence_s",
+        "frac_gaps_gt_2x",
+        "longest_gap_min",
+        "moon_phase_frac",
+        "moon_sep_deg",
+        "moon_up_frac"
+      ],
+      "cv_auc": 0.922,
+      "cv_auc_ci": [
+        0.859,
+        0.936
+      ],
+      "brier": 0.1199,
+      "ece": 0.0503,
+      "scope": "advisory + review-queue ordering only"
+    },
+    "history": [
+      {
+        "version": "1",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-16T03:17:12+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "2",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-16T09:02:30+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "3",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-16T17:38:29+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "4",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-16T19:54:04+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "5",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-17T07:39:35+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "6",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-17T12:35:42+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "7",
+        "stage": "champion",
+        "cycle_utc": "2026-07-17T17:38:38+00:00",
+        "promoted_utc": "2026-07-17T17:39:04+00:00",
+        "demoted_utc": null,
+        "promoted_by": "human"
+      }
+    ],
+    "registry_readable": true,
+    "empty": false,
+    "note": null
+  },
+  "live_grader": {
+    "scoreboard": {
+      "auc": null,
+      "brier": null,
+      "calibration_bins": [],
+      "n": 0,
+      "live_auc_ci": null,
+      "window": 100,
+      "drift_status": "no-data"
+    },
+    "training": {
+      "cv_auc": 0.922,
+      "cv_auc_ci": [
+        0.859,
+        0.936
+      ],
+      "brier": 0.1199,
+      "cycle": 10,
+      "version": "7"
+    },
+    "n": 0,
+    "drift_status": "no-data",
+    "state": "insufficient",
+    "note": "insufficient data (n=0) \u2014 the rolling scoreboard fills as grader predictions in data/results/predictions.jsonl gain labels in benchmark.csv"
+  },
+  "shadow_triage": {
+    "banner": "shadow \u2014 not steering the queue; rollout is a human decision",
+    "scoreboard": {
+      "spearman_rank_corr": null,
+      "uplift_curve": [],
+      "hours_to_50pct_model": null,
+      "hours_to_50pct_actual": null,
+      "est_hours_saved_per_60": null,
+      "n": 0,
+      "caveat": "shadow \u2014 n=0 labeled shadow nights (<100); treat the uplift as provisional"
+    },
+    "n": 0,
+    "n_logged_shadow": 0,
+    "spearman_rank_corr": null,
+    "hours_to_50pct_model": null,
+    "hours_to_50pct_actual": null,
+    "est_hours_saved_per_60": null,
+    "figure": {
+      "file": "uplift.png",
+      "present": false,
+      "sha256": null,
+      "reason": "no labeled shadow uplift data yet (scoreboard.json triage.uplift_curve absent)"
+    },
+    "state": "insufficient",
+    "low_n_caveat": true,
+    "note": "no labeled shadow nights yet (n=0; 0 shadow predictions logged) \u2014 the acquirer logs a triage line for every night it commits to; uplift becomes measurable once those nights are reduced and labeled"
+  },
   "headline": {
     "champion": {
       "name": "Incumbent rules",
       "kind": "rules",
       "authoritative": true,
       "metric": "grouped-ranker AUC",
-      "auc": 0.884,
+      "auc": 0.875,
       "note": "Deterministic rule_score(); consults the excluded dur_z column by design (asymmetric \u2014 the bar the rules already clear, per EVAL-PROTOCOL-V2 \u00a73)."
     },
     "challenger": {
@@ -16,21 +167,21 @@
       "kind": "model",
       "registry_stage": "challenger",
       "metric": "grouped-CV AUC (headline)",
-      "auc": 0.798,
+      "auc": 0.819,
       "ci95": [
-        0.842,
-        0.93
+        0.859,
+        0.936
       ],
-      "random_auc": 0.866,
-      "cv_auc_gap": 0.068,
-      "n_train": 267,
-      "n_pos": 81
+      "random_auc": 0.837,
+      "cv_auc_gap": 0.018,
+      "n_train": 290,
+      "n_pos": 92
     },
     "verdict": {
       "authoritative": "rules",
       "beats_rules_grouped": false,
-      "beats_best_feature_grouped": false,
-      "text": "Rules remain authoritative. The challenger does not beat the incumbent rules on grouped AUC (nor the best single feature, depth_snr). Promotion to champion is a human act only, and none has been made."
+      "beats_best_feature_grouped": true,
+      "text": "Rules remain authoritative. The challenger does not beat the incumbent rules on grouped AUC. Promotion to champion is a human act only, and none has been made."
     }
   },
   "cycles": [
@@ -276,6 +427,35 @@
       "ece": 0.0801,
       "ece_bins": 3,
       "note": ""
+    },
+    {
+      "cycle": 10,
+      "cycle_utc": "2026-07-17T17:38:38+00:00",
+      "date": "2026-07-17",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 290,
+      "n_pos": 92,
+      "positive_rate": 0.317,
+      "auc": 0.922,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.942,
+      "cv_auc_grouped": 0.922,
+      "cv_auc_gap": 0.02,
+      "auc_grouped_ci": [
+        0.859,
+        0.936
+      ],
+      "brier": 0.1199,
+      "brier_ci": [
+        0.104,
+        0.138
+      ],
+      "ece": 0.0503,
+      "ece_bins": 3,
+      "note": ""
     }
   ],
   "baselines": [
@@ -286,29 +466,29 @@
     },
     {
       "name": "scatter_pct threshold",
-      "auc": 0.821,
+      "auc": 0.818,
       "note": "The single most interpretable quality cut; logged by name every cycle."
     },
     {
       "name": "Best single feature (scatter_pct)",
-      "auc": 0.821,
+      "auc": 0.818,
       "note": "Highest-AUC raw feature \u2014 the ceiling any single-cut rule could reach."
     },
     {
       "name": "Incumbent rules",
-      "auc": 0.884,
+      "auc": 0.875,
       "note": "Champion. Asymmetric: consults excluded dur_z. Model must beat this on grouped AUC without excluded columns to earn promotion."
     },
     {
       "name": "Challenger model (gbm)",
-      "auc": 0.798,
+      "auc": 0.819,
       "note": "Grouped-OOF headline AUC \u2014 the honest new-target generalization estimate."
     }
   ],
   "features": [
     {
       "name": "n_frames",
-      "importance": 0.0016,
+      "importance": 0.0008,
       "imputed_frac": 0.0
     },
     {
@@ -318,23 +498,23 @@
     },
     {
       "name": "scatter_pct",
-      "importance": 0.2189,
+      "importance": 0.1924,
       "imputed_frac": 0.0
     },
     {
       "name": "depth_snr",
-      "importance": 0.0729,
+      "importance": 0.063,
       "imputed_frac": 0.0
     },
     {
       "name": "rprs_rel_err",
       "importance": 0.0,
-      "imputed_frac": 0.0262
+      "imputed_frac": 0.0241
     },
     {
       "name": "dur_rel_err",
-      "importance": 0.0057,
-      "imputed_frac": 0.0075
+      "importance": 0.0009,
+      "imputed_frac": 0.0069
     },
     {
       "name": "tmid_err_min",
@@ -343,8 +523,8 @@
     },
     {
       "name": "aperture_px",
-      "importance": 0.0003,
-      "imputed_frac": 0.1011
+      "importance": 0.0001,
+      "imputed_frac": 0.0966
     },
     {
       "name": "n_comps",
@@ -353,30 +533,60 @@
     },
     {
       "name": "resid_shapiro_p",
-      "importance": 0.0003,
-      "imputed_frac": 0.0524
+      "importance": 0.0,
+      "imputed_frac": 0.0483
     },
     {
       "name": "resid_ljungbox_p",
-      "importance": 0.0004,
-      "imputed_frac": 0.0524
+      "importance": 0.0,
+      "imputed_frac": 0.0483
     },
     {
       "name": "coverage_frac",
-      "importance": 0.0357,
-      "imputed_frac": 0.1049
+      "importance": 0.0258,
+      "imputed_frac": 0.1
     },
     {
       "name": "beta_rednoise",
-      "importance": 0.0004,
+      "importance": 0.0,
+      "imputed_frac": 0.0
+    },
+    {
+      "name": "median_cadence_s",
+      "importance": 0.0,
+      "imputed_frac": 0.0
+    },
+    {
+      "name": "frac_gaps_gt_2x",
+      "importance": 0.0,
+      "imputed_frac": 0.0
+    },
+    {
+      "name": "longest_gap_min",
+      "importance": 0.0,
+      "imputed_frac": 0.0
+    },
+    {
+      "name": "moon_phase_frac",
+      "importance": 0.0,
+      "imputed_frac": 0.0
+    },
+    {
+      "name": "moon_sep_deg",
+      "importance": 0.0,
+      "imputed_frac": 0.0
+    },
+    {
+      "name": "moon_up_frac",
+      "importance": 0.0,
       "imputed_frac": 0.0
     }
   ],
   "leakage": {
-    "random": 0.866,
-    "grouped": 0.798,
-    "gap": 0.068,
-    "n_groups": 17,
+    "random": 0.837,
+    "grouped": 0.819,
+    "gap": 0.018,
+    "n_groups": 20,
     "groups_are": "target",
     "excluded_cols": [
       "rprs_z",
@@ -386,11 +596,11 @@
     ]
   },
   "lineage": {
-    "dataset_sha256": "3d2ec8b2d67a9da67f39d5f6c14172ab8384b6cac37222d9a772036a9d38b417",
+    "dataset_sha256": "9fd51e529db54ac894ee12094f23478883663c4f9d8acebcf5a57f0fa6256275",
     "schema_version": 2,
-    "n": 267,
-    "pos": 81,
-    "neg": 186,
+    "n": 290,
+    "pos": 92,
+    "neg": 198,
     "n_rows_dropped_nan": 0,
     "mlflow_run_ids": [
       "0085820ca4574ef8ae4e8c4fe7cddea4",
@@ -398,6 +608,7 @@
       "208b4eaedb5e4e74ae41df6197e0d6db",
       "38084d52e7a84c3f9dbec5335d73b3bf",
       "5e128fd1ef1948db93f2344a99b3dfe8",
+      "646cf2e8381b4329bbaa244236375d5c",
       "c591b42d2ffa44dcb555b5b8139eb8c5",
       "d5171ddae7d64eca910422b0d23fe850",
       "e9a5a8910ce74b4da7eb87dc501d4a8e",
@@ -410,25 +621,25 @@
         "bin": 0,
         "edge_lo": 0.0,
         "edge_hi": 0.333,
-        "count": 154,
-        "pred_mean": 0.1106,
-        "obs_freq": 0.0455
+        "count": 158,
+        "pred_mean": 0.1079,
+        "obs_freq": 0.057
       },
       {
         "bin": 1,
         "edge_lo": 0.333,
         "edge_hi": 0.667,
-        "count": 90,
-        "pred_mean": 0.5087,
-        "obs_freq": 0.6333
+        "count": 93,
+        "pred_mean": 0.5202,
+        "obs_freq": 0.5161
       },
       {
         "bin": 2,
         "edge_lo": 0.667,
         "edge_hi": 1.0,
-        "count": 23,
-        "pred_mean": 0.7327,
-        "obs_freq": 0.7391
+        "count": 39,
+        "pred_mean": 0.7397,
+        "obs_freq": 0.8974
       }
     ],
     "n_bins": 3,
@@ -438,33 +649,33 @@
       0.667,
       1.0
     ],
-    "ece": 0.0801,
-    "brier": 0.1251,
+    "ece": 0.0503,
+    "brier": 0.1199,
     "brier_ci": [
-      0.106,
-      0.142
+      0.104,
+      0.138
     ]
   },
   "figures": {
     "roc": {
       "file": "roc.png",
       "present": true,
-      "sha256": "916897e7054dbc9af080e56f3253f2812b52ef79cf2fe712ff439f41008b3fba"
+      "sha256": "7263369d6eb07aaf8779d36e6b8def1599749c366797708f4c7a6f3c5129a32f"
     },
     "pr": {
       "file": "pr.png",
       "present": true,
-      "sha256": "43f014e49cd8193a67227256921e70c0aa59263adc20b4b7b7da193c8c5cba18"
+      "sha256": "9d025a94de1419e543083a0252bce2991d639ea6d751c2ecb97c06441324d9e2"
     },
     "reliability": {
       "file": "reliability.png",
       "present": true,
-      "sha256": "d5e9b3c187fde390157fcae7e986242e4bff9548e965696893236dbd72df308e"
+      "sha256": "6060b3a201f601ac938f0e2bf7a14db312404d103732745f4a7d459e33ce8df9"
     },
     "importances": {
       "file": "importances.png",
       "present": true,
-      "sha256": "baebc3b3fcfd426a556da1a635d2d510536ebfef7b52c440d52e6e8e3ce628fc"
+      "sha256": "d56b9c18c1f3f8e18d790b5c80ffe7575459f57abaa4db3c72e34fd999ee1fcf"
     }
   },
   "model_card_html_or_md": "# Model Card \u2014 Run-Quality Model\n\nStructured after Mitchell et al., \"Model Cards for Model Reporting\" (2019). This card\ndescribes the **deployed** classifier (cycle 3) and the v2 evaluation that governs it\nfrom the next cycle. Numbers here are reproduced from `data/results/model-metrics.csv`,\n`docs/MODEL.md`, and the frozen `docs/EVAL-PROTOCOL-V2.md`.\n\n## Model details\n\n- **Purpose.** Predict whether one photometric reduction run is scientifically usable\n  for submission, as a calibrated probability `p_good`, to help a human triage the\n  review queue faster.\n- **Type.** Calibrated logistic regression (scikit-learn `LogisticRegression`,\n  `class_weight=\"balanced\"`, sigmoid calibration) on a median-imputed, standardized\n  feature pipeline. The ladder escalates to `HistGradientBoosting` only above 100 rows\n  and only if it beats logistic in CV; today's deployed model is logistic.\n- **Version / provenance.** Deployed: cycle 3 (2026-07-15), logistic, n_train=70,\n  11 features. Every cycle records `schema_version`, `dataset_sha256`, and an entry in\n  the hash-chained audit log (`actor=\"model\"`).\n- **Owner.** Single-maintainer citizen-science pipeline (astro project). Model artifacts\n  live in `data/results/` (gitignored, local-only; pickle is produced and consumed by\n  one script on one machine).\n- **Features (v2, 13).** `n_frames`, `exposure_s`, `scatter_pct`, `depth_snr`,\n  `rprs_rel_err`, `dur_rel_err`, `tmid_err_min`, `aperture_px`, `n_comps`,\n  `resid_shapiro_p`, `resid_ljungbox_p`, `coverage_frac`, `beta_rednoise`. All are\n  reduction-quality signals; none is derived from the published truth (see leakage).\n\n## Intended use\n\n- **In scope.** Triage and pre-ranking of the human review queue: order dossiers,\n  sharpen the RECOMMEND line, and flag likely-bad reductions for a closer look. The\n  output is advisory only.\n- **Primary users.** The pipeline maintainer reviewing dossiers before any submission\n  to AAVSO / Exoplanet Watch / MPC.\n- **Out of scope \u2014 do not use for:**\n  - **Auto-approval or unsupervised submission.** Nothing is submitted without a human\n    setting `status: approved`. No auto-approval path exists and none may be added.\n  - **Scientific claims.** `p_good` is a workflow-triage probability, not evidence about\n    a planet, an ephemeris, or a detection. It must never appear in a science result.\n  - **Cross-instrument or cross-target trust beyond the training distribution** (see\n    biases). It has not been validated on Seestar data; on Seestar it runs in shadow\n    mode only.\n  - **Ranking anything other than reduction usability** (e.g. target selection \u2014 that is\n    `night_score.py`).\n\n## Factors\n\n- **Instrument.** Training data is MicroObservatory (single 6-inch optic) plus EXOTIC\n  practice/validation sets. Behaviour on other instruments is unknown.\n- **Target and sky.** Northern-hemisphere targets only (HAT-P-32b, TrES-2b/3b, CoRoT-2b,\n  HD 189733b, Qatar-1b/10b, WASP-2b/135b, XO-1b, HAT-P-27b/55b, KELT-20b).\n- **Archive era.** Nights span 2017\u2192present; archive-era systematics and seasonal quality\n  differ. Recent-30-day MO nights skew low quality.\n- **Evaluation slicing.** Grouped by `target` (extend to `(target, instrument)` once more\n  than one instrument is present) \u2014 the split that matters, since deployment is always a\n  new night and often a new target.\n\n## Metrics\n\nDiscrimination is reported under **grouped** cross-validation (unseen target at test\ntime) as the headline, alongside the random-CV number; the gap is the target-leakage\nestimate. Calibration uses a small-n (3-bin) reliability curve. Uncertainty is a\nstratified bootstrap 95% CI (1000 resamples). Full definitions: `docs/EVAL-PROTOCOL-V2.md`.\n\n**Deployed model \u2014 cycle 3 (v1 metrics, as logged):** n=70, 15 positives (21%),\nrandom-CV AUC 0.891 \u00b1 0.041, Brier 0.123, 10-bin ECE 0.130, reject precision 0.925.\nThese predate the v2 protocol (no grouped AUC, no CIs, 10-bin ECE) and are not\ncomparable to v2 cycles.\n\n**v2 preview (dry-run on the current n=100 / 29-positive table, not yet a logged\ncycle):** grouped-CV AUC 0.878, random-CV AUC 0.886, gap 0.008 (low target leakage);\ngrouped AUC 95% CI [0.808, 0.942]; Brier 95% CI [0.086, 0.193]; 3-bin ECE 0.085.\nBaselines on the same data: majority 0.50, `scatter_pct` 0.878, best single feature\n`depth_snr` 0.899, incumbent rules 0.924. **The model does not yet beat `depth_snr`\nalone or the rules on grouped AUC** \u2014 this is exactly why the rules stay authoritative\nand the human gate is non-negotiable. The first *logged* v2 cycle is triggered by the\norchestrator at \u2265 25 positives with all baselines present.\n\n## Evaluation & training data\n\n- **Source.** MicroObservatory public archive nights reduced by the pipeline and scored\n  against published ExoClock ephemerides (`mo_benchmark.py`); EXOTIC practice/validation\n  runs with known truth; and human review decisions. One row per documented run\n  (`data/records/<id>/record.json` \u2192 `data/results/run-features.csv`).\n- **Size & balance.** v2 rebuild: 100 trainable rows, 29 positive / 71 negative\n  (~29% positive). Deployed model trained on 70 / 15 positive.\n- **Labels.** Positive = `ACCURATE` / `MARGINAL` / human-`approved`; negative =\n  `INACCURATE` / `NON-DETECTION` / `RUN-FAILED` / human-`rejected` / `NOISY-CONSISTENT`.\n  Labels inherit the scoring thresholds in `mo_benchmark.py`: the model learns *our*\n  definition of \"usable,\" not a platonic one. The definition is versioned in that file.\n- **Known biases.**\n  - **Single-instrument optics** \u2014 MicroObservatory 6-inch dominates; the model may key\n    on MO characteristics. Breaking this correlation is the whole point of phase P3\n    (cross-instrument) before P4 trusts it on Seestar.\n  - **Northern targets only** \u2014 no Southern-sky validation.\n  - **Archive-era effects** \u2014 systematics and quality vary by era/season; good labels\n    come disproportionately from the deep archive and practice sets, bad labels from the\n    poor recent season.\n  - **Small positive count** \u2014 grouped AUC and calibration are fragile until positives\n    grow well past 25.\n\n## Quantitative analyses\n\n- Random vs grouped AUC and their gap are logged every cycle (`cv_auc_random`,\n  `cv_auc_grouped`, `cv_auc_gap`) \u2014 the leakage diagnostic.\n- Reliability curve per cycle in `data/results/calibration/<cycle_utc>.json`.\n- Bootstrap CIs on grouped AUC and Brier per cycle.\n- Per-feature imputed fraction per cycle (a feature going all-NaN is a broken emitter).\n\n## Ethical & operational considerations\n\n- **The human gate is load-bearing.** The pipeline's core invariant is *automate\n  reduction, never judgment.* The model compresses review time; it does not replace the\n  reviewer. `.claude/settings.json` denies submission side-effects to automation, and no\n  auto-approval exists.\n- **Failure mode that matters.** A false SCREEN-PASS that lulls the reviewer is worse\n  than a false REJECT (a wasted look). Thresholds are asymmetric (reject liberally at\n  p<0.35, pass rarely at p>0.90) and `screen_pass_rate` is expected near zero until\n  calibration matures.\n- **No consensus contamination.** The model is not used to generate Zooniverse\n  classifications or any crowd-consensus input.\n- **Probabilities carry context.** `p_good` is always quoted with `n_train` in dossiers\n  so a small-data probability is not over-read.\n\n## Caveats & maintenance\n\n- **Retrain cadence.** Weekly, after the Tuesday benchmark top-up and nightly backfill\n  land new labels; a cycle is only logged at \u2265 25 positives with all baselines present.\n- **Drift monitoring.** Per-cycle `dataset_sha256` (training-set change detection),\n  imputed-fraction (emitter health), grouped-AUC stability across cycles, and the\n  calibration JSON. Schema assertions refuse to train on a drifted feature table.\n- **Trust gate for P4 (Seestar shadow \u2192 weighted RECOMMEND, still never approval):**\n  ECE < 0.10, \u2265 25 positives, stable grouped AUC across \u2265 3 consecutive cycles.\n- **Cycle comparability.** Cycles 1\u20133 were trained on a feature table that was later\n  found corrupted (benchmark.csv drift, fixed 2026-07-15) and used v1 metrics; they are\n  not comparable to v2 cycles. See `docs/MODEL.md`.\n",

@@ -723,22 +723,27 @@ function renderQuality(d) {
     const xs = q.map((_, i) => i);
     const sky = q.map(p => p.sky), peak = q.map(p => p.peak);
     const mono = cssVar("--font-data").split(",")[0] || "monospace";
+    /* two y-scales: sky (~350 ADU) and peak (~4095) crush each other on one linear
+       axis — the sky series rendered as a flat line ("missing data" report) */
+    const skyLo = Math.min(...sky), skyHi = Math.max(...sky), pad = Math.max(4, (skyHi - skyLo) * 0.15);
     const u = new uPlot({
       width: el.clientWidth || 380, height: 150,
       cursor: {show: false}, legend: {show: false}, pxAlign: false,
-      scales: {x: {time: false}, y: {range: [Math.min(...sky) * 0.7, SAT_ADU * 1.12]}},
+      scales: {x: {time: false},
+               sky: {range: [skyLo - pad, skyHi + pad]},
+               peak: {range: [0, SAT_ADU * 1.12]}},
       axes: [
         {show: false},
-        {stroke: cssVar("--muted"), grid: {stroke: cssVar("--grid"), width: 1},
+        {scale: "sky", stroke: cssVar("--muted"), grid: {stroke: cssVar("--grid"), width: 1},
          ticks: {show: false}, size: 44, font: "10px " + mono},
       ],
       series: [
         {},
-        {stroke: cssVar("--aqua"), width: 1.8, points: {show: false}},
-        {stroke: cssVar("--muted"), width: 1.2, dash: [3, 4], points: {show: false}},
+        {scale: "sky", stroke: cssVar("--aqua"), width: 1.8, points: {show: false}},
+        {scale: "peak", stroke: cssVar("--muted"), width: 1.2, dash: [3, 4], points: {show: false}},
       ],
       hooks: {draw: [u => {                          // saturation-ceiling annotation
-        const ctx = u.ctx, yPix = u.valToPos(SAT_ADU, "y", true);
+        const ctx = u.ctx, yPix = u.valToPos(SAT_ADU, "peak", true);
         ctx.save();
         ctx.strokeStyle = cssVar("--crit"); ctx.setLineDash([5, 4]); ctx.lineWidth = 1;
         ctx.beginPath();
@@ -972,13 +977,25 @@ function renderKpis(d) {
     yieldCap ? yieldCap + (yDelta ? " · " + yDelta.txt : "") : (yDelta?.txt ?? "awaiting telemetry v3 — session"),
     yDelta?.cls, ySer, "--aqua");
 
-  /* probe→score latency: v2 exposes acquire-stage medians only — labeled as such */
-  const latParts = ["probe", "walk", "fetch"].filter(s => med[s]);
-  const latSum = latParts.reduce((a, s) => a + med[s], 0);
-  kpiCard("kpi-lat", latParts.length ? (latSum / 60).toFixed(1) : "—", latParts.length ? "min" : "",
-    latParts.length ? "acquire stages: " + latParts.map(s => `${s} ${med[s]}s`).join(" · ")
-                    : "awaiting telemetry v3 — stage medians",
-    "", null, "--blue");
+  /* probe→score latency: v3 stage budgets (full night) → fallback to v2 acquire medians */
+  const sb = d.stage_budgets || {};
+  const sbStages = Object.keys(sb).filter(s => sb[s]?.p50_s != null);
+  const latSer = histSeries(p => p.night_latency_s != null ? p.night_latency_s / 60 : null);
+  const latDelta = latSer ? deltaCaption(latSer, v => v.toFixed(1) + " min", true) : null;
+  if (sbStages.length) {
+    const total = sbStages.reduce((a, s) => a + sb[s].p50_s, 0);
+    kpiCard("kpi-lat", (total / 60).toFixed(1), "min",
+      "median stages: " + sbStages.map(s => `${s} ${Math.round(sb[s].p50_s)}s`).join(" · ") +
+      (latDelta ? " · " + latDelta.txt : ""),
+      latDelta?.cls, latSer, "--blue");
+  } else {
+    const latParts = ["probe", "walk", "fetch"].filter(s => med[s]);
+    const latSum = latParts.reduce((a, s) => a + med[s], 0);
+    kpiCard("kpi-lat", latParts.length ? (latSum / 60).toFixed(1) : "—", latParts.length ? "min" : "",
+      latParts.length ? "acquire stages: " + latParts.map(s => `${s} ${med[s]}s`).join(" · ")
+                      : "awaiting telemetry v3 — stage medians",
+      "", latSer, "--blue");
+  }
 
   const qSer = histSeries(p => p.queue_depth);
   const qDelta = qSer ? deltaCaption(qSer, v => Math.round(v) + "", false) : null;
@@ -987,9 +1004,9 @@ function renderKpis(d) {
     qDelta?.cls, qSer, "--blue");
 
   const slaSer = histSeries(p => p.review_oldest_age_s != null ? p.review_oldest_age_s / 3600 : null);
-  const oldest = rv.oldest_age_s ?? reviewFallback.oldest_age_s;
+  const oldest = rv.oldest_age_s;
   const slaWarn = oldest != null && oldest > 48 * 3600;
-  const pending = rv.pending_n ?? reviewFallback.pending;
+  const pending = rv.pending_n;
   kpiCard("kpi-sla", oldest != null ? (oldest / 3600 < 48 ? (oldest / 3600).toFixed(1) : (oldest / 86400).toFixed(1)) : "—",
     oldest != null ? (oldest / 3600 < 48 ? "h" : "d") : "",
     oldest != null ? `oldest pending${slaWarn ? " — needs you" : ""}${pending != null ? " · " + pending + " pending" : ""}`
@@ -1342,37 +1359,16 @@ $("log-search").addEventListener("input", e => {
   searchT = setTimeout(() => { logState.q = e.target.value.trim(); applyLogFilters(); }, 150);
 });
 
-/* ---------- review queue: plain deep-links to ../review/#id (no drawer) ----- */
+/* review lives on its own page — no queue section here. This slim stats-only poll
+   feeds the flow strip's Approved node + pre-v3 fallbacks for pending/oldest. */
 const reviewFallback = {pending: null, oldest_age_s: null, approved: null};
-async function loadQueue() {
-  if (document.hidden) return;
-  const pc = $("review-pending-count");
-  let rows;
-  try { rows = await (await fetch(API + "/api/queue")).json(); }
-  catch (e) {
-    if (pc) pc.hidden = true;
-    reviewFallback.pending = reviewFallback.approved = null;
-    $("queue").innerHTML =
-      '<span class="empty-dev" style="color:var(--muted)">review API offline — start the ' +
-      '<span class="mono">review_server.py</span> server (:8323) to enable approvals</span>' +
-      '<span class="empty-snapshot" style="color:var(--muted)">Live approvals run locally — ' +
-      'this static weekly snapshot shows the review queue read-only. ' +
-      'Open <a href="../review/">Review</a> for the captured dossiers.</span>';
-    return;
-  }
-  reviewFallback.pending = rows.filter(r => (r.review?.status || "pending") === "pending").length;
-  reviewFallback.approved = rows.filter(r => r.review?.status === "approved").length;
-  if (pc) {
-    if (reviewFallback.pending > 0) { pc.textContent = reviewFallback.pending + " pending"; pc.hidden = false; }
-    else { pc.textContent = ""; pc.hidden = true; }
-  }
-  $("queue").innerHTML = rows.slice(0, 12).map(r => `
-    <a class="rq-row" href="../review/#${encodeURIComponent(r.id)}">
-      ${badge(r.verdict) || `<span class="pill">${esc(r.type || "run")}</span>`}
-      <span class="rid">${esc(r.target)} · ${esc(r.id)}</span>
-      <span class="pill ${esc(r.review?.status || "pending")}">${esc(r.review?.status || "pending")}</span>
-      <span class="pill">${esc(r.n_frames)} frames</span>
-    </a>`).join("");
+async function reviewStats() {
+  if (document.hidden || snapshot) return;
+  try {
+    const rows = await (await fetch(API + "/api/queue")).json();
+    reviewFallback.pending = rows.filter(r => (r.review?.status || "pending") === "pending").length;
+    reviewFallback.approved = rows.filter(r => r.review?.status === "approved").length;
+  } catch (e) { reviewFallback.pending = reviewFallback.approved = null; }
 }
 
 /* ---------- main poll -------------------------------------------------------- */
@@ -1416,9 +1412,9 @@ function stopPolling() { pollTimers.forEach(clearInterval); pollTimers = []; }
 
 refresh();
 kpiHistRefresh();
-loadQueue();
+reviewStats();
 pollTimers.push(
   setInterval(refresh, 5000),
   setInterval(kpiHistRefresh, 60000),
-  setInterval(loadQueue, 30000),
+  setInterval(reviewStats, 60000),
 );

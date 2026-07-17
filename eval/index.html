@@ -159,6 +159,23 @@
   .lim-list { margin: 0; padding-left: 20px; }
   .lim-list li { font-size: 12.5px; color: var(--sec); margin: var(--sp-2) 0; line-height: 1.55; }
 
+  /* ---- MLOps live-tracking sections (registry / live grader / shadow triage) ---- */
+  .banner.shadow {
+    background: color-mix(in srgb, var(--warn) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent);
+    color: var(--ink); font-weight: 650; margin-bottom: var(--sp-3);
+  }
+  .live-headline { font-family: var(--font-data); font-variant-numeric: tabular-nums;
+                   font-size: var(--fs-28); font-weight: 650; color: var(--ink);
+                   line-height: 1.15; }
+  .live-headline.dim { color: var(--muted); font-size: var(--fs-17); font-weight: 600; }
+  .live-sub { color: var(--sec); font-size: var(--fs-12); margin-top: 4px; }
+  .drift-pill { display: inline-flex; align-items: center; gap: 7px; padding: 3px 10px;
+                border-radius: var(--radius-pill); font: 650 var(--fs-11)/1.4 var(--font-ui);
+                border: 1px solid var(--grid); color: var(--sec); }
+  .drift-pill.ok    { border-color: color-mix(in srgb, var(--good) 55%, transparent); color: var(--good-txt); }
+  .drift-pill.drift { border-color: color-mix(in srgb, var(--crit) 55%, transparent); color: var(--crit-txt); }
+
   .empty { text-align: center; padding: var(--sp-7) var(--sp-4); color: var(--muted); }
   .empty code { font-family: var(--font-data); color: var(--ink);
                 background: color-mix(in srgb, var(--muted) 14%, transparent);
@@ -284,6 +301,140 @@ function renderHeadline(p) {
     <p class="verdict-line">${esc(v.text)}
       Promotion is a <strong style="color:var(--ink)">human act only</strong> — nothing is
       submitted, and no model is promoted to champion, without a maintainer's decision.</p>
+  </section>`;
+}
+
+/* ---- MLOps live-tracking sections (spec 2026-07-17-mlops-rollout) ---- */
+function renderModelRegistry(p) {
+  const r = p.model_registry;
+  if (!r) return "";
+  const ch = r.champion;
+  let chBlock;
+  if (ch) {
+    const ci = (ch.cv_auc_ci && ch.cv_auc_ci[0] != null)
+      ? ` [${fmt(ch.cv_auc_ci[0])}, ${fmt(ch.cv_auc_ci[1])}]` : "";
+    chBlock = `<table class="kv">
+      <tr><td>Champion version</td><td class="mono">v${esc(ch.version)} (training cycle ${ch.cycle ?? "—"})</td></tr>
+      <tr><td>Grouped-CV AUC (training)</td><td class="mono">${fmt(ch.cv_auc)}${ci}</td></tr>
+      <tr><td>Brier · ECE (training)</td><td class="mono">${fmt(ch.brier)} · ${fmt(ch.ece)}</td></tr>
+      <tr><td>Features</td><td class="mono">${(ch.features || []).length || "—"}</td></tr>
+      <tr><td>Trained</td><td class="mono">${esc((ch.trained_utc || "—").slice(0, 19))}</td></tr>
+      <tr><td>Promoted (human act)</td><td class="mono">${esc((ch.promoted_utc || "—").slice(0, 19))}</td></tr>
+      <tr><td>Scope</td><td>${esc(ch.scope || "—")}</td></tr>
+    </table>`;
+  } else {
+    chBlock = `<p class="lede">${esc(r.note || "no champion promoted yet")}</p>`;
+  }
+  const hist = (r.history || []).map(v => `<tr>
+      <td class="mono">v${esc(v.version)}</td>
+      <td>${esc(v.stage || "challenger")}</td>
+      <td class="mono">${esc((v.promoted_utc || "—").slice(0, 10))}</td>
+      <td class="mono">${esc((v.demoted_utc || "—").slice(0, 10))}</td>
+      <td>${esc(v.promoted_by || "—")}</td></tr>`).join("");
+  const histBlock = hist
+    ? `<table class="data-table" style="margin-top:var(--sp-3)">
+        <thead><tr><th>version</th><th>stage</th><th>promoted</th><th>demoted</th><th>by</th></tr></thead>
+        <tbody>${hist}</tbody></table>`
+    : `<p class="lede" style="margin-top:var(--sp-3)">${r.registry_readable
+        ? "no registered versions yet"
+        : "registry history unavailable in this build — the champion pointer above is the canonical cheap copy"}.</p>`;
+  return `<section class="card" aria-label="Model registry">
+    <h2 class="section-title">Model registry — versions, stages &amp; human promotion
+      ${why("why-reg", "Every training cycle registers a versioned model as a "
+        + "<em>challenger</em>. Exactly one may hold the <em>champion</em> stage, and "
+        + "only a human can move it there (<code>mlops.py promote</code>, audit-logged). "
+        + "champion.json is the cheap pointer the pipeline reads; the registry keeps the "
+        + "full history so a promotion can be reverted by hand.")}</h2>
+    ${p.mlops_intro ? `<p class="lede">${esc(p.mlops_intro)}</p>` : ""}
+    ${chBlock}
+    ${histBlock}
+  </section>`;
+}
+
+function renderLiveGrader(p) {
+  const g = p.live_grader;
+  if (!g) return "";
+  const tr = g.training;
+  const trCi = (tr && tr.cv_auc_ci && tr.cv_auc_ci[0] != null)
+    ? `[${fmt(tr.cv_auc_ci[0])}, ${fmt(tr.cv_auc_ci[1])}]` : "—";
+  const trainLine = tr
+    ? `training reference: grouped-CV AUC ${fmt(tr.cv_auc)} CI ${trCi} · Brier ${fmt(tr.brier)} (cycle ${tr.cycle ?? "—"}, v${esc(tr.version ?? "—")})`
+    : "training reference unavailable (no champion promoted yet)";
+  let body;
+  if (g.state !== "ok") {
+    body = `<p class="live-headline dim">insufficient data (n=${g.n ?? 0})</p>
+      <p class="live-sub">${esc(g.note || "")}</p>`;
+  } else {
+    const sb = g.scoreboard || {};
+    const drift = String(g.drift_status || "unknown");
+    const driftCls = /ok|none|stable/i.test(drift) ? "ok" : (/drift|alert|below/i.test(drift) ? "drift" : "");
+    const bins = (sb.calibration_bins || []).map(b => `<tr>
+        <td class="num">${fmt(b.pred_mean)}</td><td class="num">${fmt(b.obs_freq)}</td>
+        <td class="num">${b.count ?? "—"}</td></tr>`).join("");
+    body = `<div class="grid2">
+      <table class="kv">
+        <tr><td>Live AUC (rolling)</td><td class="mono">${fmt(sb.auc)}</td></tr>
+        <tr><td>Live Brier (rolling)</td><td class="mono">${fmt(sb.brier)}</td></tr>
+        <tr><td>n joined (prediction ∧ label)</td><td class="mono">${sb.n ?? "—"}</td></tr>
+        <tr><td>Drift status</td><td><span class="drift-pill ${driftCls}">${esc(drift)}</span></td></tr>
+      </table>
+      ${bins ? `<table class="data-table"><thead><tr><th class="num">pred mean</th>
+        <th class="num">obs freq</th><th class="num">n</th></tr></thead><tbody>${bins}</tbody></table>` : ""}
+    </div>`;
+  }
+  return `<section class="card" aria-label="Live performance — grader (UC1)">
+    <h2 class="section-title">Live performance — grader (UC1)
+      ${why("why-live", "The grader logs its p(good) to predictions.jsonl <em>before</em> "
+        + "each verdict is recorded, and labels are joined later from benchmark.csv — "
+        + "prediction-before-label by construction. The rolling last-100 joins give live "
+        + "AUC/Brier/calibration to compare against the champion's training-time CI; a "
+        + "sustained drop below it recommends (never performs) demotion.")}</h2>
+    ${body}
+    <p class="lede" style="margin-top:var(--sp-3)">${esc(trainLine)}</p>
+  </section>`;
+}
+
+function renderShadowTriage(p) {
+  const s = p.shadow_triage;
+  if (!s) return "";
+  const banner = `<div class="banner shadow" role="status">
+    <span class="led warn" aria-hidden="true"></span>
+    <span>${esc(s.banner || "shadow — not steering the queue; rollout is a human decision")}</span>
+  </div>`;
+  let body;
+  if (s.state !== "ok") {
+    body = `<p class="live-headline dim">no measurable uplift yet (n=${s.n ?? 0} labeled shadow nights)</p>
+      <p class="live-sub">${esc(s.note || "")}</p>`;
+  } else {
+    const m = s.hours_to_50pct_model, a = s.hours_to_50pct_actual;
+    const headline = (m != null && a != null)
+      ? `<p class="live-headline">${fmt(m, 1)} h <span style="color:var(--muted);font-size:var(--fs-15)">model</span>
+          vs ${fmt(a, 1)} h <span style="color:var(--muted);font-size:var(--fs-15)">actual</span></p>
+        <p class="live-sub">hours of acquisition to reach 50% of the session's science-grade nights</p>`
+      : "";
+    body = `${headline}
+      <table class="kv" style="margin-top:var(--sp-3)">
+        <tr><td>Spearman rank correlation (model vs realized order)</td><td class="mono">${fmt(s.spearman_rank_corr)}</td></tr>
+        <tr><td>Estimated hours saved per 60-night tranche</td><td class="mono">${fmt(s.est_hours_saved_per_60, 1)}</td></tr>
+        <tr><td>n labeled shadow nights</td><td class="mono">${s.n}</td></tr>
+        <tr><td>shadow predictions logged</td><td class="mono">${s.n_logged_shadow ?? "—"}</td></tr>
+      </table>
+      ${s.low_n_caveat ? `<p class="lede" style="margin-top:var(--sp-2)">caveat: fewer than 100 labeled
+        shadow nights — treat the uplift as directional, not decisive.</p>` : ""}`;
+  }
+  return `<section class="card" aria-label="Shadow triage (UC2) — does the model help probing?">
+    <h2 class="section-title">Shadow triage — does the model help probing? (UC2)
+      ${why("why-shadow", "For every night the acquirer commits to, a triage line is "
+        + "logged with the pre-probe view of the sky (moon, geometry, priors, season, "
+        + "prospect) and the realized queue rank. No triage model exists yet, so p_good "
+        + "is null — the inputs are logged so a future model can be scored retroactively. "
+        + "The uplift curve compares cumulative science-grade nights per hour of "
+        + "acquisition under model-order vs realized-order vs random.")}</h2>
+    ${banner}
+    ${body}
+    <div class="fig-grid" style="margin-top:var(--sp-3)">
+      ${figureCard(s.figure, 5, "Shadow triage uplift — cumulative science-grade nights vs acquisition effort")}
+    </div>
   </section>`;
 }
 
@@ -561,6 +712,9 @@ function render(p) {
     + (p.recomputed ? " · figures recomputed from frozen protocol" : " · figures from last build (table unavailable)");
   $("#main").innerHTML = [
     renderHeadline(p),
+    renderModelRegistry(p),
+    renderLiveGrader(p),
+    renderShadowTriage(p),
     renderHistory(p),
     renderFigures(p),
     renderBaselines(p),

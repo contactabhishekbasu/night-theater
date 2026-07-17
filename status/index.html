@@ -124,28 +124,8 @@
     </div>
   </section>
 
-  <!-- ============ REVIEW & DECISIONS (rows deep-link to Review — no drawer) ============ -->
-  <section aria-labelledby="review-h">
-    <div class="card review-card">
-      <div class="review-head">
-        <h2 class="section-title" id="review-h">Review &amp; decisions
-          <span class="pill" id="review-pending-count" hidden></span>
-          <span class="why" tabindex="0" role="button" onclick="tgl('ex-review')">explain</span></h2>
-        <a class="btn btn--ghost review-open" href="../review/">Open review queue →</a>
-      </div>
-      <div class="explain" id="ex-review">
-        Nothing is ever submitted without a human approving the specific result — that's
-        the pipeline's founding rule. Click a run to see everything: the light curve, the
-        exact file that would go to AAVSO (annotated field by field), the model's
-        recommendation with its reasons, and the full provenance chain. <b>Approve</b>
-        queues it for submission; <b>Reject</b> archives it with your reason (rejected
-        runs stay published — honest logs include failures); <b>Redo</b> re-queues the
-        night for a fresh reduction. Every decision lands in the tamper-evident audit
-        trail as a human action.
-      </div>
-      <div id="queue">loading…</div>
-    </div>
-  </section>
+  <!-- Review lives on its own page (../review/); the command bar's pending count +
+       the Review node in the flow strip deep-link there — no duplicate section here. -->
 
   <!-- ============ 2 · THE NIGHT, PLAYED BACK + COVERAGE/QUALITY ============ -->
   <section class="grid2">
