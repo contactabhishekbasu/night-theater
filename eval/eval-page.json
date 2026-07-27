@@ -1,44 +1,10 @@
 {
-  "generated_utc": "2026-07-17T19:15:42+00:00",
+  "generated_utc": "2026-07-27T17:03:55+00:00",
   "protocol_doc": "docs/EVAL-PROTOCOL-V2.md",
   "recomputed": true,
   "mlops_intro": "Every model here moves through a versioned MLOps loop: training cycles are logged and evaluated against frozen baselines, promotion to champion is a human act, the triage use-case rolls out shadow-first, and live scoreboards below track both use-cases against their training-time evaluation.",
   "model_registry": {
-    "champion": {
-      "version": "7",
-      "cycle": 10,
-      "trained_utc": "2026-07-17T17:38:38+00:00",
-      "promoted_utc": "2026-07-17T17:39:04+00:00",
-      "features": [
-        "n_frames",
-        "exposure_s",
-        "scatter_pct",
-        "depth_snr",
-        "rprs_rel_err",
-        "dur_rel_err",
-        "tmid_err_min",
-        "aperture_px",
-        "n_comps",
-        "resid_shapiro_p",
-        "resid_ljungbox_p",
-        "coverage_frac",
-        "beta_rednoise",
-        "median_cadence_s",
-        "frac_gaps_gt_2x",
-        "longest_gap_min",
-        "moon_phase_frac",
-        "moon_sep_deg",
-        "moon_up_frac"
-      ],
-      "cv_auc": 0.922,
-      "cv_auc_ci": [
-        0.859,
-        0.936
-      ],
-      "brier": 0.1199,
-      "ece": 0.0503,
-      "scope": "advisory + review-queue ordering only"
-    },
+    "champion": null,
     "history": [
       {
         "version": "1",
@@ -90,41 +56,174 @@
       },
       {
         "version": "7",
-        "stage": "champion",
+        "stage": "challenger",
         "cycle_utc": "2026-07-17T17:38:38+00:00",
         "promoted_utc": "2026-07-17T17:39:04+00:00",
-        "demoted_utc": null,
+        "demoted_utc": "2026-07-19T22:57:33+00:00",
         "promoted_by": "human"
+      },
+      {
+        "version": "8",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-18T10:32:51+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "9",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-19T22:20:52+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "10",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-20T08:16:13+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "11",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-21T00:19:00+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "12",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-21T08:16:18+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "13",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-22T08:16:16+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "14",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-23T09:08:28+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "15",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-24T08:16:18+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "16",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-25T08:16:24+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "17",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-26T08:16:25+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "18",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-27T08:16:37+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
+      },
+      {
+        "version": "19",
+        "stage": "challenger",
+        "cycle_utc": "2026-07-27T17:02:59+00:00",
+        "promoted_utc": null,
+        "demoted_utc": null,
+        "promoted_by": null
       }
     ],
     "registry_readable": true,
-    "empty": false,
-    "note": null
+    "empty": true,
+    "note": "no champion promoted yet \u2014 promotion is a human act (scripts/mlops.py promote); the incumbent rules remain authoritative"
   },
   "live_grader": {
     "scoreboard": {
-      "auc": null,
-      "brier": null,
-      "calibration_bins": [],
-      "n": 0,
-      "live_auc_ci": null,
-      "window": 100,
-      "drift_status": "no-data"
-    },
-    "training": {
-      "cv_auc": 0.922,
-      "cv_auc_ci": [
-        0.859,
-        0.936
+      "auc": 0.985,
+      "brier": 0.0537,
+      "calibration_bins": [
+        {
+          "bin": 0,
+          "edge_lo": 0.0,
+          "edge_hi": 0.333,
+          "count": 65,
+          "pred_mean": 0.0415,
+          "obs_freq": 0.0
+        },
+        {
+          "bin": 1,
+          "edge_lo": 0.333,
+          "edge_hi": 0.667,
+          "count": 16,
+          "pred_mean": 0.5139,
+          "obs_freq": 0.5625
+        },
+        {
+          "bin": 2,
+          "edge_lo": 0.667,
+          "edge_hi": 1.0,
+          "count": 19,
+          "pred_mean": 0.7705,
+          "obs_freq": 0.9474
+        }
       ],
-      "brier": 0.1199,
-      "cycle": 10,
-      "version": "7"
+      "n": 100,
+      "live_auc_ci": [
+        0.965,
+        0.998
+      ],
+      "window": 100,
+      "drift_status": "no-champion"
+    },
+    "training": null,
+    "n": 100,
+    "drift_status": "no-champion",
+    "state": "ok",
+    "note": null
+  },
+  "gate_agreement": {
+    "scoreboard": {
+      "n": 0,
+      "agree_rate": null,
+      "approved_high_p": 0,
+      "approved_low_p": 0,
+      "rejected_high_p": 0,
+      "rejected_low_p": 0,
+      "n_unmatched": 0,
+      "threshold": 0.5
     },
     "n": 0,
-    "drift_status": "no-data",
+    "agree_rate": null,
+    "n_unmatched": 0,
+    "threshold": 0.5,
     "state": "insufficient",
-    "note": "insufficient data (n=0) \u2014 the rolling scoreboard fills as grader predictions in data/results/predictions.jsonl gain labels in benchmark.csv"
+    "note": "awaiting first human decisions \u2014 every archive night so far was auto-filed"
   },
   "shadow_triage": {
     "banner": "shadow \u2014 not steering the queue; rollout is a human decision",
@@ -133,46 +232,2645 @@
       "uplift_curve": [
         {
           "k": 1,
-          "frac_effort": 0.3333,
+          "frac_effort": 0.0027,
           "model": 0.0,
           "actual": 0.0,
-          "random": 0.3333
+          "random": 0.0027
         },
         {
           "k": 2,
-          "frac_effort": 0.6667,
+          "frac_effort": 0.0055,
           "model": 0.0,
-          "actual": 0.0,
-          "random": 0.6667
+          "actual": 0.0082,
+          "random": 0.0055
         },
         {
           "k": 3,
+          "frac_effort": 0.0082,
+          "model": 0.0082,
+          "actual": 0.0082,
+          "random": 0.0082
+        },
+        {
+          "k": 4,
+          "frac_effort": 0.011,
+          "model": 0.0164,
+          "actual": 0.0082,
+          "random": 0.011
+        },
+        {
+          "k": 5,
+          "frac_effort": 0.0137,
+          "model": 0.0164,
+          "actual": 0.0082,
+          "random": 0.0137
+        },
+        {
+          "k": 6,
+          "frac_effort": 0.0164,
+          "model": 0.0164,
+          "actual": 0.0164,
+          "random": 0.0164
+        },
+        {
+          "k": 7,
+          "frac_effort": 0.0192,
+          "model": 0.0246,
+          "actual": 0.0246,
+          "random": 0.0192
+        },
+        {
+          "k": 8,
+          "frac_effort": 0.0219,
+          "model": 0.0328,
+          "actual": 0.0246,
+          "random": 0.0219
+        },
+        {
+          "k": 9,
+          "frac_effort": 0.0247,
+          "model": 0.0328,
+          "actual": 0.0246,
+          "random": 0.0247
+        },
+        {
+          "k": 10,
+          "frac_effort": 0.0274,
+          "model": 0.0328,
+          "actual": 0.0246,
+          "random": 0.0274
+        },
+        {
+          "k": 11,
+          "frac_effort": 0.0301,
+          "model": 0.0328,
+          "actual": 0.0246,
+          "random": 0.0301
+        },
+        {
+          "k": 12,
+          "frac_effort": 0.0329,
+          "model": 0.0328,
+          "actual": 0.0246,
+          "random": 0.0329
+        },
+        {
+          "k": 13,
+          "frac_effort": 0.0356,
+          "model": 0.0328,
+          "actual": 0.0328,
+          "random": 0.0356
+        },
+        {
+          "k": 14,
+          "frac_effort": 0.0384,
+          "model": 0.0328,
+          "actual": 0.0328,
+          "random": 0.0384
+        },
+        {
+          "k": 15,
+          "frac_effort": 0.0411,
+          "model": 0.041,
+          "actual": 0.041,
+          "random": 0.0411
+        },
+        {
+          "k": 16,
+          "frac_effort": 0.0438,
+          "model": 0.041,
+          "actual": 0.0492,
+          "random": 0.0438
+        },
+        {
+          "k": 17,
+          "frac_effort": 0.0466,
+          "model": 0.0492,
+          "actual": 0.0492,
+          "random": 0.0466
+        },
+        {
+          "k": 18,
+          "frac_effort": 0.0493,
+          "model": 0.0492,
+          "actual": 0.0574,
+          "random": 0.0493
+        },
+        {
+          "k": 19,
+          "frac_effort": 0.0521,
+          "model": 0.0492,
+          "actual": 0.0574,
+          "random": 0.0521
+        },
+        {
+          "k": 20,
+          "frac_effort": 0.0548,
+          "model": 0.0492,
+          "actual": 0.0574,
+          "random": 0.0548
+        },
+        {
+          "k": 21,
+          "frac_effort": 0.0575,
+          "model": 0.0492,
+          "actual": 0.0656,
+          "random": 0.0575
+        },
+        {
+          "k": 22,
+          "frac_effort": 0.0603,
+          "model": 0.0574,
+          "actual": 0.0738,
+          "random": 0.0603
+        },
+        {
+          "k": 23,
+          "frac_effort": 0.063,
+          "model": 0.0574,
+          "actual": 0.0738,
+          "random": 0.063
+        },
+        {
+          "k": 24,
+          "frac_effort": 0.0658,
+          "model": 0.0656,
+          "actual": 0.082,
+          "random": 0.0658
+        },
+        {
+          "k": 25,
+          "frac_effort": 0.0685,
+          "model": 0.0656,
+          "actual": 0.0902,
+          "random": 0.0685
+        },
+        {
+          "k": 26,
+          "frac_effort": 0.0712,
+          "model": 0.0656,
+          "actual": 0.0902,
+          "random": 0.0712
+        },
+        {
+          "k": 27,
+          "frac_effort": 0.074,
+          "model": 0.0738,
+          "actual": 0.0902,
+          "random": 0.074
+        },
+        {
+          "k": 28,
+          "frac_effort": 0.0767,
+          "model": 0.082,
+          "actual": 0.0984,
+          "random": 0.0767
+        },
+        {
+          "k": 29,
+          "frac_effort": 0.0795,
+          "model": 0.0902,
+          "actual": 0.1066,
+          "random": 0.0795
+        },
+        {
+          "k": 30,
+          "frac_effort": 0.0822,
+          "model": 0.0984,
+          "actual": 0.1066,
+          "random": 0.0822
+        },
+        {
+          "k": 31,
+          "frac_effort": 0.0849,
+          "model": 0.1066,
+          "actual": 0.1066,
+          "random": 0.0849
+        },
+        {
+          "k": 32,
+          "frac_effort": 0.0877,
+          "model": 0.1066,
+          "actual": 0.1066,
+          "random": 0.0877
+        },
+        {
+          "k": 33,
+          "frac_effort": 0.0904,
+          "model": 0.1066,
+          "actual": 0.1066,
+          "random": 0.0904
+        },
+        {
+          "k": 34,
+          "frac_effort": 0.0932,
+          "model": 0.1066,
+          "actual": 0.1066,
+          "random": 0.0932
+        },
+        {
+          "k": 35,
+          "frac_effort": 0.0959,
+          "model": 0.1066,
+          "actual": 0.1148,
+          "random": 0.0959
+        },
+        {
+          "k": 36,
+          "frac_effort": 0.0986,
+          "model": 0.1066,
+          "actual": 0.123,
+          "random": 0.0986
+        },
+        {
+          "k": 37,
+          "frac_effort": 0.1014,
+          "model": 0.1066,
+          "actual": 0.1311,
+          "random": 0.1014
+        },
+        {
+          "k": 38,
+          "frac_effort": 0.1041,
+          "model": 0.1066,
+          "actual": 0.1311,
+          "random": 0.1041
+        },
+        {
+          "k": 39,
+          "frac_effort": 0.1068,
+          "model": 0.1066,
+          "actual": 0.1393,
+          "random": 0.1068
+        },
+        {
+          "k": 40,
+          "frac_effort": 0.1096,
+          "model": 0.1066,
+          "actual": 0.1393,
+          "random": 0.1096
+        },
+        {
+          "k": 41,
+          "frac_effort": 0.1123,
+          "model": 0.1066,
+          "actual": 0.1475,
+          "random": 0.1123
+        },
+        {
+          "k": 42,
+          "frac_effort": 0.1151,
+          "model": 0.1066,
+          "actual": 0.1475,
+          "random": 0.1151
+        },
+        {
+          "k": 43,
+          "frac_effort": 0.1178,
+          "model": 0.1066,
+          "actual": 0.1557,
+          "random": 0.1178
+        },
+        {
+          "k": 44,
+          "frac_effort": 0.1205,
+          "model": 0.1066,
+          "actual": 0.1557,
+          "random": 0.1205
+        },
+        {
+          "k": 45,
+          "frac_effort": 0.1233,
+          "model": 0.1148,
+          "actual": 0.1557,
+          "random": 0.1233
+        },
+        {
+          "k": 46,
+          "frac_effort": 0.126,
+          "model": 0.1148,
+          "actual": 0.1557,
+          "random": 0.126
+        },
+        {
+          "k": 47,
+          "frac_effort": 0.1288,
+          "model": 0.1148,
+          "actual": 0.1557,
+          "random": 0.1288
+        },
+        {
+          "k": 48,
+          "frac_effort": 0.1315,
+          "model": 0.1148,
+          "actual": 0.1639,
+          "random": 0.1315
+        },
+        {
+          "k": 49,
+          "frac_effort": 0.1342,
+          "model": 0.1148,
+          "actual": 0.1639,
+          "random": 0.1342
+        },
+        {
+          "k": 50,
+          "frac_effort": 0.137,
+          "model": 0.1148,
+          "actual": 0.1721,
+          "random": 0.137
+        },
+        {
+          "k": 51,
+          "frac_effort": 0.1397,
+          "model": 0.1148,
+          "actual": 0.1721,
+          "random": 0.1397
+        },
+        {
+          "k": 52,
+          "frac_effort": 0.1425,
+          "model": 0.1148,
+          "actual": 0.1721,
+          "random": 0.1425
+        },
+        {
+          "k": 53,
+          "frac_effort": 0.1452,
+          "model": 0.1148,
+          "actual": 0.1721,
+          "random": 0.1452
+        },
+        {
+          "k": 54,
+          "frac_effort": 0.1479,
+          "model": 0.1148,
+          "actual": 0.1721,
+          "random": 0.1479
+        },
+        {
+          "k": 55,
+          "frac_effort": 0.1507,
+          "model": 0.1148,
+          "actual": 0.1721,
+          "random": 0.1507
+        },
+        {
+          "k": 56,
+          "frac_effort": 0.1534,
+          "model": 0.123,
+          "actual": 0.1721,
+          "random": 0.1534
+        },
+        {
+          "k": 57,
+          "frac_effort": 0.1562,
+          "model": 0.1311,
+          "actual": 0.1721,
+          "random": 0.1562
+        },
+        {
+          "k": 58,
+          "frac_effort": 0.1589,
+          "model": 0.1393,
+          "actual": 0.1721,
+          "random": 0.1589
+        },
+        {
+          "k": 59,
+          "frac_effort": 0.1616,
+          "model": 0.1393,
+          "actual": 0.1803,
+          "random": 0.1616
+        },
+        {
+          "k": 60,
+          "frac_effort": 0.1644,
+          "model": 0.1393,
+          "actual": 0.1885,
+          "random": 0.1644
+        },
+        {
+          "k": 61,
+          "frac_effort": 0.1671,
+          "model": 0.1475,
+          "actual": 0.1885,
+          "random": 0.1671
+        },
+        {
+          "k": 62,
+          "frac_effort": 0.1699,
+          "model": 0.1475,
+          "actual": 0.1885,
+          "random": 0.1699
+        },
+        {
+          "k": 63,
+          "frac_effort": 0.1726,
+          "model": 0.1475,
+          "actual": 0.1885,
+          "random": 0.1726
+        },
+        {
+          "k": 64,
+          "frac_effort": 0.1753,
+          "model": 0.1475,
+          "actual": 0.1967,
+          "random": 0.1753
+        },
+        {
+          "k": 65,
+          "frac_effort": 0.1781,
+          "model": 0.1475,
+          "actual": 0.1967,
+          "random": 0.1781
+        },
+        {
+          "k": 66,
+          "frac_effort": 0.1808,
+          "model": 0.1475,
+          "actual": 0.1967,
+          "random": 0.1808
+        },
+        {
+          "k": 67,
+          "frac_effort": 0.1836,
+          "model": 0.1475,
+          "actual": 0.2049,
+          "random": 0.1836
+        },
+        {
+          "k": 68,
+          "frac_effort": 0.1863,
+          "model": 0.1475,
+          "actual": 0.2049,
+          "random": 0.1863
+        },
+        {
+          "k": 69,
+          "frac_effort": 0.189,
+          "model": 0.1475,
+          "actual": 0.2131,
+          "random": 0.189
+        },
+        {
+          "k": 70,
+          "frac_effort": 0.1918,
+          "model": 0.1475,
+          "actual": 0.2213,
+          "random": 0.1918
+        },
+        {
+          "k": 71,
+          "frac_effort": 0.1945,
+          "model": 0.1557,
+          "actual": 0.2213,
+          "random": 0.1945
+        },
+        {
+          "k": 72,
+          "frac_effort": 0.1973,
+          "model": 0.1557,
+          "actual": 0.2213,
+          "random": 0.1973
+        },
+        {
+          "k": 73,
+          "frac_effort": 0.2,
+          "model": 0.1639,
+          "actual": 0.2213,
+          "random": 0.2
+        },
+        {
+          "k": 74,
+          "frac_effort": 0.2027,
+          "model": 0.1639,
+          "actual": 0.2295,
+          "random": 0.2027
+        },
+        {
+          "k": 75,
+          "frac_effort": 0.2055,
+          "model": 0.1639,
+          "actual": 0.2295,
+          "random": 0.2055
+        },
+        {
+          "k": 76,
+          "frac_effort": 0.2082,
+          "model": 0.1639,
+          "actual": 0.2295,
+          "random": 0.2082
+        },
+        {
+          "k": 77,
+          "frac_effort": 0.211,
+          "model": 0.1639,
+          "actual": 0.2295,
+          "random": 0.211
+        },
+        {
+          "k": 78,
+          "frac_effort": 0.2137,
+          "model": 0.1721,
+          "actual": 0.2295,
+          "random": 0.2137
+        },
+        {
+          "k": 79,
+          "frac_effort": 0.2164,
+          "model": 0.1721,
+          "actual": 0.2295,
+          "random": 0.2164
+        },
+        {
+          "k": 80,
+          "frac_effort": 0.2192,
+          "model": 0.1803,
+          "actual": 0.2377,
+          "random": 0.2192
+        },
+        {
+          "k": 81,
+          "frac_effort": 0.2219,
+          "model": 0.1803,
+          "actual": 0.2459,
+          "random": 0.2219
+        },
+        {
+          "k": 82,
+          "frac_effort": 0.2247,
+          "model": 0.1803,
+          "actual": 0.2541,
+          "random": 0.2247
+        },
+        {
+          "k": 83,
+          "frac_effort": 0.2274,
+          "model": 0.1803,
+          "actual": 0.2541,
+          "random": 0.2274
+        },
+        {
+          "k": 84,
+          "frac_effort": 0.2301,
+          "model": 0.1803,
+          "actual": 0.2623,
+          "random": 0.2301
+        },
+        {
+          "k": 85,
+          "frac_effort": 0.2329,
+          "model": 0.1803,
+          "actual": 0.2623,
+          "random": 0.2329
+        },
+        {
+          "k": 86,
+          "frac_effort": 0.2356,
+          "model": 0.1803,
+          "actual": 0.2705,
+          "random": 0.2356
+        },
+        {
+          "k": 87,
+          "frac_effort": 0.2384,
+          "model": 0.1803,
+          "actual": 0.2787,
+          "random": 0.2384
+        },
+        {
+          "k": 88,
+          "frac_effort": 0.2411,
+          "model": 0.1803,
+          "actual": 0.2787,
+          "random": 0.2411
+        },
+        {
+          "k": 89,
+          "frac_effort": 0.2438,
+          "model": 0.1885,
+          "actual": 0.2787,
+          "random": 0.2438
+        },
+        {
+          "k": 90,
+          "frac_effort": 0.2466,
+          "model": 0.1967,
+          "actual": 0.2787,
+          "random": 0.2466
+        },
+        {
+          "k": 91,
+          "frac_effort": 0.2493,
+          "model": 0.1967,
+          "actual": 0.2787,
+          "random": 0.2493
+        },
+        {
+          "k": 92,
+          "frac_effort": 0.2521,
+          "model": 0.1967,
+          "actual": 0.2787,
+          "random": 0.2521
+        },
+        {
+          "k": 93,
+          "frac_effort": 0.2548,
+          "model": 0.2049,
+          "actual": 0.2787,
+          "random": 0.2548
+        },
+        {
+          "k": 94,
+          "frac_effort": 0.2575,
+          "model": 0.2049,
+          "actual": 0.2787,
+          "random": 0.2575
+        },
+        {
+          "k": 95,
+          "frac_effort": 0.2603,
+          "model": 0.2131,
+          "actual": 0.2869,
+          "random": 0.2603
+        },
+        {
+          "k": 96,
+          "frac_effort": 0.263,
+          "model": 0.2131,
+          "actual": 0.2869,
+          "random": 0.263
+        },
+        {
+          "k": 97,
+          "frac_effort": 0.2658,
+          "model": 0.2131,
+          "actual": 0.2869,
+          "random": 0.2658
+        },
+        {
+          "k": 98,
+          "frac_effort": 0.2685,
+          "model": 0.2131,
+          "actual": 0.2869,
+          "random": 0.2685
+        },
+        {
+          "k": 99,
+          "frac_effort": 0.2712,
+          "model": 0.2213,
+          "actual": 0.2869,
+          "random": 0.2712
+        },
+        {
+          "k": 100,
+          "frac_effort": 0.274,
+          "model": 0.2295,
+          "actual": 0.2869,
+          "random": 0.274
+        },
+        {
+          "k": 101,
+          "frac_effort": 0.2767,
+          "model": 0.2295,
+          "actual": 0.2869,
+          "random": 0.2767
+        },
+        {
+          "k": 102,
+          "frac_effort": 0.2795,
+          "model": 0.2377,
+          "actual": 0.2951,
+          "random": 0.2795
+        },
+        {
+          "k": 103,
+          "frac_effort": 0.2822,
+          "model": 0.2459,
+          "actual": 0.2951,
+          "random": 0.2822
+        },
+        {
+          "k": 104,
+          "frac_effort": 0.2849,
+          "model": 0.2541,
+          "actual": 0.2951,
+          "random": 0.2849
+        },
+        {
+          "k": 105,
+          "frac_effort": 0.2877,
+          "model": 0.2541,
+          "actual": 0.2951,
+          "random": 0.2877
+        },
+        {
+          "k": 106,
+          "frac_effort": 0.2904,
+          "model": 0.2541,
+          "actual": 0.2951,
+          "random": 0.2904
+        },
+        {
+          "k": 107,
+          "frac_effort": 0.2932,
+          "model": 0.2623,
+          "actual": 0.2951,
+          "random": 0.2932
+        },
+        {
+          "k": 108,
+          "frac_effort": 0.2959,
+          "model": 0.2623,
+          "actual": 0.2951,
+          "random": 0.2959
+        },
+        {
+          "k": 109,
+          "frac_effort": 0.2986,
+          "model": 0.2623,
+          "actual": 0.2951,
+          "random": 0.2986
+        },
+        {
+          "k": 110,
+          "frac_effort": 0.3014,
+          "model": 0.2623,
+          "actual": 0.3033,
+          "random": 0.3014
+        },
+        {
+          "k": 111,
+          "frac_effort": 0.3041,
+          "model": 0.2705,
+          "actual": 0.3115,
+          "random": 0.3041
+        },
+        {
+          "k": 112,
+          "frac_effort": 0.3068,
+          "model": 0.2705,
+          "actual": 0.3115,
+          "random": 0.3068
+        },
+        {
+          "k": 113,
+          "frac_effort": 0.3096,
+          "model": 0.2705,
+          "actual": 0.3197,
+          "random": 0.3096
+        },
+        {
+          "k": 114,
+          "frac_effort": 0.3123,
+          "model": 0.2705,
+          "actual": 0.3279,
+          "random": 0.3123
+        },
+        {
+          "k": 115,
+          "frac_effort": 0.3151,
+          "model": 0.2787,
+          "actual": 0.3279,
+          "random": 0.3151
+        },
+        {
+          "k": 116,
+          "frac_effort": 0.3178,
+          "model": 0.2787,
+          "actual": 0.3279,
+          "random": 0.3178
+        },
+        {
+          "k": 117,
+          "frac_effort": 0.3205,
+          "model": 0.2787,
+          "actual": 0.3279,
+          "random": 0.3205
+        },
+        {
+          "k": 118,
+          "frac_effort": 0.3233,
+          "model": 0.2787,
+          "actual": 0.3279,
+          "random": 0.3233
+        },
+        {
+          "k": 119,
+          "frac_effort": 0.326,
+          "model": 0.2787,
+          "actual": 0.3279,
+          "random": 0.326
+        },
+        {
+          "k": 120,
+          "frac_effort": 0.3288,
+          "model": 0.2787,
+          "actual": 0.3279,
+          "random": 0.3288
+        },
+        {
+          "k": 121,
+          "frac_effort": 0.3315,
+          "model": 0.2869,
+          "actual": 0.3279,
+          "random": 0.3315
+        },
+        {
+          "k": 122,
+          "frac_effort": 0.3342,
+          "model": 0.2951,
+          "actual": 0.3361,
+          "random": 0.3342
+        },
+        {
+          "k": 123,
+          "frac_effort": 0.337,
+          "model": 0.3033,
+          "actual": 0.3361,
+          "random": 0.337
+        },
+        {
+          "k": 124,
+          "frac_effort": 0.3397,
+          "model": 0.3033,
+          "actual": 0.3361,
+          "random": 0.3397
+        },
+        {
+          "k": 125,
+          "frac_effort": 0.3425,
+          "model": 0.3033,
+          "actual": 0.3361,
+          "random": 0.3425
+        },
+        {
+          "k": 126,
+          "frac_effort": 0.3452,
+          "model": 0.3115,
+          "actual": 0.3361,
+          "random": 0.3452
+        },
+        {
+          "k": 127,
+          "frac_effort": 0.3479,
+          "model": 0.3197,
+          "actual": 0.3361,
+          "random": 0.3479
+        },
+        {
+          "k": 128,
+          "frac_effort": 0.3507,
+          "model": 0.3197,
+          "actual": 0.3443,
+          "random": 0.3507
+        },
+        {
+          "k": 129,
+          "frac_effort": 0.3534,
+          "model": 0.3279,
+          "actual": 0.3443,
+          "random": 0.3534
+        },
+        {
+          "k": 130,
+          "frac_effort": 0.3562,
+          "model": 0.3279,
+          "actual": 0.3443,
+          "random": 0.3562
+        },
+        {
+          "k": 131,
+          "frac_effort": 0.3589,
+          "model": 0.3279,
+          "actual": 0.3443,
+          "random": 0.3589
+        },
+        {
+          "k": 132,
+          "frac_effort": 0.3616,
+          "model": 0.3279,
+          "actual": 0.3525,
+          "random": 0.3616
+        },
+        {
+          "k": 133,
+          "frac_effort": 0.3644,
+          "model": 0.3279,
+          "actual": 0.3607,
+          "random": 0.3644
+        },
+        {
+          "k": 134,
+          "frac_effort": 0.3671,
+          "model": 0.3279,
+          "actual": 0.3689,
+          "random": 0.3671
+        },
+        {
+          "k": 135,
+          "frac_effort": 0.3699,
+          "model": 0.3279,
+          "actual": 0.377,
+          "random": 0.3699
+        },
+        {
+          "k": 136,
+          "frac_effort": 0.3726,
+          "model": 0.3279,
+          "actual": 0.377,
+          "random": 0.3726
+        },
+        {
+          "k": 137,
+          "frac_effort": 0.3753,
+          "model": 0.3279,
+          "actual": 0.377,
+          "random": 0.3753
+        },
+        {
+          "k": 138,
+          "frac_effort": 0.3781,
+          "model": 0.3279,
+          "actual": 0.377,
+          "random": 0.3781
+        },
+        {
+          "k": 139,
+          "frac_effort": 0.3808,
+          "model": 0.3279,
+          "actual": 0.3852,
+          "random": 0.3808
+        },
+        {
+          "k": 140,
+          "frac_effort": 0.3836,
+          "model": 0.3361,
+          "actual": 0.3852,
+          "random": 0.3836
+        },
+        {
+          "k": 141,
+          "frac_effort": 0.3863,
+          "model": 0.3361,
+          "actual": 0.3852,
+          "random": 0.3863
+        },
+        {
+          "k": 142,
+          "frac_effort": 0.389,
+          "model": 0.3443,
+          "actual": 0.3852,
+          "random": 0.389
+        },
+        {
+          "k": 143,
+          "frac_effort": 0.3918,
+          "model": 0.3443,
+          "actual": 0.3852,
+          "random": 0.3918
+        },
+        {
+          "k": 144,
+          "frac_effort": 0.3945,
+          "model": 0.3443,
+          "actual": 0.3852,
+          "random": 0.3945
+        },
+        {
+          "k": 145,
+          "frac_effort": 0.3973,
+          "model": 0.3525,
+          "actual": 0.3852,
+          "random": 0.3973
+        },
+        {
+          "k": 146,
+          "frac_effort": 0.4,
+          "model": 0.3607,
+          "actual": 0.3934,
+          "random": 0.4
+        },
+        {
+          "k": 147,
+          "frac_effort": 0.4027,
+          "model": 0.3607,
+          "actual": 0.3934,
+          "random": 0.4027
+        },
+        {
+          "k": 148,
+          "frac_effort": 0.4055,
+          "model": 0.3689,
+          "actual": 0.3934,
+          "random": 0.4055
+        },
+        {
+          "k": 149,
+          "frac_effort": 0.4082,
+          "model": 0.3689,
+          "actual": 0.3934,
+          "random": 0.4082
+        },
+        {
+          "k": 150,
+          "frac_effort": 0.411,
+          "model": 0.377,
+          "actual": 0.3934,
+          "random": 0.411
+        },
+        {
+          "k": 151,
+          "frac_effort": 0.4137,
+          "model": 0.377,
+          "actual": 0.3934,
+          "random": 0.4137
+        },
+        {
+          "k": 152,
+          "frac_effort": 0.4164,
+          "model": 0.3852,
+          "actual": 0.3934,
+          "random": 0.4164
+        },
+        {
+          "k": 153,
+          "frac_effort": 0.4192,
+          "model": 0.3852,
+          "actual": 0.4016,
+          "random": 0.4192
+        },
+        {
+          "k": 154,
+          "frac_effort": 0.4219,
+          "model": 0.3934,
+          "actual": 0.4016,
+          "random": 0.4219
+        },
+        {
+          "k": 155,
+          "frac_effort": 0.4247,
+          "model": 0.3934,
+          "actual": 0.4016,
+          "random": 0.4247
+        },
+        {
+          "k": 156,
+          "frac_effort": 0.4274,
+          "model": 0.4016,
+          "actual": 0.4016,
+          "random": 0.4274
+        },
+        {
+          "k": 157,
+          "frac_effort": 0.4301,
+          "model": 0.4098,
+          "actual": 0.4016,
+          "random": 0.4301
+        },
+        {
+          "k": 158,
+          "frac_effort": 0.4329,
+          "model": 0.4098,
+          "actual": 0.4098,
+          "random": 0.4329
+        },
+        {
+          "k": 159,
+          "frac_effort": 0.4356,
+          "model": 0.4098,
+          "actual": 0.418,
+          "random": 0.4356
+        },
+        {
+          "k": 160,
+          "frac_effort": 0.4384,
+          "model": 0.4098,
+          "actual": 0.4262,
+          "random": 0.4384
+        },
+        {
+          "k": 161,
+          "frac_effort": 0.4411,
+          "model": 0.418,
+          "actual": 0.4262,
+          "random": 0.4411
+        },
+        {
+          "k": 162,
+          "frac_effort": 0.4438,
+          "model": 0.418,
+          "actual": 0.4262,
+          "random": 0.4438
+        },
+        {
+          "k": 163,
+          "frac_effort": 0.4466,
+          "model": 0.4262,
+          "actual": 0.4262,
+          "random": 0.4466
+        },
+        {
+          "k": 164,
+          "frac_effort": 0.4493,
+          "model": 0.4262,
+          "actual": 0.4262,
+          "random": 0.4493
+        },
+        {
+          "k": 165,
+          "frac_effort": 0.4521,
+          "model": 0.4344,
+          "actual": 0.4262,
+          "random": 0.4521
+        },
+        {
+          "k": 166,
+          "frac_effort": 0.4548,
+          "model": 0.4426,
+          "actual": 0.4344,
+          "random": 0.4548
+        },
+        {
+          "k": 167,
+          "frac_effort": 0.4575,
+          "model": 0.4426,
+          "actual": 0.4344,
+          "random": 0.4575
+        },
+        {
+          "k": 168,
+          "frac_effort": 0.4603,
+          "model": 0.4508,
+          "actual": 0.4344,
+          "random": 0.4603
+        },
+        {
+          "k": 169,
+          "frac_effort": 0.463,
+          "model": 0.459,
+          "actual": 0.4426,
+          "random": 0.463
+        },
+        {
+          "k": 170,
+          "frac_effort": 0.4658,
+          "model": 0.459,
+          "actual": 0.4426,
+          "random": 0.4658
+        },
+        {
+          "k": 171,
+          "frac_effort": 0.4685,
+          "model": 0.459,
+          "actual": 0.4426,
+          "random": 0.4685
+        },
+        {
+          "k": 172,
+          "frac_effort": 0.4712,
+          "model": 0.459,
+          "actual": 0.4426,
+          "random": 0.4712
+        },
+        {
+          "k": 173,
+          "frac_effort": 0.474,
+          "model": 0.459,
+          "actual": 0.4426,
+          "random": 0.474
+        },
+        {
+          "k": 174,
+          "frac_effort": 0.4767,
+          "model": 0.4672,
+          "actual": 0.4508,
+          "random": 0.4767
+        },
+        {
+          "k": 175,
+          "frac_effort": 0.4795,
+          "model": 0.4672,
+          "actual": 0.4508,
+          "random": 0.4795
+        },
+        {
+          "k": 176,
+          "frac_effort": 0.4822,
+          "model": 0.4754,
+          "actual": 0.4508,
+          "random": 0.4822
+        },
+        {
+          "k": 177,
+          "frac_effort": 0.4849,
+          "model": 0.4754,
+          "actual": 0.459,
+          "random": 0.4849
+        },
+        {
+          "k": 178,
+          "frac_effort": 0.4877,
+          "model": 0.4754,
+          "actual": 0.459,
+          "random": 0.4877
+        },
+        {
+          "k": 179,
+          "frac_effort": 0.4904,
+          "model": 0.4754,
+          "actual": 0.459,
+          "random": 0.4904
+        },
+        {
+          "k": 180,
+          "frac_effort": 0.4932,
+          "model": 0.4836,
+          "actual": 0.459,
+          "random": 0.4932
+        },
+        {
+          "k": 181,
+          "frac_effort": 0.4959,
+          "model": 0.4836,
+          "actual": 0.459,
+          "random": 0.4959
+        },
+        {
+          "k": 182,
+          "frac_effort": 0.4986,
+          "model": 0.4836,
+          "actual": 0.459,
+          "random": 0.4986
+        },
+        {
+          "k": 183,
+          "frac_effort": 0.5014,
+          "model": 0.4836,
+          "actual": 0.459,
+          "random": 0.5014
+        },
+        {
+          "k": 184,
+          "frac_effort": 0.5041,
+          "model": 0.4918,
+          "actual": 0.459,
+          "random": 0.5041
+        },
+        {
+          "k": 185,
+          "frac_effort": 0.5068,
+          "model": 0.5,
+          "actual": 0.459,
+          "random": 0.5068
+        },
+        {
+          "k": 186,
+          "frac_effort": 0.5096,
+          "model": 0.5082,
+          "actual": 0.459,
+          "random": 0.5096
+        },
+        {
+          "k": 187,
+          "frac_effort": 0.5123,
+          "model": 0.5082,
+          "actual": 0.459,
+          "random": 0.5123
+        },
+        {
+          "k": 188,
+          "frac_effort": 0.5151,
+          "model": 0.5082,
+          "actual": 0.459,
+          "random": 0.5151
+        },
+        {
+          "k": 189,
+          "frac_effort": 0.5178,
+          "model": 0.5082,
+          "actual": 0.459,
+          "random": 0.5178
+        },
+        {
+          "k": 190,
+          "frac_effort": 0.5205,
+          "model": 0.5082,
+          "actual": 0.459,
+          "random": 0.5205
+        },
+        {
+          "k": 191,
+          "frac_effort": 0.5233,
+          "model": 0.5164,
+          "actual": 0.4672,
+          "random": 0.5233
+        },
+        {
+          "k": 192,
+          "frac_effort": 0.526,
+          "model": 0.5164,
+          "actual": 0.4672,
+          "random": 0.526
+        },
+        {
+          "k": 193,
+          "frac_effort": 0.5288,
+          "model": 0.5246,
+          "actual": 0.4672,
+          "random": 0.5288
+        },
+        {
+          "k": 194,
+          "frac_effort": 0.5315,
+          "model": 0.5328,
+          "actual": 0.4754,
+          "random": 0.5315
+        },
+        {
+          "k": 195,
+          "frac_effort": 0.5342,
+          "model": 0.5328,
+          "actual": 0.4836,
+          "random": 0.5342
+        },
+        {
+          "k": 196,
+          "frac_effort": 0.537,
+          "model": 0.5328,
+          "actual": 0.4918,
+          "random": 0.537
+        },
+        {
+          "k": 197,
+          "frac_effort": 0.5397,
+          "model": 0.541,
+          "actual": 0.5,
+          "random": 0.5397
+        },
+        {
+          "k": 198,
+          "frac_effort": 0.5425,
+          "model": 0.541,
+          "actual": 0.5,
+          "random": 0.5425
+        },
+        {
+          "k": 199,
+          "frac_effort": 0.5452,
+          "model": 0.5492,
+          "actual": 0.5,
+          "random": 0.5452
+        },
+        {
+          "k": 200,
+          "frac_effort": 0.5479,
+          "model": 0.5492,
+          "actual": 0.5,
+          "random": 0.5479
+        },
+        {
+          "k": 201,
+          "frac_effort": 0.5507,
+          "model": 0.5492,
+          "actual": 0.5,
+          "random": 0.5507
+        },
+        {
+          "k": 202,
+          "frac_effort": 0.5534,
+          "model": 0.5492,
+          "actual": 0.5082,
+          "random": 0.5534
+        },
+        {
+          "k": 203,
+          "frac_effort": 0.5562,
+          "model": 0.5492,
+          "actual": 0.5082,
+          "random": 0.5562
+        },
+        {
+          "k": 204,
+          "frac_effort": 0.5589,
+          "model": 0.5492,
+          "actual": 0.5082,
+          "random": 0.5589
+        },
+        {
+          "k": 205,
+          "frac_effort": 0.5616,
+          "model": 0.5492,
+          "actual": 0.5082,
+          "random": 0.5616
+        },
+        {
+          "k": 206,
+          "frac_effort": 0.5644,
+          "model": 0.5492,
+          "actual": 0.5082,
+          "random": 0.5644
+        },
+        {
+          "k": 207,
+          "frac_effort": 0.5671,
+          "model": 0.5574,
+          "actual": 0.5082,
+          "random": 0.5671
+        },
+        {
+          "k": 208,
+          "frac_effort": 0.5699,
+          "model": 0.5574,
+          "actual": 0.5164,
+          "random": 0.5699
+        },
+        {
+          "k": 209,
+          "frac_effort": 0.5726,
+          "model": 0.5574,
+          "actual": 0.5246,
+          "random": 0.5726
+        },
+        {
+          "k": 210,
+          "frac_effort": 0.5753,
+          "model": 0.5574,
+          "actual": 0.5328,
+          "random": 0.5753
+        },
+        {
+          "k": 211,
+          "frac_effort": 0.5781,
+          "model": 0.5574,
+          "actual": 0.541,
+          "random": 0.5781
+        },
+        {
+          "k": 212,
+          "frac_effort": 0.5808,
+          "model": 0.5656,
+          "actual": 0.541,
+          "random": 0.5808
+        },
+        {
+          "k": 213,
+          "frac_effort": 0.5836,
+          "model": 0.5656,
+          "actual": 0.541,
+          "random": 0.5836
+        },
+        {
+          "k": 214,
+          "frac_effort": 0.5863,
+          "model": 0.5656,
+          "actual": 0.541,
+          "random": 0.5863
+        },
+        {
+          "k": 215,
+          "frac_effort": 0.589,
+          "model": 0.5656,
+          "actual": 0.5492,
+          "random": 0.589
+        },
+        {
+          "k": 216,
+          "frac_effort": 0.5918,
+          "model": 0.5738,
+          "actual": 0.5574,
+          "random": 0.5918
+        },
+        {
+          "k": 217,
+          "frac_effort": 0.5945,
+          "model": 0.5738,
+          "actual": 0.5656,
+          "random": 0.5945
+        },
+        {
+          "k": 218,
+          "frac_effort": 0.5973,
+          "model": 0.582,
+          "actual": 0.5738,
+          "random": 0.5973
+        },
+        {
+          "k": 219,
+          "frac_effort": 0.6,
+          "model": 0.582,
+          "actual": 0.5738,
+          "random": 0.6
+        },
+        {
+          "k": 220,
+          "frac_effort": 0.6027,
+          "model": 0.582,
+          "actual": 0.5738,
+          "random": 0.6027
+        },
+        {
+          "k": 221,
+          "frac_effort": 0.6055,
+          "model": 0.5902,
+          "actual": 0.5738,
+          "random": 0.6055
+        },
+        {
+          "k": 222,
+          "frac_effort": 0.6082,
+          "model": 0.5984,
+          "actual": 0.5738,
+          "random": 0.6082
+        },
+        {
+          "k": 223,
+          "frac_effort": 0.611,
+          "model": 0.6066,
+          "actual": 0.5738,
+          "random": 0.611
+        },
+        {
+          "k": 224,
+          "frac_effort": 0.6137,
+          "model": 0.6066,
+          "actual": 0.5738,
+          "random": 0.6137
+        },
+        {
+          "k": 225,
+          "frac_effort": 0.6164,
+          "model": 0.6066,
+          "actual": 0.5738,
+          "random": 0.6164
+        },
+        {
+          "k": 226,
+          "frac_effort": 0.6192,
+          "model": 0.6066,
+          "actual": 0.582,
+          "random": 0.6192
+        },
+        {
+          "k": 227,
+          "frac_effort": 0.6219,
+          "model": 0.6066,
+          "actual": 0.582,
+          "random": 0.6219
+        },
+        {
+          "k": 228,
+          "frac_effort": 0.6247,
+          "model": 0.6066,
+          "actual": 0.5902,
+          "random": 0.6247
+        },
+        {
+          "k": 229,
+          "frac_effort": 0.6274,
+          "model": 0.6148,
+          "actual": 0.5902,
+          "random": 0.6274
+        },
+        {
+          "k": 230,
+          "frac_effort": 0.6301,
+          "model": 0.623,
+          "actual": 0.5902,
+          "random": 0.6301
+        },
+        {
+          "k": 231,
+          "frac_effort": 0.6329,
+          "model": 0.623,
+          "actual": 0.5984,
+          "random": 0.6329
+        },
+        {
+          "k": 232,
+          "frac_effort": 0.6356,
+          "model": 0.6311,
+          "actual": 0.5984,
+          "random": 0.6356
+        },
+        {
+          "k": 233,
+          "frac_effort": 0.6384,
+          "model": 0.6393,
+          "actual": 0.5984,
+          "random": 0.6384
+        },
+        {
+          "k": 234,
+          "frac_effort": 0.6411,
+          "model": 0.6475,
+          "actual": 0.5984,
+          "random": 0.6411
+        },
+        {
+          "k": 235,
+          "frac_effort": 0.6438,
+          "model": 0.6475,
+          "actual": 0.5984,
+          "random": 0.6438
+        },
+        {
+          "k": 236,
+          "frac_effort": 0.6466,
+          "model": 0.6557,
+          "actual": 0.5984,
+          "random": 0.6466
+        },
+        {
+          "k": 237,
+          "frac_effort": 0.6493,
+          "model": 0.6557,
+          "actual": 0.5984,
+          "random": 0.6493
+        },
+        {
+          "k": 238,
+          "frac_effort": 0.6521,
+          "model": 0.6557,
+          "actual": 0.6066,
+          "random": 0.6521
+        },
+        {
+          "k": 239,
+          "frac_effort": 0.6548,
+          "model": 0.6639,
+          "actual": 0.6148,
+          "random": 0.6548
+        },
+        {
+          "k": 240,
+          "frac_effort": 0.6575,
+          "model": 0.6721,
+          "actual": 0.6148,
+          "random": 0.6575
+        },
+        {
+          "k": 241,
+          "frac_effort": 0.6603,
+          "model": 0.6803,
+          "actual": 0.6148,
+          "random": 0.6603
+        },
+        {
+          "k": 242,
+          "frac_effort": 0.663,
+          "model": 0.6885,
+          "actual": 0.6148,
+          "random": 0.663
+        },
+        {
+          "k": 243,
+          "frac_effort": 0.6658,
+          "model": 0.6967,
+          "actual": 0.623,
+          "random": 0.6658
+        },
+        {
+          "k": 244,
+          "frac_effort": 0.6685,
+          "model": 0.6967,
+          "actual": 0.623,
+          "random": 0.6685
+        },
+        {
+          "k": 245,
+          "frac_effort": 0.6712,
+          "model": 0.7049,
+          "actual": 0.623,
+          "random": 0.6712
+        },
+        {
+          "k": 246,
+          "frac_effort": 0.674,
+          "model": 0.7131,
+          "actual": 0.6311,
+          "random": 0.674
+        },
+        {
+          "k": 247,
+          "frac_effort": 0.6767,
+          "model": 0.7213,
+          "actual": 0.6311,
+          "random": 0.6767
+        },
+        {
+          "k": 248,
+          "frac_effort": 0.6795,
+          "model": 0.7295,
+          "actual": 0.6393,
+          "random": 0.6795
+        },
+        {
+          "k": 249,
+          "frac_effort": 0.6822,
+          "model": 0.7377,
+          "actual": 0.6393,
+          "random": 0.6822
+        },
+        {
+          "k": 250,
+          "frac_effort": 0.6849,
+          "model": 0.7377,
+          "actual": 0.6475,
+          "random": 0.6849
+        },
+        {
+          "k": 251,
+          "frac_effort": 0.6877,
+          "model": 0.7377,
+          "actual": 0.6557,
+          "random": 0.6877
+        },
+        {
+          "k": 252,
+          "frac_effort": 0.6904,
+          "model": 0.7459,
+          "actual": 0.6557,
+          "random": 0.6904
+        },
+        {
+          "k": 253,
+          "frac_effort": 0.6932,
+          "model": 0.7459,
+          "actual": 0.6557,
+          "random": 0.6932
+        },
+        {
+          "k": 254,
+          "frac_effort": 0.6959,
+          "model": 0.7459,
+          "actual": 0.6557,
+          "random": 0.6959
+        },
+        {
+          "k": 255,
+          "frac_effort": 0.6986,
+          "model": 0.7459,
+          "actual": 0.6639,
+          "random": 0.6986
+        },
+        {
+          "k": 256,
+          "frac_effort": 0.7014,
+          "model": 0.7459,
+          "actual": 0.6721,
+          "random": 0.7014
+        },
+        {
+          "k": 257,
+          "frac_effort": 0.7041,
+          "model": 0.7459,
+          "actual": 0.6721,
+          "random": 0.7041
+        },
+        {
+          "k": 258,
+          "frac_effort": 0.7068,
+          "model": 0.7459,
+          "actual": 0.6721,
+          "random": 0.7068
+        },
+        {
+          "k": 259,
+          "frac_effort": 0.7096,
+          "model": 0.7459,
+          "actual": 0.6803,
+          "random": 0.7096
+        },
+        {
+          "k": 260,
+          "frac_effort": 0.7123,
+          "model": 0.7459,
+          "actual": 0.6803,
+          "random": 0.7123
+        },
+        {
+          "k": 261,
+          "frac_effort": 0.7151,
+          "model": 0.7459,
+          "actual": 0.6885,
+          "random": 0.7151
+        },
+        {
+          "k": 262,
+          "frac_effort": 0.7178,
+          "model": 0.7459,
+          "actual": 0.6885,
+          "random": 0.7178
+        },
+        {
+          "k": 263,
+          "frac_effort": 0.7205,
+          "model": 0.7459,
+          "actual": 0.6967,
+          "random": 0.7205
+        },
+        {
+          "k": 264,
+          "frac_effort": 0.7233,
+          "model": 0.7541,
+          "actual": 0.6967,
+          "random": 0.7233
+        },
+        {
+          "k": 265,
+          "frac_effort": 0.726,
+          "model": 0.7541,
+          "actual": 0.7049,
+          "random": 0.726
+        },
+        {
+          "k": 266,
+          "frac_effort": 0.7288,
+          "model": 0.7541,
+          "actual": 0.7131,
+          "random": 0.7288
+        },
+        {
+          "k": 267,
+          "frac_effort": 0.7315,
+          "model": 0.7541,
+          "actual": 0.7213,
+          "random": 0.7315
+        },
+        {
+          "k": 268,
+          "frac_effort": 0.7342,
+          "model": 0.7541,
+          "actual": 0.7213,
+          "random": 0.7342
+        },
+        {
+          "k": 269,
+          "frac_effort": 0.737,
+          "model": 0.7623,
+          "actual": 0.7213,
+          "random": 0.737
+        },
+        {
+          "k": 270,
+          "frac_effort": 0.7397,
+          "model": 0.7623,
+          "actual": 0.7213,
+          "random": 0.7397
+        },
+        {
+          "k": 271,
+          "frac_effort": 0.7425,
+          "model": 0.7705,
+          "actual": 0.7295,
+          "random": 0.7425
+        },
+        {
+          "k": 272,
+          "frac_effort": 0.7452,
+          "model": 0.7787,
+          "actual": 0.7295,
+          "random": 0.7452
+        },
+        {
+          "k": 273,
+          "frac_effort": 0.7479,
+          "model": 0.7787,
+          "actual": 0.7295,
+          "random": 0.7479
+        },
+        {
+          "k": 274,
+          "frac_effort": 0.7507,
+          "model": 0.7787,
+          "actual": 0.7377,
+          "random": 0.7507
+        },
+        {
+          "k": 275,
+          "frac_effort": 0.7534,
+          "model": 0.7787,
+          "actual": 0.7377,
+          "random": 0.7534
+        },
+        {
+          "k": 276,
+          "frac_effort": 0.7562,
+          "model": 0.7787,
+          "actual": 0.7459,
+          "random": 0.7562
+        },
+        {
+          "k": 277,
+          "frac_effort": 0.7589,
+          "model": 0.7869,
+          "actual": 0.7459,
+          "random": 0.7589
+        },
+        {
+          "k": 278,
+          "frac_effort": 0.7616,
+          "model": 0.7869,
+          "actual": 0.7459,
+          "random": 0.7616
+        },
+        {
+          "k": 279,
+          "frac_effort": 0.7644,
+          "model": 0.7951,
+          "actual": 0.7541,
+          "random": 0.7644
+        },
+        {
+          "k": 280,
+          "frac_effort": 0.7671,
+          "model": 0.7951,
+          "actual": 0.7541,
+          "random": 0.7671
+        },
+        {
+          "k": 281,
+          "frac_effort": 0.7699,
+          "model": 0.7951,
+          "actual": 0.7541,
+          "random": 0.7699
+        },
+        {
+          "k": 282,
+          "frac_effort": 0.7726,
+          "model": 0.7951,
+          "actual": 0.7623,
+          "random": 0.7726
+        },
+        {
+          "k": 283,
+          "frac_effort": 0.7753,
+          "model": 0.7951,
+          "actual": 0.7623,
+          "random": 0.7753
+        },
+        {
+          "k": 284,
+          "frac_effort": 0.7781,
+          "model": 0.7951,
+          "actual": 0.7623,
+          "random": 0.7781
+        },
+        {
+          "k": 285,
+          "frac_effort": 0.7808,
+          "model": 0.7951,
+          "actual": 0.7705,
+          "random": 0.7808
+        },
+        {
+          "k": 286,
+          "frac_effort": 0.7836,
+          "model": 0.8033,
+          "actual": 0.7705,
+          "random": 0.7836
+        },
+        {
+          "k": 287,
+          "frac_effort": 0.7863,
+          "model": 0.8033,
+          "actual": 0.7705,
+          "random": 0.7863
+        },
+        {
+          "k": 288,
+          "frac_effort": 0.789,
+          "model": 0.8033,
+          "actual": 0.7705,
+          "random": 0.789
+        },
+        {
+          "k": 289,
+          "frac_effort": 0.7918,
+          "model": 0.8115,
+          "actual": 0.7705,
+          "random": 0.7918
+        },
+        {
+          "k": 290,
+          "frac_effort": 0.7945,
+          "model": 0.8197,
+          "actual": 0.7705,
+          "random": 0.7945
+        },
+        {
+          "k": 291,
+          "frac_effort": 0.7973,
+          "model": 0.8197,
+          "actual": 0.7705,
+          "random": 0.7973
+        },
+        {
+          "k": 292,
+          "frac_effort": 0.8,
+          "model": 0.8197,
+          "actual": 0.7787,
+          "random": 0.8
+        },
+        {
+          "k": 293,
+          "frac_effort": 0.8027,
+          "model": 0.8279,
+          "actual": 0.7869,
+          "random": 0.8027
+        },
+        {
+          "k": 294,
+          "frac_effort": 0.8055,
+          "model": 0.8361,
+          "actual": 0.7951,
+          "random": 0.8055
+        },
+        {
+          "k": 295,
+          "frac_effort": 0.8082,
+          "model": 0.8361,
+          "actual": 0.7951,
+          "random": 0.8082
+        },
+        {
+          "k": 296,
+          "frac_effort": 0.811,
+          "model": 0.8361,
+          "actual": 0.7951,
+          "random": 0.811
+        },
+        {
+          "k": 297,
+          "frac_effort": 0.8137,
+          "model": 0.8443,
+          "actual": 0.7951,
+          "random": 0.8137
+        },
+        {
+          "k": 298,
+          "frac_effort": 0.8164,
+          "model": 0.8443,
+          "actual": 0.7951,
+          "random": 0.8164
+        },
+        {
+          "k": 299,
+          "frac_effort": 0.8192,
+          "model": 0.8443,
+          "actual": 0.7951,
+          "random": 0.8192
+        },
+        {
+          "k": 300,
+          "frac_effort": 0.8219,
+          "model": 0.8443,
+          "actual": 0.7951,
+          "random": 0.8219
+        },
+        {
+          "k": 301,
+          "frac_effort": 0.8247,
+          "model": 0.8443,
+          "actual": 0.8033,
+          "random": 0.8247
+        },
+        {
+          "k": 302,
+          "frac_effort": 0.8274,
+          "model": 0.8525,
+          "actual": 0.8033,
+          "random": 0.8274
+        },
+        {
+          "k": 303,
+          "frac_effort": 0.8301,
+          "model": 0.8525,
+          "actual": 0.8033,
+          "random": 0.8301
+        },
+        {
+          "k": 304,
+          "frac_effort": 0.8329,
+          "model": 0.8607,
+          "actual": 0.8115,
+          "random": 0.8329
+        },
+        {
+          "k": 305,
+          "frac_effort": 0.8356,
+          "model": 0.8689,
+          "actual": 0.8197,
+          "random": 0.8356
+        },
+        {
+          "k": 306,
+          "frac_effort": 0.8384,
+          "model": 0.877,
+          "actual": 0.8197,
+          "random": 0.8384
+        },
+        {
+          "k": 307,
+          "frac_effort": 0.8411,
+          "model": 0.877,
+          "actual": 0.8197,
+          "random": 0.8411
+        },
+        {
+          "k": 308,
+          "frac_effort": 0.8438,
+          "model": 0.877,
+          "actual": 0.8279,
+          "random": 0.8438
+        },
+        {
+          "k": 309,
+          "frac_effort": 0.8466,
+          "model": 0.877,
+          "actual": 0.8279,
+          "random": 0.8466
+        },
+        {
+          "k": 310,
+          "frac_effort": 0.8493,
+          "model": 0.8852,
+          "actual": 0.8279,
+          "random": 0.8493
+        },
+        {
+          "k": 311,
+          "frac_effort": 0.8521,
+          "model": 0.8852,
+          "actual": 0.8361,
+          "random": 0.8521
+        },
+        {
+          "k": 312,
+          "frac_effort": 0.8548,
+          "model": 0.8852,
+          "actual": 0.8361,
+          "random": 0.8548
+        },
+        {
+          "k": 313,
+          "frac_effort": 0.8575,
+          "model": 0.8852,
+          "actual": 0.8361,
+          "random": 0.8575
+        },
+        {
+          "k": 314,
+          "frac_effort": 0.8603,
+          "model": 0.8934,
+          "actual": 0.8361,
+          "random": 0.8603
+        },
+        {
+          "k": 315,
+          "frac_effort": 0.863,
+          "model": 0.8934,
+          "actual": 0.8443,
+          "random": 0.863
+        },
+        {
+          "k": 316,
+          "frac_effort": 0.8658,
+          "model": 0.9016,
+          "actual": 0.8443,
+          "random": 0.8658
+        },
+        {
+          "k": 317,
+          "frac_effort": 0.8685,
+          "model": 0.9016,
+          "actual": 0.8443,
+          "random": 0.8685
+        },
+        {
+          "k": 318,
+          "frac_effort": 0.8712,
+          "model": 0.9016,
+          "actual": 0.8525,
+          "random": 0.8712
+        },
+        {
+          "k": 319,
+          "frac_effort": 0.874,
+          "model": 0.9098,
+          "actual": 0.8525,
+          "random": 0.874
+        },
+        {
+          "k": 320,
+          "frac_effort": 0.8767,
+          "model": 0.9098,
+          "actual": 0.8607,
+          "random": 0.8767
+        },
+        {
+          "k": 321,
+          "frac_effort": 0.8795,
+          "model": 0.9098,
+          "actual": 0.8689,
+          "random": 0.8795
+        },
+        {
+          "k": 322,
+          "frac_effort": 0.8822,
+          "model": 0.9098,
+          "actual": 0.8689,
+          "random": 0.8822
+        },
+        {
+          "k": 323,
+          "frac_effort": 0.8849,
+          "model": 0.9098,
+          "actual": 0.8689,
+          "random": 0.8849
+        },
+        {
+          "k": 324,
+          "frac_effort": 0.8877,
+          "model": 0.9098,
+          "actual": 0.877,
+          "random": 0.8877
+        },
+        {
+          "k": 325,
+          "frac_effort": 0.8904,
+          "model": 0.9098,
+          "actual": 0.877,
+          "random": 0.8904
+        },
+        {
+          "k": 326,
+          "frac_effort": 0.8932,
+          "model": 0.9098,
+          "actual": 0.877,
+          "random": 0.8932
+        },
+        {
+          "k": 327,
+          "frac_effort": 0.8959,
+          "model": 0.9098,
+          "actual": 0.877,
+          "random": 0.8959
+        },
+        {
+          "k": 328,
+          "frac_effort": 0.8986,
+          "model": 0.9098,
+          "actual": 0.877,
+          "random": 0.8986
+        },
+        {
+          "k": 329,
+          "frac_effort": 0.9014,
+          "model": 0.9098,
+          "actual": 0.8852,
+          "random": 0.9014
+        },
+        {
+          "k": 330,
+          "frac_effort": 0.9041,
+          "model": 0.9098,
+          "actual": 0.8852,
+          "random": 0.9041
+        },
+        {
+          "k": 331,
+          "frac_effort": 0.9068,
+          "model": 0.9098,
+          "actual": 0.8934,
+          "random": 0.9068
+        },
+        {
+          "k": 332,
+          "frac_effort": 0.9096,
+          "model": 0.9098,
+          "actual": 0.9016,
+          "random": 0.9096
+        },
+        {
+          "k": 333,
+          "frac_effort": 0.9123,
+          "model": 0.9098,
+          "actual": 0.9098,
+          "random": 0.9123
+        },
+        {
+          "k": 334,
+          "frac_effort": 0.9151,
+          "model": 0.9098,
+          "actual": 0.9098,
+          "random": 0.9151
+        },
+        {
+          "k": 335,
+          "frac_effort": 0.9178,
+          "model": 0.9098,
+          "actual": 0.918,
+          "random": 0.9178
+        },
+        {
+          "k": 336,
+          "frac_effort": 0.9205,
+          "model": 0.918,
+          "actual": 0.9262,
+          "random": 0.9205
+        },
+        {
+          "k": 337,
+          "frac_effort": 0.9233,
+          "model": 0.9262,
+          "actual": 0.9262,
+          "random": 0.9233
+        },
+        {
+          "k": 338,
+          "frac_effort": 0.926,
+          "model": 0.9262,
+          "actual": 0.9262,
+          "random": 0.926
+        },
+        {
+          "k": 339,
+          "frac_effort": 0.9288,
+          "model": 0.9262,
+          "actual": 0.9262,
+          "random": 0.9288
+        },
+        {
+          "k": 340,
+          "frac_effort": 0.9315,
+          "model": 0.9262,
+          "actual": 0.9262,
+          "random": 0.9315
+        },
+        {
+          "k": 341,
+          "frac_effort": 0.9342,
+          "model": 0.9344,
+          "actual": 0.9344,
+          "random": 0.9342
+        },
+        {
+          "k": 342,
+          "frac_effort": 0.937,
+          "model": 0.9426,
+          "actual": 0.9426,
+          "random": 0.937
+        },
+        {
+          "k": 343,
+          "frac_effort": 0.9397,
+          "model": 0.9426,
+          "actual": 0.9426,
+          "random": 0.9397
+        },
+        {
+          "k": 344,
+          "frac_effort": 0.9425,
+          "model": 0.9508,
+          "actual": 0.9508,
+          "random": 0.9425
+        },
+        {
+          "k": 345,
+          "frac_effort": 0.9452,
+          "model": 0.9508,
+          "actual": 0.9508,
+          "random": 0.9452
+        },
+        {
+          "k": 346,
+          "frac_effort": 0.9479,
+          "model": 0.9508,
+          "actual": 0.9508,
+          "random": 0.9479
+        },
+        {
+          "k": 347,
+          "frac_effort": 0.9507,
+          "model": 0.9508,
+          "actual": 0.9508,
+          "random": 0.9507
+        },
+        {
+          "k": 348,
+          "frac_effort": 0.9534,
+          "model": 0.9508,
+          "actual": 0.9508,
+          "random": 0.9534
+        },
+        {
+          "k": 349,
+          "frac_effort": 0.9562,
+          "model": 0.9508,
+          "actual": 0.9508,
+          "random": 0.9562
+        },
+        {
+          "k": 350,
+          "frac_effort": 0.9589,
+          "model": 0.959,
+          "actual": 0.959,
+          "random": 0.9589
+        },
+        {
+          "k": 351,
+          "frac_effort": 0.9616,
+          "model": 0.959,
+          "actual": 0.959,
+          "random": 0.9616
+        },
+        {
+          "k": 352,
+          "frac_effort": 0.9644,
+          "model": 0.9672,
+          "actual": 0.9672,
+          "random": 0.9644
+        },
+        {
+          "k": 353,
+          "frac_effort": 0.9671,
+          "model": 0.9754,
+          "actual": 0.9754,
+          "random": 0.9671
+        },
+        {
+          "k": 354,
+          "frac_effort": 0.9699,
+          "model": 0.9754,
+          "actual": 0.9754,
+          "random": 0.9699
+        },
+        {
+          "k": 355,
+          "frac_effort": 0.9726,
+          "model": 0.9836,
+          "actual": 0.9836,
+          "random": 0.9726
+        },
+        {
+          "k": 356,
+          "frac_effort": 0.9753,
+          "model": 0.9836,
+          "actual": 0.9836,
+          "random": 0.9753
+        },
+        {
+          "k": 357,
+          "frac_effort": 0.9781,
+          "model": 0.9836,
+          "actual": 0.9836,
+          "random": 0.9781
+        },
+        {
+          "k": 358,
+          "frac_effort": 0.9808,
+          "model": 0.9836,
+          "actual": 0.9836,
+          "random": 0.9808
+        },
+        {
+          "k": 359,
+          "frac_effort": 0.9836,
+          "model": 0.9836,
+          "actual": 0.9836,
+          "random": 0.9836
+        },
+        {
+          "k": 360,
+          "frac_effort": 0.9863,
+          "model": 0.9836,
+          "actual": 0.9836,
+          "random": 0.9863
+        },
+        {
+          "k": 361,
+          "frac_effort": 0.989,
+          "model": 0.9836,
+          "actual": 0.9836,
+          "random": 0.989
+        },
+        {
+          "k": 362,
+          "frac_effort": 0.9918,
+          "model": 0.9836,
+          "actual": 0.9836,
+          "random": 0.9918
+        },
+        {
+          "k": 363,
+          "frac_effort": 0.9945,
+          "model": 0.9836,
+          "actual": 0.9836,
+          "random": 0.9945
+        },
+        {
+          "k": 364,
+          "frac_effort": 0.9973,
+          "model": 0.9918,
+          "actual": 0.9918,
+          "random": 0.9973
+        },
+        {
+          "k": 365,
           "frac_effort": 1.0,
           "model": 1.0,
           "actual": 1.0,
           "random": 1.0
         }
       ],
-      "hours_to_50pct_model": 0.36,
-      "hours_to_50pct_actual": 0.36,
-      "est_hours_saved_per_60": 0.0,
-      "n": 3,
-      "caveat": "shadow \u2014 n=3 labeled shadow nights (<100); treat the uplift as provisional"
+      "hours_to_50pct_model": 23.52,
+      "hours_to_50pct_actual": 25.05,
+      "est_hours_saved_per_60": 0.25,
+      "n": 365,
+      "caveat": null
     },
-    "n": 3,
-    "n_logged_shadow": 13,
+    "n": 365,
+    "n_logged_shadow": 1779,
     "spearman_rank_corr": null,
-    "hours_to_50pct_model": 0.36,
-    "hours_to_50pct_actual": 0.36,
-    "est_hours_saved_per_60": 0.0,
+    "hours_to_50pct_model": 23.52,
+    "hours_to_50pct_actual": 25.05,
+    "est_hours_saved_per_60": 0.25,
     "figure": {
       "file": "uplift.png",
       "present": true,
-      "sha256": "ff81f435b63958cbef4c3f08d20e7733d776155148f43e8cf2bb6f091801f2d6"
+      "sha256": "ddb9c04ebbf6ef62eee9e74ad365bb851c0ae4d68438a6d7eeea60e68edfae59"
     },
     "state": "ok",
-    "low_n_caveat": true,
+    "low_n_caveat": false,
     "note": null
+  },
+  "probing_model": {
+    "label": "science-grade = ACCURATE: fit within 2\u03c3 of published values",
+    "deployment": "shadow-only \u2014 logs predictions, steers nothing; promotion needs \u0394AUC CI>0 across 3 label-growth cycles + human sign-off",
+    "empty": false,
+    "built_utc": "2026-07-27T17:03:18+00:00",
+    "spec": "2026-07-20-probing-model-design",
+    "stage_a": {
+      "n_cells": 64,
+      "global_p": 0.6208,
+      "n_outcomes": 1320
+    },
+    "stage_b": {
+      "n": 363,
+      "n_pos": 84,
+      "C": 1.0,
+      "auc_grouped": 0.565,
+      "auc_grouped_ci": [
+        0.438,
+        0.672
+      ],
+      "dataset_sha256": "4fa55f9f1158"
+    },
+    "eval": {
+      "rolling_origin": {
+        "auc": 0.645,
+        "auc_ci": [
+          0.467,
+          0.734
+        ],
+        "n_eval": 218
+      },
+      "loto": {
+        "auc": 0.467,
+        "auc_ci": [
+          0.394,
+          0.596
+        ]
+      },
+      "baselines": {
+        "prospect": 0.453,
+        "constant": 0.5,
+        "target_rate": 0.634
+      },
+      "paired_gate": {
+        "delta_auc": 0.192,
+        "delta_ci_lo": -0.0336,
+        "delta_ci_hi": 0.2977,
+        "clears_zero": false,
+        "vs": "prospect",
+        "axis": "rolling_origin",
+        "consecutive_clears": 0
+      },
+      "ranking": {
+        "n_nights": 218,
+        "nights_to_50pct_model": 67,
+        "nights_to_50pct_prospect": 126,
+        "precision_at_20": 0.35
+      }
+    },
+    "exploration": {
+      "k": 40,
+      "n_targets": 18,
+      "generated_utc": "2026-07-21T02:37:50+00:00"
+    }
   },
   "headline": {
     "champion": {
@@ -180,7 +2878,7 @@
       "kind": "rules",
       "authoritative": true,
       "metric": "grouped-ranker AUC",
-      "auc": 0.875,
+      "auc": 0.87,
       "note": "Deterministic rule_score(); consults the excluded dur_z column by design (asymmetric \u2014 the bar the rules already clear, per EVAL-PROTOCOL-V2 \u00a73)."
     },
     "challenger": {
@@ -188,21 +2886,21 @@
       "kind": "model",
       "registry_stage": "challenger",
       "metric": "grouped-CV AUC (headline)",
-      "auc": 0.819,
+      "auc": 0.909,
       "ci95": [
-        0.859,
-        0.936
+        0.886,
+        0.93
       ],
-      "random_auc": 0.837,
-      "cv_auc_gap": 0.018,
-      "n_train": 290,
-      "n_pos": 92
+      "random_auc": 0.924,
+      "cv_auc_gap": 0.015,
+      "n_train": 654,
+      "n_pos": 215
     },
     "verdict": {
       "authoritative": "rules",
-      "beats_rules_grouped": false,
+      "beats_rules_grouped": true,
       "beats_best_feature_grouped": true,
-      "text": "Rules remain authoritative. The challenger does not beat the incumbent rules on grouped AUC. Promotion to champion is a human act only, and none has been made."
+      "text": "The challenger beats the incumbent on grouped AUC. Promotion remains a human decision \u2014 the rules stay authoritative until a maintainer promotes the registered challenger."
     }
   },
   "cycles": [
@@ -477,6 +3175,354 @@
       "ece": 0.0503,
       "ece_bins": 3,
       "note": ""
+    },
+    {
+      "cycle": 11,
+      "cycle_utc": "2026-07-18T10:32:51+00:00",
+      "date": "2026-07-18",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 352,
+      "n_pos": 116,
+      "positive_rate": 0.33,
+      "auc": 0.861,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.905,
+      "cv_auc_grouped": 0.861,
+      "cv_auc_gap": 0.044,
+      "auc_grouped_ci": [
+        0.869,
+        0.931
+      ],
+      "brier": 0.1273,
+      "brier_ci": [
+        0.113,
+        0.14
+      ],
+      "ece": 0.0831,
+      "ece_bins": 3,
+      "note": ""
+    },
+    {
+      "cycle": 12,
+      "cycle_utc": "2026-07-19T22:20:52+00:00",
+      "date": "2026-07-19",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 464,
+      "n_pos": 162,
+      "positive_rate": 0.349,
+      "auc": 0.882,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.912,
+      "cv_auc_grouped": 0.882,
+      "cv_auc_gap": 0.03,
+      "auc_grouped_ci": [
+        0.857,
+        0.915
+      ],
+      "brier": 0.1288,
+      "brier_ci": [
+        0.115,
+        0.144
+      ],
+      "ece": 0.0527,
+      "ece_bins": 3,
+      "note": ""
+    },
+    {
+      "cycle": 13,
+      "cycle_utc": "2026-07-20T08:16:13+00:00",
+      "date": "2026-07-20",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 485,
+      "n_pos": 168,
+      "positive_rate": 0.346,
+      "auc": 0.899,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.922,
+      "cv_auc_grouped": 0.899,
+      "cv_auc_gap": 0.023,
+      "auc_grouped_ci": [
+        0.886,
+        0.937
+      ],
+      "brier": 0.1156,
+      "brier_ci": [
+        0.102,
+        0.129
+      ],
+      "ece": 0.055,
+      "ece_bins": 3,
+      "note": ""
+    },
+    {
+      "cycle": 14,
+      "cycle_utc": "2026-07-21T00:19:00+00:00",
+      "date": "2026-07-21",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 520,
+      "n_pos": 181,
+      "positive_rate": 0.348,
+      "auc": 0.906,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.912,
+      "cv_auc_grouped": 0.906,
+      "cv_auc_gap": 0.006,
+      "auc_grouped_ci": [
+        0.859,
+        0.934
+      ],
+      "brier": 0.1245,
+      "brier_ci": [
+        0.107,
+        0.142
+      ],
+      "ece": 0.0653,
+      "ece_bins": 3,
+      "note": ""
+    },
+    {
+      "cycle": 15,
+      "cycle_utc": "2026-07-21T08:16:18+00:00",
+      "date": "2026-07-21",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 529,
+      "n_pos": 182,
+      "positive_rate": 0.344,
+      "auc": 0.902,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.922,
+      "cv_auc_grouped": 0.902,
+      "cv_auc_gap": 0.02,
+      "auc_grouped_ci": [
+        0.843,
+        0.934
+      ],
+      "brier": 0.1247,
+      "brier_ci": [
+        0.105,
+        0.147
+      ],
+      "ece": 0.0582,
+      "ece_bins": 3,
+      "note": ""
+    },
+    {
+      "cycle": 16,
+      "cycle_utc": "2026-07-22T08:16:16+00:00",
+      "date": "2026-07-22",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 549,
+      "n_pos": 187,
+      "positive_rate": 0.341,
+      "auc": 0.907,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.91,
+      "cv_auc_grouped": 0.907,
+      "cv_auc_gap": 0.003,
+      "auc_grouped_ci": [
+        0.835,
+        0.932
+      ],
+      "brier": 0.1291,
+      "brier_ci": [
+        0.109,
+        0.15
+      ],
+      "ece": 0.0626,
+      "ece_bins": 3,
+      "note": ""
+    },
+    {
+      "cycle": 17,
+      "cycle_utc": "2026-07-23T09:08:28+00:00",
+      "date": "2026-07-23",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 553,
+      "n_pos": 188,
+      "positive_rate": 0.34,
+      "auc": 0.904,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.923,
+      "cv_auc_grouped": 0.904,
+      "cv_auc_gap": 0.019,
+      "auc_grouped_ci": [
+        0.83,
+        0.933
+      ],
+      "brier": 0.1295,
+      "brier_ci": [
+        0.109,
+        0.151
+      ],
+      "ece": 0.0654,
+      "ece_bins": 3,
+      "note": ""
+    },
+    {
+      "cycle": 18,
+      "cycle_utc": "2026-07-24T08:16:18+00:00",
+      "date": "2026-07-24",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 566,
+      "n_pos": 191,
+      "positive_rate": 0.337,
+      "auc": 0.901,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.911,
+      "cv_auc_grouped": 0.901,
+      "cv_auc_gap": 0.01,
+      "auc_grouped_ci": [
+        0.838,
+        0.937
+      ],
+      "brier": 0.1241,
+      "brier_ci": [
+        0.104,
+        0.146
+      ],
+      "ece": 0.0536,
+      "ece_bins": 3,
+      "note": ""
+    },
+    {
+      "cycle": 19,
+      "cycle_utc": "2026-07-25T08:16:24+00:00",
+      "date": "2026-07-25",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 611,
+      "n_pos": 202,
+      "positive_rate": 0.331,
+      "auc": 0.901,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.928,
+      "cv_auc_grouped": 0.901,
+      "cv_auc_gap": 0.027,
+      "auc_grouped_ci": [
+        0.845,
+        0.942
+      ],
+      "brier": 0.1196,
+      "brier_ci": [
+        0.099,
+        0.143
+      ],
+      "ece": 0.0652,
+      "ece_bins": 3,
+      "note": ""
+    },
+    {
+      "cycle": 20,
+      "cycle_utc": "2026-07-26T08:16:25+00:00",
+      "date": "2026-07-26",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 654,
+      "n_pos": 215,
+      "positive_rate": 0.329,
+      "auc": 0.909,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.924,
+      "cv_auc_grouped": 0.909,
+      "cv_auc_gap": 0.015,
+      "auc_grouped_ci": [
+        0.857,
+        0.945
+      ],
+      "brier": 0.114,
+      "brier_ci": [
+        0.094,
+        0.14
+      ],
+      "ece": 0.0329,
+      "ece_bins": 3,
+      "note": ""
+    },
+    {
+      "cycle": 21,
+      "cycle_utc": "2026-07-27T08:16:37+00:00",
+      "date": "2026-07-27",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 654,
+      "n_pos": 215,
+      "positive_rate": 0.329,
+      "auc": 0.909,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.924,
+      "cv_auc_grouped": 0.909,
+      "cv_auc_gap": 0.015,
+      "auc_grouped_ci": [
+        0.857,
+        0.945
+      ],
+      "brier": 0.114,
+      "brier_ci": [
+        0.094,
+        0.14
+      ],
+      "ece": 0.0329,
+      "ece_bins": 3,
+      "note": ""
+    },
+    {
+      "cycle": 22,
+      "cycle_utc": "2026-07-27T17:02:59+00:00",
+      "date": "2026-07-27",
+      "model": "gbm",
+      "schema_version": "2",
+      "protocol": "v2",
+      "comparable": true,
+      "n_train": 654,
+      "n_pos": 215,
+      "positive_rate": 0.329,
+      "auc": 0.909,
+      "auc_kind": "grouped-OOF",
+      "cv_auc_random": 0.924,
+      "cv_auc_grouped": 0.909,
+      "cv_auc_gap": 0.015,
+      "auc_grouped_ci": [
+        0.857,
+        0.945
+      ],
+      "brier": 0.114,
+      "brier_ci": [
+        0.094,
+        0.14
+      ],
+      "ece": 0.0329,
+      "ece_bins": 3,
+      "note": ""
     }
   ],
   "baselines": [
@@ -487,29 +3533,29 @@
     },
     {
       "name": "scatter_pct threshold",
-      "auc": 0.818,
+      "auc": 0.83,
       "note": "The single most interpretable quality cut; logged by name every cycle."
     },
     {
       "name": "Best single feature (scatter_pct)",
-      "auc": 0.818,
+      "auc": 0.83,
       "note": "Highest-AUC raw feature \u2014 the ceiling any single-cut rule could reach."
     },
     {
       "name": "Incumbent rules",
-      "auc": 0.875,
+      "auc": 0.87,
       "note": "Champion. Asymmetric: consults excluded dur_z. Model must beat this on grouped AUC without excluded columns to earn promotion."
     },
     {
       "name": "Challenger model (gbm)",
-      "auc": 0.819,
+      "auc": 0.909,
       "note": "Grouped-OOF headline AUC \u2014 the honest new-target generalization estimate."
     }
   ],
   "features": [
     {
       "name": "n_frames",
-      "importance": 0.0008,
+      "importance": 0.0006,
       "imputed_frac": 0.0
     },
     {
@@ -519,33 +3565,33 @@
     },
     {
       "name": "scatter_pct",
-      "importance": 0.1924,
+      "importance": 0.1938,
       "imputed_frac": 0.0
     },
     {
       "name": "depth_snr",
-      "importance": 0.063,
+      "importance": 0.0497,
       "imputed_frac": 0.0
     },
     {
       "name": "rprs_rel_err",
       "importance": 0.0,
-      "imputed_frac": 0.0241
+      "imputed_frac": 0.0168
     },
     {
       "name": "dur_rel_err",
-      "importance": 0.0009,
-      "imputed_frac": 0.0069
+      "importance": 0.0019,
+      "imputed_frac": 0.0061
     },
     {
       "name": "tmid_err_min",
-      "importance": 0.0,
+      "importance": 0.0003,
       "imputed_frac": 0.0
     },
     {
       "name": "aperture_px",
-      "importance": 0.0001,
-      "imputed_frac": 0.0966
+      "importance": 0.0,
+      "imputed_frac": 0.1208
     },
     {
       "name": "n_comps",
@@ -554,18 +3600,18 @@
     },
     {
       "name": "resid_shapiro_p",
-      "importance": 0.0,
-      "imputed_frac": 0.0483
+      "importance": 0.0002,
+      "imputed_frac": 0.0336
     },
     {
       "name": "resid_ljungbox_p",
       "importance": 0.0,
-      "imputed_frac": 0.0483
+      "imputed_frac": 0.0336
     },
     {
       "name": "coverage_frac",
-      "importance": 0.0258,
-      "imputed_frac": 0.1
+      "importance": 0.0068,
+      "imputed_frac": 0.0902
     },
     {
       "name": "beta_rednoise",
@@ -604,10 +3650,10 @@
     }
   ],
   "leakage": {
-    "random": 0.837,
-    "grouped": 0.819,
-    "gap": 0.018,
-    "n_groups": 20,
+    "random": 0.924,
+    "grouped": 0.909,
+    "gap": 0.015,
+    "n_groups": 21,
     "groups_are": "target",
     "excluded_cols": [
       "rprs_z",
@@ -617,23 +3663,35 @@
     ]
   },
   "lineage": {
-    "dataset_sha256": "9fd51e529db54ac894ee12094f23478883663c4f9d8acebcf5a57f0fa6256275",
+    "dataset_sha256": "f87ec95a1d2a2d080b51bed85d376206c83a40bd25b0718c481844fef09b6eaa",
     "schema_version": 2,
-    "n": 290,
-    "pos": 92,
-    "neg": 198,
+    "n": 654,
+    "pos": 215,
+    "neg": 439,
     "n_rows_dropped_nan": 0,
     "mlflow_run_ids": [
       "0085820ca4574ef8ae4e8c4fe7cddea4",
       "0a76a74519bb48f38f9941dc25f94809",
+      "0f72024f673b4295be0fa9f355b3b3c8",
+      "10b468a0687248049d95bbeb1aff8806",
       "208b4eaedb5e4e74ae41df6197e0d6db",
+      "210f41f55643423db6536c76c742d0ff",
       "38084d52e7a84c3f9dbec5335d73b3bf",
+      "4342529c8f0f4158bd389b323bf1ea73",
+      "48b2c4c2b68d4193b221e52102a21e51",
       "5e128fd1ef1948db93f2344a99b3dfe8",
       "646cf2e8381b4329bbaa244236375d5c",
+      "65e41a5e33a44fb0a9410fd44fe05e52",
+      "7b2bf3365146475aaba701f4f6db4889",
+      "8050e88cafcf48fba2604d4b7be9a679",
+      "8d718f750c7748f990f8ca438f153716",
+      "a267684d52be4629b2132a341c61696f",
       "c591b42d2ffa44dcb555b5b8139eb8c5",
       "d5171ddae7d64eca910422b0d23fe850",
       "e9a5a8910ce74b4da7eb87dc501d4a8e",
-      "f48f820181fb4af7a082f63baabddbc1"
+      "ef7718f6d8164626a15b4561ebb3cadf",
+      "f48f820181fb4af7a082f63baabddbc1",
+      "ffd9849af2264261a9b1e2be9f67c0d3"
     ]
   },
   "calibration": {
@@ -642,25 +3700,25 @@
         "bin": 0,
         "edge_lo": 0.0,
         "edge_hi": 0.333,
-        "count": 158,
-        "pred_mean": 0.1079,
-        "obs_freq": 0.057
+        "count": 349,
+        "pred_mean": 0.0879,
+        "obs_freq": 0.0458
       },
       {
         "bin": 1,
         "edge_lo": 0.333,
         "edge_hi": 0.667,
-        "count": 93,
-        "pred_mean": 0.5202,
-        "obs_freq": 0.5161
+        "count": 170,
+        "pred_mean": 0.5194,
+        "obs_freq": 0.5235
       },
       {
         "bin": 2,
         "edge_lo": 0.667,
         "edge_hi": 1.0,
-        "count": 39,
-        "pred_mean": 0.7397,
-        "obs_freq": 0.8974
+        "count": 135,
+        "pred_mean": 0.7691,
+        "obs_freq": 0.8148
       }
     ],
     "n_bins": 3,
@@ -670,33 +3728,33 @@
       0.667,
       1.0
     ],
-    "ece": 0.0503,
-    "brier": 0.1199,
+    "ece": 0.0329,
+    "brier": 0.114,
     "brier_ci": [
-      0.104,
-      0.138
+      0.102,
+      0.126
     ]
   },
   "figures": {
     "roc": {
       "file": "roc.png",
       "present": true,
-      "sha256": "7263369d6eb07aaf8779d36e6b8def1599749c366797708f4c7a6f3c5129a32f"
+      "sha256": "a38034448d44074517a950d33214a17cb0efe5b4750e75aaf79850f40f179042"
     },
     "pr": {
       "file": "pr.png",
       "present": true,
-      "sha256": "9d025a94de1419e543083a0252bce2991d639ea6d751c2ecb97c06441324d9e2"
+      "sha256": "a19f7bdbb11c62f328d1bd1e4062e61f180bf2d7ce136d61f5bcc1720f65affc"
     },
     "reliability": {
       "file": "reliability.png",
       "present": true,
-      "sha256": "6060b3a201f601ac938f0e2bf7a14db312404d103732745f4a7d459e33ce8df9"
+      "sha256": "099252950a4728d859ea9cdea6ebb9fae3f872ce8e99531c6b8e692e88e92f4d"
     },
     "importances": {
       "file": "importances.png",
       "present": true,
-      "sha256": "d56b9c18c1f3f8e18d790b5c80ffe7575459f57abaa4db3c72e34fd999ee1fcf"
+      "sha256": "828e7e70c3a20b7a5e7247c727dd2cfe139373cbd5faf5931b8b63c847ef1bca"
     }
   },
   "model_card_html_or_md": "# Model Card \u2014 Run-Quality Model\n\nStructured after Mitchell et al., \"Model Cards for Model Reporting\" (2019). This card\ndescribes the **deployed** classifier (cycle 3) and the v2 evaluation that governs it\nfrom the next cycle. Numbers here are reproduced from `data/results/model-metrics.csv`,\n`docs/MODEL.md`, and the frozen `docs/EVAL-PROTOCOL-V2.md`.\n\n## Model details\n\n- **Purpose.** Predict whether one photometric reduction run is scientifically usable\n  for submission, as a calibrated probability `p_good`, to help a human triage the\n  review queue faster.\n- **Type.** Calibrated logistic regression (scikit-learn `LogisticRegression`,\n  `class_weight=\"balanced\"`, sigmoid calibration) on a median-imputed, standardized\n  feature pipeline. The ladder escalates to `HistGradientBoosting` only above 100 rows\n  and only if it beats logistic in CV; today's deployed model is logistic.\n- **Version / provenance.** Deployed: cycle 3 (2026-07-15), logistic, n_train=70,\n  11 features. Every cycle records `schema_version`, `dataset_sha256`, and an entry in\n  the hash-chained audit log (`actor=\"model\"`).\n- **Owner.** Single-maintainer citizen-science pipeline (astro project). Model artifacts\n  live in `data/results/` (gitignored, local-only; pickle is produced and consumed by\n  one script on one machine).\n- **Features (v2, 13).** `n_frames`, `exposure_s`, `scatter_pct`, `depth_snr`,\n  `rprs_rel_err`, `dur_rel_err`, `tmid_err_min`, `aperture_px`, `n_comps`,\n  `resid_shapiro_p`, `resid_ljungbox_p`, `coverage_frac`, `beta_rednoise`. All are\n  reduction-quality signals; none is derived from the published truth (see leakage).\n\n## Intended use\n\n- **In scope.** Triage and pre-ranking of the human review queue: order dossiers,\n  sharpen the RECOMMEND line, and flag likely-bad reductions for a closer look. The\n  output is advisory only.\n- **Primary users.** The pipeline maintainer reviewing dossiers before any submission\n  to AAVSO / Exoplanet Watch / MPC.\n- **Out of scope \u2014 do not use for:**\n  - **Auto-approval or unsupervised submission.** Nothing is submitted without a human\n    setting `status: approved`. No auto-approval path exists and none may be added.\n  - **Scientific claims.** `p_good` is a workflow-triage probability, not evidence about\n    a planet, an ephemeris, or a detection. It must never appear in a science result.\n  - **Cross-instrument or cross-target trust beyond the training distribution** (see\n    biases). It has not been validated on Seestar data; on Seestar it runs in shadow\n    mode only.\n  - **Ranking anything other than reduction usability** (e.g. target selection \u2014 that is\n    `night_score.py`).\n\n## Factors\n\n- **Instrument.** Training data is MicroObservatory (single 6-inch optic) plus EXOTIC\n  practice/validation sets. Behaviour on other instruments is unknown.\n- **Target and sky.** Northern-hemisphere targets only (HAT-P-32b, TrES-2b/3b, CoRoT-2b,\n  HD 189733b, Qatar-1b/10b, WASP-2b/135b, XO-1b, HAT-P-27b/55b, KELT-20b).\n- **Archive era.** Nights span 2017\u2192present; archive-era systematics and seasonal quality\n  differ. Recent-30-day MO nights skew low quality.\n- **Evaluation slicing.** Grouped by `target` (extend to `(target, instrument)` once more\n  than one instrument is present) \u2014 the split that matters, since deployment is always a\n  new night and often a new target.\n\n## Metrics\n\nDiscrimination is reported under **grouped** cross-validation (unseen target at test\ntime) as the headline, alongside the random-CV number; the gap is the target-leakage\nestimate. Calibration uses a small-n (3-bin) reliability curve. Uncertainty is a\nstratified bootstrap 95% CI (1000 resamples). Full definitions: `docs/EVAL-PROTOCOL-V2.md`.\n\n**Deployed model \u2014 cycle 3 (v1 metrics, as logged):** n=70, 15 positives (21%),\nrandom-CV AUC 0.891 \u00b1 0.041, Brier 0.123, 10-bin ECE 0.130, reject precision 0.925.\nThese predate the v2 protocol (no grouped AUC, no CIs, 10-bin ECE) and are not\ncomparable to v2 cycles.\n\n**v2 preview (dry-run on the current n=100 / 29-positive table, not yet a logged\ncycle):** grouped-CV AUC 0.878, random-CV AUC 0.886, gap 0.008 (low target leakage);\ngrouped AUC 95% CI [0.808, 0.942]; Brier 95% CI [0.086, 0.193]; 3-bin ECE 0.085.\nBaselines on the same data: majority 0.50, `scatter_pct` 0.878, best single feature\n`depth_snr` 0.899, incumbent rules 0.924. **The model does not yet beat `depth_snr`\nalone or the rules on grouped AUC** \u2014 this is exactly why the rules stay authoritative\nand the human gate is non-negotiable. The first *logged* v2 cycle is triggered by the\norchestrator at \u2265 25 positives with all baselines present.\n\n## Evaluation & training data\n\n- **Source.** MicroObservatory public archive nights reduced by the pipeline and scored\n  against published ExoClock ephemerides (`mo_benchmark.py`); EXOTIC practice/validation\n  runs with known truth; and human review decisions. One row per documented run\n  (`data/records/<id>/record.json` \u2192 `data/results/run-features.csv`).\n- **Size & balance.** v2 rebuild: 100 trainable rows, 29 positive / 71 negative\n  (~29% positive). Deployed model trained on 70 / 15 positive.\n- **Labels.** Positive = `ACCURATE` / `MARGINAL` / human-`approved`; negative =\n  `INACCURATE` / `NON-DETECTION` / `RUN-FAILED` / human-`rejected` / `NOISY-CONSISTENT`.\n  Labels inherit the scoring thresholds in `mo_benchmark.py`: the model learns *our*\n  definition of \"usable,\" not a platonic one. The definition is versioned in that file.\n- **Known biases.**\n  - **Single-instrument optics** \u2014 MicroObservatory 6-inch dominates; the model may key\n    on MO characteristics. Breaking this correlation is the whole point of phase P3\n    (cross-instrument) before P4 trusts it on Seestar.\n  - **Northern targets only** \u2014 no Southern-sky validation.\n  - **Archive-era effects** \u2014 systematics and quality vary by era/season; good labels\n    come disproportionately from the deep archive and practice sets, bad labels from the\n    poor recent season.\n  - **Small positive count** \u2014 grouped AUC and calibration are fragile until positives\n    grow well past 25.\n\n## Quantitative analyses\n\n- Random vs grouped AUC and their gap are logged every cycle (`cv_auc_random`,\n  `cv_auc_grouped`, `cv_auc_gap`) \u2014 the leakage diagnostic.\n- Reliability curve per cycle in `data/results/calibration/<cycle_utc>.json`.\n- Bootstrap CIs on grouped AUC and Brier per cycle.\n- Per-feature imputed fraction per cycle (a feature going all-NaN is a broken emitter).\n\n## Ethical & operational considerations\n\n- **The human gate is load-bearing.** The pipeline's core invariant is *automate\n  reduction, never judgment.* The model compresses review time; it does not replace the\n  reviewer. `.claude/settings.json` denies submission side-effects to automation, and no\n  auto-approval exists.\n- **Failure mode that matters.** A false SCREEN-PASS that lulls the reviewer is worse\n  than a false REJECT (a wasted look). Thresholds are asymmetric (reject liberally at\n  p<0.35, pass rarely at p>0.90) and `screen_pass_rate` is expected near zero until\n  calibration matures.\n- **No consensus contamination.** The model is not used to generate Zooniverse\n  classifications or any crowd-consensus input.\n- **Probabilities carry context.** `p_good` is always quoted with `n_train` in dossiers\n  so a small-data probability is not over-read.\n\n## Caveats & maintenance\n\n- **Retrain cadence.** Weekly, after the Tuesday benchmark top-up and nightly backfill\n  land new labels; a cycle is only logged at \u2265 25 positives with all baselines present.\n- **Drift monitoring.** Per-cycle `dataset_sha256` (training-set change detection),\n  imputed-fraction (emitter health), grouped-AUC stability across cycles, and the\n  calibration JSON. Schema assertions refuse to train on a drifted feature table.\n- **Trust gate for P4 (Seestar shadow \u2192 weighted RECOMMEND, still never approval):**\n  ECE < 0.10, \u2265 25 positives, stable grouped AUC across \u2265 3 consecutive cycles.\n- **Cycle comparability.** Cycles 1\u20133 were trained on a feature table that was later\n  found corrupted (benchmark.csv drift, fixed 2026-07-15) and used v1 metrics; they are\n  not comparable to v2 cycles. See `docs/MODEL.md`.\n",

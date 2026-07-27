@@ -9,7 +9,7 @@
   <meta property="og:description" content="From personal-telescope frames to traceable, human-reviewed scientific evidence.">
   <title>Backyard Meridian | Product Management Case Study</title>
   <link rel="icon" href="assets/landing/backyard-meridian-mark.png" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/landing/portfolio.css">
+  <link rel="stylesheet" href="assets/landing/portfolio.css?v=20260718c">
 </head>
 <body>
   <a class="skip" href="#main">Skip to case study</a>
@@ -22,7 +22,7 @@
       </a>
       <nav class="site-tabs" aria-label="Primary">
         <a class="site-tab" href="#top" aria-current="page">Case study</a>
-        <a class="site-tab" href="status/">Live</a>
+        <a class="site-tab" href="status/">Workflow</a>
         <a class="site-tab" href="review/">Review</a>
         <a class="site-tab" href="eval/">Evaluation</a>
       </nav>
@@ -94,9 +94,9 @@
         </div>
         <div class="science-note reveal"><strong>Model operations</strong><span>The quality model now ships through a full MLOps loop: every training cycle is versioned and evaluated against frozen baselines, promotion to champion is a human act recorded in the audit log, and a second pre-probe triage use-case runs shadow-first — its predictions logged but never steering the queue until measured uplift earns a human rollout decision. Live scoreboards for both are on the <a href="eval/">Evaluation page</a>.</span></div>
         <div class="outcome-strip reveal" aria-label="Current product outcomes">
-          <div class="outcome"><strong data-stat="dossiers">108</strong><span>Review dossiers carrying figures and machine records</span></div>
-          <div class="outcome"><strong data-stat="lc_csvs">118</strong><span>Exported light-curve tables with <span data-stat="lc_rows">5,914</span> flux rows</span></div>
-          <div class="outcome"><strong data-stat="cycles">4</strong><span>Evaluation cycles logged, with <span data-stat="v2_cycles">1</span> under the frozen v2 protocol</span></div>
+          <div class="outcome"><strong data-stat="dossiers">367</strong><span>Review dossiers carrying figures and machine records</span></div>
+          <div class="outcome"><strong data-stat="lc_csvs">369</strong><span>Exported light-curve tables with <span data-stat="lc_rows">21,803</span> flux rows</span></div>
+          <div class="outcome"><strong data-stat="cycles">11</strong><span>Evaluation cycles logged, with <span data-stat="v2_cycles">8</span> under the frozen v2 protocol</span></div>
           <div class="outcome"><strong>1</strong><span>Deliberate human gate before contribution</span></div>
         </div>
       </div>
@@ -193,17 +193,17 @@
       <div class="container">
         <div class="section-head reveal">
           <div><p class="eyebrow">06 · Dataset specification</p><h2 class="title">Built from real observing nights.</h2></div>
-          <p class="lead">A dated operational snapshot of source frames, reductions, exports, diagnostics, models, and reports. <span class="meta" data-stat="as_of_line">As of 16 Jul 2026 · refreshed weekly</span></p>
+          <p class="lead">A dated operational snapshot of source frames, reductions, exports, diagnostics, models, and reports. <span class="meta" data-stat="as_of_line">As of 18 Jul 2026 · refreshed weekly</span></p>
         </div>
         <div class="dataset-grid reveal">
           <article class="data"><strong>17 GB</strong><span>Research corpus currently on disk</span></article>
-          <article class="data"><strong data-stat="fits_frames">10,354</strong><span>FITS source frames preserved</span></article>
-          <article class="data"><strong data-stat="lc_csvs">118</strong><span>Exported light-curve CSVs · <span data-stat="lc_rows">5,914</span> flux rows</span></article>
-          <article class="data"><strong data-stat="dossiers">108</strong><span>Review dossiers with figures and machine records</span></article>
-          <article class="data"><strong data-stat="targets">15</strong><span>Canonical exoplanet targets</span></article>
+          <article class="data"><strong data-stat="fits_frames">29,840</strong><span>FITS source frames preserved</span></article>
+          <article class="data"><strong data-stat="lc_csvs">369</strong><span>Exported light-curve CSVs · <span data-stat="lc_rows">21,803</span> flux rows</span></article>
+          <article class="data"><strong data-stat="dossiers">367</strong><span>Review dossiers with figures and machine records</span></article>
+          <article class="data"><strong data-stat="targets">24</strong><span>Canonical exoplanet targets</span></article>
           <article class="data"><strong data-stat="span">2017→26</strong><span>Observation-night span represented in review</span></article>
-          <article class="data"><strong data-stat="playback">3,583</strong><span>Playback frames in the Night Theater export</span></article>
-          <article class="data"><strong data-stat="features">13</strong><span>Features used by the quality model</span></article>
+          <article class="data"><strong data-stat="playback">22,044</strong><span>Playback frames in the Night Theater export</span></article>
+          <article class="data"><strong data-stat="features">19</strong><span>Features used by the quality model</span></article>
         </div>
         <div class="lineage reveal" aria-label="Dataset lineage">
           <div><span>Source</span><strong>FITS frames</strong></div><div><span>Track</span><strong>Star centroids</strong></div><div><span>Reduce</span><strong>Flux + fit</strong></div><div><span>Explain</span><strong>Six diagnostics</strong></div><div><span>Decide</span><strong>Human dossier</strong></div>
@@ -236,31 +236,31 @@
       <div class="container">
         <div class="section-head reveal">
           <div><p class="eyebrow">08 · Model evaluation</p><h2 class="title">Trust begins with the harder split.</h2></div>
-          <p class="lead">The frozen v2 protocol asks whether the model can rank reductions from an unseen target. It is useful, calibrated, and not ready to replace the rules.</p>
+          <p class="lead">The frozen v2 protocol asks whether the model can rank reductions from an unseen target. It beats the rule-based baseline, is calibrated, and still defers to the rules by design.</p>
         </div>
         <div class="eval-summary">
           <article class="eval-verdict reveal">
-            <div class="eval-verdict-top"><p class="meta">Frozen protocol v2 · cycle 4</p><span class="eval-status">Rules remain authoritative</span></div>
-            <h3>Useful challenger. No promotion.</h3>
-            <p>The model helps order the review queue. It never approves a dossier. On the stricter target-held-out test, it trails both the incumbent rules and the best single feature.</p>
+            <div class="eval-verdict-top"><p class="meta">Frozen protocol v2 · cycle <span data-stat="v2_cycles">18</span></p><span class="eval-status">Rules remain authoritative</span></div>
+            <h3>Beats the rules. Stays advisory.</h3>
+            <p>The model helps order the review queue. It never approves a dossier. On the stricter target-held-out test it beats the incumbent rules — yet the rules stay authoritative by deliberate human choice, and no model writes the final scientific status.</p>
             <div class="eval-metrics" aria-label="Current model metrics">
-              <div class="eval-metric"><strong data-stat="auc" data-fmt="dot3">.872</strong><span>Grouped AUC</span><small>Ranking quality on unseen targets</small></div>
-              <div class="eval-metric"><strong data-stat="ece" data-fmt="dot3">.065</strong><span>ECE</span><small>Probability mismatch, lower is better</small></div>
-              <div class="eval-metric"><strong data-stat="gap" data-fmt="dot3">.002</strong><span>Leakage gap</span><small data-stat="gap_note">Random .874 minus grouped .872</small></div>
-              <div class="eval-metric"><strong data-stat="labeled">114</strong><span>Labeled runs</span><small data-stat="usable_split">33 usable and 81 not usable</small></div>
+              <div class="eval-metric"><strong data-stat="auc" data-fmt="dot3">.909</strong><span>Grouped AUC</span><small>Ranking quality on unseen targets</small></div>
+              <div class="eval-metric"><strong data-stat="ece" data-fmt="dot3">.033</strong><span>ECE</span><small>Probability mismatch, lower is better</small></div>
+              <div class="eval-metric"><strong data-stat="gap" data-fmt="dot3">.015</strong><span>Leakage gap</span><small data-stat="gap_note">Random .924 minus grouped .909</small></div>
+              <div class="eval-metric"><strong data-stat="labeled">669</strong><span>Labeled runs</span><small data-stat="usable_split">219 usable and 450 not usable</small></div>
             </div>
           </article>
 
           <article class="eval-baselines reveal" aria-labelledby="baseline-title">
-            <div class="eval-panel-head"><div><p class="meta">Grouped out-of-fold AUC</p><h3 id="baseline-title">The challenger must beat what already works.</h3></div><span>Higher is better</span></div>
-            <div class="eval-bars" role="img" aria-label="Grouped AUC comparison. Incumbent rules 0.927. Best single feature 0.899. Scatter threshold 0.880. Challenger model 0.872. Chance 0.500.">
-              <div class="eval-bar eval-bar--champion"><div><span>Incumbent rules</span><strong>.927</strong></div><i style="--score:92.7%"></i><small>Current champion</small></div>
-              <div class="eval-bar"><div><span>Best single feature</span><strong>.899</strong></div><i style="--score:89.9%"></i><small>Depth signal-to-noise</small></div>
-              <div class="eval-bar"><div><span>Scatter threshold</span><strong>.880</strong></div><i style="--score:88%"></i><small>Interpretable quality cut</small></div>
-              <div class="eval-bar eval-bar--challenger"><div><span>Challenger model</span><strong>.872</strong></div><i style="--score:87.2%"></i><small>13 features · gradient boosting</small></div>
+            <div class="eval-panel-head"><div><p class="meta">Grouped out-of-fold AUC</p><h3 id="baseline-title">The model clears what already works.</h3></div><span>Higher is better</span></div>
+            <div class="eval-bars" role="img" aria-label="Grouped out-of-fold AUC: quality model, incumbent rules, best single feature, scatter threshold, and chance — values update live from the evaluation page.">
+              <div class="eval-bar eval-bar--challenger"><div><span>Quality watchdog (challenger)</span><strong data-stat="auc" data-fmt="dot3">.909</strong></div><i data-score-stat="auc" style="--score:90.9%"></i><small><span data-stat="features">19</span> features · gradient boosting</small></div>
+              <div class="eval-bar"><div><span>Incumbent rules</span><strong data-stat="rules_auc" data-fmt="dot3">.870</strong></div><i data-score-stat="rules_auc" style="--score:87.0%"></i><small>Authoritative by human choice</small></div>
+              <div class="eval-bar"><div><span>Best single feature</span><strong data-stat="best_feature_auc" data-fmt="dot3">.830</strong></div><i data-score-stat="best_feature_auc" style="--score:83.0%"></i><small data-stat="best_feature">scatter_pct</small></div>
+              <div class="eval-bar"><div><span>Scatter threshold</span><strong data-stat="scatter_auc" data-fmt="dot3">.830</strong></div><i data-score-stat="scatter_auc" style="--score:83.0%"></i><small>Interpretable quality cut</small></div>
               <div class="eval-bar eval-bar--chance"><div><span>Chance</span><strong>.500</strong></div><i style="--score:50%"></i><small>Discrimination floor</small></div>
             </div>
-            <p class="eval-caveat">This is a deliberately hard comparison. The rules can use duration deviation, while v2 excludes that field and three other label-defining fields from the learned model.</p>
+            <p class="eval-caveat">A deliberately hard comparison: the rules may use duration deviation, while the model is denied that field and three other label-defining ones — and still ranks higher.</p>
           </article>
         </div>
 
@@ -268,19 +268,19 @@
           <div class="eval-explain-head"><div><p class="meta">How the evaluation works</p><h3>Hold out the target, then test the claim.</h3></div><p>Earlier v1 cycles used a different split and calibration method. They remain in the audit trail, but they are not trendlined against v2.</p></div>
           <ol class="eval-steps">
             <li><span>01 · Label</span><p><strong>Ask one product question.</strong> Is this reduction usable for submission? Human-approved, accurate, and marginal runs are positive examples.</p></li>
-            <li><span>02 · Group</span><p><strong>Keep each target together.</strong> Sixteen targets are split as groups, so a target seen in training cannot reappear in its test fold.</p></li>
+            <li><span>02 · Group</span><p><strong>Keep each target together.</strong> Each target is split as its own group, so a target seen in training cannot reappear in its test fold.</p></li>
             <li><span>03 · Compare</span><p><strong>Log every baseline.</strong> The challenger must be compared with chance, a scatter cut, the best single feature, and the incumbent rules.</p></li>
-            <li><span>04 · Calibrate</span><p><strong>Check confidence, not only rank.</strong> ECE is .065 across three bins. Brier score is .107 with a 95% interval from .080 to .137.</p></li>
+            <li><span>04 · Calibrate</span><p><strong>Check confidence, not only rank.</strong> ECE is <span data-stat="ece" data-fmt="dot3">.033</span> across three bins, so a stated probability stays close to the observed frequency.</p></li>
           </ol>
         </div>
 
         <div class="eval-gates reveal" aria-labelledby="gate-title">
           <div class="eval-gate-intro"><p class="meta">Promotion decision</p><h3 id="gate-title">Two gates pass. Two gates hold.</h3><p>A model may sharpen the recommendation line, but promotion is always a human decision.</p></div>
           <div class="eval-gate-list">
-            <div class="eval-gate eval-gate--pass"><span>Pass</span><p><strong>Enough positive examples</strong>30 usable runs, above the minimum of 25.</p></div>
-            <div class="eval-gate eval-gate--pass"><span>Pass</span><p><strong>Calibration threshold</strong>ECE .065, below the .100 trust gate.</p></div>
+            <div class="eval-gate eval-gate--pass"><span>Pass</span><p><strong>Enough positive examples</strong><span data-stat="usable">219</span> usable runs, above the minimum of 25.</p></div>
+            <div class="eval-gate eval-gate--pass"><span>Pass</span><p><strong>Calibration threshold</strong>ECE <span data-stat="ece" data-fmt="dot3">.033</span>, below the .100 trust gate.</p></div>
             <div class="eval-gate eval-gate--hold"><span>Hold</span><p><strong>Stability over time</strong>One v2 cycle is logged. Three consecutive stable cycles are required.</p></div>
-            <div class="eval-gate eval-gate--hold"><span>Hold</span><p><strong>Beat the champion</strong>Grouped AUC .872 remains below the rules at .927.</p></div>
+            <div class="eval-gate eval-gate--hold"><span>Hold</span><p><strong>Paired significance</strong>Promotion needs the ΔAUC confidence interval to clear zero across 3 consecutive cycles, plus a human act. The challenger leads on the point estimate (AUC .909 vs rules .870), but the gate is not yet cleared.</p></div>
           </div>
         </div>
 
@@ -288,7 +288,7 @@
         <div class="eval-assets">
           <figure class="eval-asset reveal"><a href="eval/roc.png"><img src="eval/roc.png" loading="lazy" alt="ROC chart comparing the challenger with rules and single-feature baselines"></a><figcaption><strong>Ranking across thresholds</strong><span>ROC · grouped out-of-fold predictions</span></figcaption></figure>
           <figure class="eval-asset reveal"><a href="eval/pr.png"><img src="eval/pr.png" loading="lazy" alt="Precision recall chart comparing the challenger with evaluation baselines"></a><figcaption><strong>Finding usable runs</strong><span>Precision and recall · positive means usable</span></figcaption></figure>
-          <figure class="eval-asset reveal"><a href="eval/reliability.png"><img src="eval/reliability.png" loading="lazy" alt="Reliability chart comparing predicted probabilities with observed usable-run frequency"></a><figcaption><strong>Probability honesty</strong><span>ECE .065 · Brier .107</span></figcaption></figure>
+          <figure class="eval-asset reveal"><a href="eval/reliability.png"><img src="eval/reliability.png" loading="lazy" alt="Reliability chart comparing predicted probabilities with observed usable-run frequency"></a><figcaption><strong>Probability honesty</strong><span>ECE <span data-stat="ece" data-fmt="dot3">.033</span> · Brier <span data-stat="brier" data-fmt="dot3">.114</span></span></figcaption></figure>
           <figure class="eval-asset reveal"><a href="eval/importances.png"><img src="eval/importances.png" loading="lazy" alt="Permutation importance chart for the thirteen challenger model features"></a><figcaption><strong>What changes the ranking</strong><span>Scatter and depth signal-to-noise lead</span></figcaption></figure>
         </div>
         <div class="eval-actions reveal"><a class="button button--solid" href="eval/">Open the complete evaluation ↗</a><a class="button" href="docs/EVAL-PROTOCOL-V2.md">Read the frozen protocol ↗</a></div>
@@ -350,12 +350,14 @@
   (function () {
     var TH = function (n) { return Number(n).toLocaleString("en-US"); };
     var D3 = function (n) { var v = Number(n); return (v < 1 ? String(v.toFixed(3)).replace(/^0/, "") : v.toFixed(3)); };
-    fetch("landing-stats.json").then(function (r) { return r.ok ? r.json() : null; })
+    fetch("landing-stats.json?" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (s) {
         if (!s) return;
         var direct = { dossiers: TH, lc_csvs: TH, lc_rows: TH, cycles: TH, v2_cycles: TH,
                        fits_frames: TH, targets: TH, playback: TH, features: TH,
-                       labeled: TH, auc: D3, ece: D3, gap: D3 };
+                       labeled: TH, usable: TH, auc: D3, ece: D3, brier: D3, gap: D3,
+                       rules_auc: D3, best_feature_auc: D3, scatter_auc: D3 };
         Object.keys(direct).forEach(function (k) {
           if (s[k] == null) return;
           document.querySelectorAll('[data-stat="' + k + '"]').forEach(function (el) {
@@ -364,6 +366,13 @@
         });
         var span = document.querySelector('[data-stat="span"]');
         if (span && s.span) span.textContent = s.span;
+        var bf = document.querySelector('[data-stat="best_feature"]');
+        if (bf && s.best_feature) bf.textContent = s.best_feature;
+        /* eval-bar widths: --score follows the same stat the bar's value reads */
+        document.querySelectorAll('[data-score-stat]').forEach(function (el) {
+          var v = Number(s[el.getAttribute("data-score-stat")]);
+          if (!isNaN(v)) el.style.setProperty("--score", (v * 100).toFixed(1) + "%");
+        });
         var gn = document.querySelector('[data-stat="gap_note"]');
         if (gn && s.auc_random) gn.textContent = "Random " + D3(s.auc_random) + " minus grouped " + D3(s.auc);
         var us = document.querySelector('[data-stat="usable_split"]');

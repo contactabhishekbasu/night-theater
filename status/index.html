@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <title>Live Pipeline — Backyard Meridian</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="../assets/theater.css">
+<link rel="stylesheet" href="../assets/theater.css?v=20260718d">
 <link rel="stylesheet" href="../assets/vendor/uPlot.min.css">
-<link rel="stylesheet" href="status.css">
+<link rel="stylesheet" href="status.css?v=20260718j">
 <script>
   /* set the manual theme before first paint to avoid a flash (shared with Page 2) */
   try {
@@ -24,14 +24,12 @@
   </a>
   <nav class="site-header__tabs" aria-label="Primary">
     <a class="site-tab" href="../">Case study</a>
-    <a class="site-tab" href="../status/" aria-current="page">Live</a>
+    <a class="site-tab" href="../status/" aria-current="page">Workflow</a>
     <a class="site-tab" href="../review/">Review</a>
     <a class="site-tab" href="../eval/">Evaluation</a>
   </nav>
   <div class="site-header__tools">
     <span class="snapshot-badge" id="snapshot-badge" title="This is the static weekly snapshot">snapshot</span>
-    <button id="explainBtn" class="icon-btn" aria-pressed="false"
-            title="Reveal every explanation on the page">Explain this page</button>
     <button id="themeBtn" class="icon-btn" aria-label="Toggle light / dark theme" title="Toggle theme">◐</button>
   </div>
 </header>
@@ -71,12 +69,53 @@
     <span class="led crit" aria-hidden="true"></span><span id="top-banner-text"></span>
   </div>
 
-  <!-- ============ 1 · TONIGHT BOARD ============ -->
+  <!-- ============ PERFORMANCE — LAST 24 H (moved to the top, directly under the command bar) ============ -->
+  <section aria-labelledby="kpi-h">
+    <h2 class="section-title" id="kpi-h" style="margin-left:2px">Performance — last 24 h</h2>
+    <div class="kpi-cards">
+      <div class="kpi-card" id="kpi-tp"><div class="l">Throughput</div><div class="v">—</div><div class="d">—</div><div class="chart" aria-hidden="true"></div></div>
+      <div class="kpi-card" id="kpi-yield"><div class="l">Yield (usable)</div><div class="v">—</div><div class="d">—</div><div class="chart" aria-hidden="true"></div></div>
+      <div class="kpi-card" id="kpi-lat"><div class="l">Probe→score</div><div class="v">—</div><div class="d">—</div><div class="chart" aria-hidden="true"></div></div>
+      <div class="kpi-card" id="kpi-queue"><div class="l">Queue depth</div><div class="v">—</div><div class="d">—</div><div class="chart" aria-hidden="true"></div></div>
+      <div class="kpi-card" id="kpi-probe"><div class="l">Probe</div><div class="v">—</div><div class="d">—</div><div class="chart" aria-hidden="true"></div></div>
+      <div class="kpi-card" id="kpi-err"><div class="l">Error budget</div><div class="v">—</div><div class="d">—</div><div class="chart" aria-hidden="true"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ 1 · TONIGHT BOARD (controls cluster now lives in this card header) ============ -->
   <section aria-labelledby="tonight-h">
     <div class="card">
-      <h2 class="section-title" id="tonight-h">Tonight — work in flight
-        <span class="why" tabindex="0" role="button" onclick="tgl('ex-lanes')">what am I looking at?</span>
-      </h2>
+      <div class="tonight-head">
+        <h2 class="section-title" id="tonight-h" style="margin:0">Tonight — work in flight
+          <button class="why-i" aria-label="what am I looking at?" onclick="tgl('ex-lanes')"></button>
+        </h2>
+        <div class="controls-cluster" id="controls-section" hidden>
+          <div class="controls compact">
+            <button class="btn btn--accent" id="ctl-pause">⏸ Pause acquiring</button>
+            <span class="seg" id="ctl-scale" role="group" aria-label="Worker scale">
+              <button data-v="1">1</button><button data-v="2">2</button>
+              <button data-v="3">3</button><button data-v="auto">Auto</button>
+            </span>
+            <span class="ctl-label">worker scale</span>
+            <button class="btn" id="ctl-requeue">↻ Requeue night…</button>
+            <button class="btn" id="ctl-prio">★ Prioritize target…</button>
+            <button class="btn" id="ctl-breaker">⚡ Reset breaker</button>
+            <span class="state-chip" id="ctl-pending" hidden></span>
+          </div>
+          <form class="ctl-form" id="ctl-form" hidden>
+            <span class="ctl-label" id="ctl-form-label"></span>
+            <input id="ctl-form-target" placeholder="target (e.g. WASP-12)" aria-label="target" required>
+            <input id="ctl-form-night" placeholder="night YYMMDD" aria-label="night">
+            <button class="btn" type="submit" id="ctl-form-apply">Apply</button>
+            <button class="btn btn--ghost" type="button" id="ctl-form-cancel">Cancel</button>
+          </form>
+          <p class="detail ctl-state-line" id="ctl-state">Every command: a confirming click, audit-logged, applied by the loop.</p>
+        </div>
+        <div id="controls-offline-wrap" hidden>
+          <p class="ctl-offline" id="controls-offline">controls offline — start
+            <span class="mono">review_server.py</span> (:8323) to enable pipeline controls</p>
+        </div>
+      </div>
       <div class="explain" id="ex-lanes">
         One row per live process. Lane <b>A</b> is the sole <b>acquirer</b> — it politely
         probes the archive for a night's frames, walks the ±3-min cadence to enumerate the
@@ -88,8 +127,8 @@
         A red dot means no heartbeat for &gt;2&nbsp;min (the watchdog will requeue its night).
       </div>
 
-      <details class="explain-details">
-        <summary>Color legend</summary>
+      <details class="legend-pop">
+        <summary aria-label="Show colour legend">Colour legend</summary>
         <div class="legend-body">
           <div>
             <div class="legend-title">Worker state</div>
@@ -127,11 +166,19 @@
   <!-- Review lives on its own page (../review/); the command bar's pending count +
        the Review node in the flow strip deep-link there — no duplicate section here. -->
 
-  <!-- ============ 2 · THE NIGHT, PLAYED BACK + COVERAGE/QUALITY ============ -->
-  <section class="grid2">
+  <!-- ============ 2 · THE NIGHT — grouped band: playback + coverage + scored result ============ -->
+  <section class="night-band" aria-labelledby="night-band-h">
+    <div class="band-head">
+      <h2 class="section-title" id="night-band-h" style="margin:0">The night — playback, coverage &amp; result</h2>
+      <p class="band-sub">all three cards show the same last reduced night — they refresh together when a newer night finishes</p>
+      <p class="band-status" id="band-status" hidden aria-live="polite"></p>
+    </div>
+    <div class="grid2">
     <div class="card" id="film-card">
       <h2 class="section-title">The night, played back
-        <span class="why" tabindex="0" role="button" onclick="tgl('ex-film')">explain</span></h2>
+        <button class="why-i" aria-label="explain the playback" onclick="tgl('ex-film')"></button></h2>
+      <div class="night-chip-row"><span id="film-chip"></span></div>
+      <p class="night-note" id="film-note" hidden></p>
       <div class="explain" id="ex-film">
         Every downloaded frame, played as a film. The <b style="color:var(--blue)">blue
         circle</b> is the target star (the one with the planet); the
@@ -153,16 +200,17 @@
         <select id="speed" aria-label="Playback speed (frames per second)">
           <option>6</option><option selected>12</option><option>24</option></select>
       </div>
-      <div class="theater-meta" id="film-meta"></div>
+      <div class="film-meta-grid" id="film-meta"></div>
       <svg class="plot" id="preview-lc" viewBox="0 0 400 80" preserveAspectRatio="none"
            role="img" aria-label="quick-look light curve building with playback"></svg>
       <div class="theater-meta" id="preview-note"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="cov-card">
       <h2 class="section-title">Transit coverage
         <span class="section-sub">— the partial-coverage trap, checked live</span>
-        <span class="why" tabindex="0" role="button" onclick="tgl('ex-cov')">explain</span></h2>
+        <button class="why-i" aria-label="explain transit coverage" onclick="tgl('ex-cov')"></button></h2>
+      <div class="night-chip-row"><span id="cov-chip"></span></div>
       <div class="explain" id="ex-cov">
         Green ticks are our frames in time; the shaded band is when the planet was
         predicted to cross its star (computed from the published orbital period). A
@@ -174,69 +222,26 @@
            role="img" aria-label="transit coverage timeline with UT axis and coverage verdict"></svg>
       <p class="detail" id="coverage-note">—</p>
       <h2 class="section-title" style="margin-top:var(--sp-4)">Frame quality
-        <span class="why" tabindex="0" role="button" onclick="tgl('ex-q')">explain</span></h2>
+        <button class="why-i" aria-label="explain frame quality" onclick="tgl('ex-q')"></button></h2>
       <div class="explain" id="ex-q">
-        Sky background per frame: a rising line means moonlight, haze, or dawn; spikes
-        mean passing clouds. Peak ADU near the sensor maximum means saturation —
-        photometry on a saturated star is unusable, which is why the pipeline checks it.
+        The trend is per-frame at acquisition: sky background (a rising line means
+        moonlight, haze, or dawn; spikes mean passing clouds) and the whole-frame peak
+        pixel — which can rail at the sensor ceiling on a bright neighbour or hot pixel
+        without the target being affected. The health ribbon below is the real verdict:
+        it reports which frames EXOTIC actually used for photometry and judges saturation
+        on the <i>target's</i> aperture, not the whole frame.
       </div>
       <div id="quality-chart" class="chart-h" role="img"
            aria-label="per-frame sky background and peak ADU vs the saturation ceiling"></div>
       <div class="legend" id="quality-legend"></div>
+      <div id="frame-health"></div>
     </div>
-  </section>
-
-  <!-- ============ 3 · CONTROLS (live only — hidden on snapshot / server down) ============ -->
-  <section id="controls-section" hidden aria-labelledby="controls-h">
-    <div class="card">
-      <h2 class="section-title" id="controls-h">Controls
-        <span class="section-sub">— confirmed, audit-logged, applied at the next safe boundary · live mode only</span></h2>
-      <div class="controls">
-        <button class="btn btn--accent" id="ctl-pause">⏸ Pause acquiring</button>
-        <span class="seg" id="ctl-scale" role="group" aria-label="Worker scale">
-          <button data-v="1">1</button><button data-v="2">2</button>
-          <button data-v="3">3</button><button data-v="auto">Auto</button>
-        </span>
-        <span class="ctl-label">worker scale</span>
-        <button class="btn" id="ctl-requeue">↻ Requeue night…</button>
-        <button class="btn" id="ctl-prio">★ Prioritize target…</button>
-        <button class="btn" id="ctl-breaker">⚡ Reset breaker</button>
-        <span class="state-chip" id="ctl-pending" hidden></span>
-      </div>
-      <form class="ctl-form" id="ctl-form" hidden>
-        <span class="ctl-label" id="ctl-form-label"></span>
-        <input id="ctl-form-target" placeholder="target (e.g. WASP-12)" aria-label="target" required>
-        <input id="ctl-form-night" placeholder="night YYMMDD" aria-label="night">
-        <button class="btn" type="submit" id="ctl-form-apply">Apply</button>
-        <button class="btn btn--ghost" type="button" id="ctl-form-cancel">Cancel</button>
-      </form>
-      <p class="detail" id="ctl-state">Every command needs a second confirming click, is written to the
-        hash-chained audit trail as a human action, and is applied by the loop between nights.</p>
     </div>
-  </section>
-  <section id="controls-offline-wrap" hidden>
-    <p class="ctl-offline" id="controls-offline">controls offline — start
-      <span class="mono">review_server.py</span> (:8323) to enable pipeline controls</p>
-  </section>
 
-  <!-- ============ 4 · PERFORMANCE — LAST 24 H ============ -->
-  <section aria-labelledby="kpi-h">
-    <h2 class="section-title" id="kpi-h" style="margin-left:2px">Performance — last 24 h</h2>
-    <div class="kpi-cards">
-      <div class="kpi-card" id="kpi-tp"><div class="l">Throughput</div><div class="v">—</div><div class="d">—</div><div class="chart" aria-hidden="true"></div></div>
-      <div class="kpi-card" id="kpi-yield"><div class="l">Yield (usable)</div><div class="v">—</div><div class="d">—</div><div class="chart" aria-hidden="true"></div></div>
-      <div class="kpi-card" id="kpi-lat"><div class="l">Probe→score</div><div class="v">—</div><div class="d">—</div><div class="chart" aria-hidden="true"></div></div>
-      <div class="kpi-card" id="kpi-queue"><div class="l">Queue depth</div><div class="v">—</div><div class="d">—</div><div class="chart" aria-hidden="true"></div></div>
-      <div class="kpi-card" id="kpi-sla"><div class="l">Review SLA</div><div class="v">—</div><div class="d">—</div><div class="chart" aria-hidden="true"></div></div>
-      <div class="kpi-card" id="kpi-err"><div class="l">Error budget</div><div class="v">—</div><div class="d">—</div><div class="chart" aria-hidden="true"></div></div>
-    </div>
-  </section>
-
-  <!-- ============ 5 · SCIENCE ROW ============ -->
-  <section class="grid2">
-    <div class="card">
+    <div class="card" id="science-card">
       <h2 class="section-title"><a class="sci-link" id="sci-review-link" href="../review/">Science card — last scored night →</a>
-        <span class="why" tabindex="0" role="button" onclick="tgl('ex-sci')">explain</span></h2>
+        <button class="why-i" aria-label="explain the verdict logic" onclick="tgl('ex-sci')"></button></h2>
+      <div class="night-chip-row"><span id="sci-chip"></span></div>
       <div class="explain" id="ex-sci">
         The verdict logic: <b>depth</b> is how much light the planet blocks (checked
         against the published value in σ, using error bars inflated for correlated
@@ -247,10 +252,25 @@
         NOISY-CONSISTENT means right answer, unusable precision; NON-DETECTION means
         the transit never showed above the noise.
       </div>
-      <div id="science">—</div>
-      <div id="reasons"></div>
-      <div class="media" style="margin-top:var(--sp-3)"><img id="lightcurve" alt="last fitted light curve" hidden></div>
+      <div class="sci-body">
+        <div class="sci-left">
+          <div id="science">—</div>
+          <div id="sci-catalog"></div>
+          <div id="reasons"></div>
+        </div>
+        <div class="sci-right">
+          <div class="media"><img id="lightcurve" alt="last fitted light curve" hidden></div>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <!-- Controls cluster + "controls offline" note now live in the "Tonight — work in flight" card header.
+       Performance — last 24 h moved to the top of the page, directly under the command bar. -->
+
+
+  <!-- ============ 5 · SESSION RESULTS + SESSIONS HISTORY ============ -->
+  <section class="grid2">
     <div class="card">
       <h2 class="section-title">Session results <span id="sess-count" class="section-sub"></span></h2>
       <div class="oc-strip" id="oc-strip" aria-label="per-night mid-time O−C, one bar per scored night"></div>
@@ -262,6 +282,18 @@
         <div class="mini-h">Training feed → next retrain</div>
         <div id="train-body"><span class="tel3">awaiting telemetry v3 — session labels</span></div>
       </div>
+    </div>
+    <div class="card" id="sessions-card">
+      <h2 class="section-title">Sessions <span class="section-sub">— current vs past loop runs</span>
+        <button class="why-i" aria-label="explain the sessions panel" onclick="tgl('ex-sessions')"></button></h2>
+      <div class="explain" id="ex-sessions">
+        Each row is one <b>loop run</b> (a session): how many nights it <b>completed</b> of
+        those it attempted, the median completion rate (nights/hr), dead-letters, and the
+        <b>verdict mix</b> it produced (the coloured bar). The <b>current</b> run is
+        highlighted; <span class="mono">~est</span> marks rows reconstructed from historical
+        logs. This answers "how is this run doing versus the ones before it?"
+      </div>
+      <div class="sessions-body" id="sessions-body"><span class="tel3">loading session history…</span></div>
     </div>
   </section>
 
@@ -293,17 +325,19 @@
       <h2 class="section-title" id="model-h" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         Quality model — advisory, never approves
         <span class="promo-chip" id="model-chip" hidden></span>
-        <span class="why" tabindex="0" role="button" onclick="tgl('ex-gates')">explain</span></h2>
+        <button class="why-i" aria-label="explain the quality-model health checks" onclick="tgl('ex-gates')"></button></h2>
       <div class="explain" id="ex-gates">
         The quality model learns from these scored nights to predict run quality. It
-        never approves anything — it drafts a recommendation a human reviews. We don't
-        trust it on real telescope data until: ≥25 good-quality examples, calibration
+        never approves anything — it drafts a recommendation a human reviews. These are
+        health checks, not the promotion gate: ≥25 good-quality examples, calibration
         error (ECE) under 0.10 — meaning "80% confident" is right ~80% of the time —
-        and stable accuracy across three training cycles.
+        and stable accuracy across three training cycles. The actual promotion gate — a
+        paired ΔAUC confidence interval clearing zero across 3 consecutive cycles, plus a
+        human act — lives on the <a href="../eval/">Evaluation page</a>.
       </div>
       <div class="model-grid">
         <div>
-          <div class="mini-h">Trust gates</div>
+          <div class="mini-h">Model health checks</div>
           <div id="model-gates"><span class="tel3">no model telemetry yet</span></div>
         </div>
         <div>
@@ -316,7 +350,9 @@
           Scored honestly: <b>GroupKFold by target</b> (a target never appears in both train
           and test), must beat majority / best-feature / rules baselines.
           <br><br>The model only <b>drafts a recommendation and orders the queue</b> — every
-          approval is human, and promotion itself is a human decision recorded in the audit trail.
+          approval is human. Promotion needs a <b>paired ΔAUC confidence interval that clears
+          zero across 3 consecutive cycles</b>, plus a human act recorded in the audit trail —
+          see the <a href="../eval/">Evaluation page</a> for that gate, not the health checks above.
           <br><br><span class="mini-h" style="display:inline">live accuracy (last 100 nights)</span>
           <span id="model-live" class="mono">coming online</span>
           <br><a href="../eval/">Full evaluation, ROC, reliability →</a>
@@ -344,7 +380,7 @@
 </div>
 
 <script src="../assets/vendor/uPlot.iife.min.js"></script>
-<script src="status.js"></script>
+<script src="status.js?v=20260727a"></script>
 
 <footer class="site-footer">
   <div class="site-footer__inner">

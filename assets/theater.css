@@ -674,7 +674,8 @@ a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-ra
 .site-header__brand small  { display: block; font-size: var(--fs-11); color: var(--muted); font-weight: 400; letter-spacing: .01em; }
 .site-header__brand:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: var(--radius-s); }
 
-.site-header__tabs { display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-1); margin: 0; }
+.site-header__tabs { display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-1);
+  margin: 0 0 0 auto; }   /* right-aligned so brand·left / tabs+tools·right matches the landing nav */
 .site-tab {
   display: inline-flex; align-items: center; white-space: nowrap;
   padding: 6px 12px; border-radius: var(--radius-s);
@@ -685,7 +686,7 @@ a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-ra
 .site-tab:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 .site-tab[aria-current="page"] { color: var(--blue); background: color-mix(in srgb, var(--blue) 12%, transparent); }
 
-.site-header__tools { display: inline-flex; align-items: center; gap: var(--sp-2); margin-left: auto; flex: none; }
+.site-header__tools { display: inline-flex; align-items: center; gap: var(--sp-2); margin-left: var(--sp-4); flex: none; }
 
 /* snapshot badge (header tools slot) — only shown on the static public snapshot */
 .snapshot-badge {
@@ -849,15 +850,19 @@ html[data-snapshot] #offline { display: none !important; }
 .lane-head .meta { margin-left: auto; font: 10.5px var(--font-data); color: var(--muted); white-space: nowrap; }
 .lane-head .meta b { color: var(--sec); font-weight: 600; }
 .steps { display: flex; gap: 6px; margin-top: 9px; overflow-x: auto; }
-.step { flex: 1; min-width: 96px; border: 1px solid var(--grid); border-radius: 5px;
+.step { flex: 1; min-width: 108px; border: 1px solid var(--grid); border-radius: 5px;
         padding: 6px 9px; background: var(--surface); }
 .step .sn { display: flex; justify-content: space-between; gap: 6px; font: 600 9.5px var(--font-data);
             text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
-.step .sv { font: var(--fs-11) var(--font-data); color: var(--sec); margin-top: 3px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* live step values (A + W lanes) wrap to at most two lines instead of clipping
+   mid-string; full text stays in the title attr set in updateStep() */
+.step .sv { font: var(--fs-11)/1.35 var(--font-data); color: var(--sec); margin-top: 3px;
+            display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+            line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
 .step.done { border-color: color-mix(in srgb, var(--aqua) 30%, var(--grid)); }
 .step.done .sn { color: var(--aqua-txt); }
-.step.now { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 7%, var(--surface)); }
+.step.now { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 7%, var(--surface));
+            flex: 1.6; min-width: 168px; }   /* widen the active step so its live stat has room to wrap */
 .step.now .sn { color: var(--blue); }
 .step.now .sv { color: var(--ink); }
 .step.pend { opacity: .45; }
@@ -886,8 +891,11 @@ html[data-snapshot] #offline { display: none !important; }
                margin: 3px 0 1px; font-variant-numeric: tabular-nums;
                white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .kpi-card .v small { font: 500 var(--fs-11) var(--font-data); color: var(--muted); }
-.kpi-card .d { font-size: 10.5px; color: var(--sec); min-height: 16px;
-               overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* detail line wraps to 2 lines instead of truncating with "…" — shows the full
+   "ETA 1.4 h at this rate · ▼ 199 vs 24 h ago" delta the ellipsis was hiding */
+.kpi-card .d { font-size: 10.5px; color: var(--sec); min-height: 16px; line-height: 1.35;
+               white-space: normal; overflow: hidden;
+               display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .kpi-card .d.up   { color: var(--aqua-txt); }
 .kpi-card .d.down { color: var(--crit-txt); }
 .kpi-card.is-warn .v { color: var(--warn-txt); }
@@ -959,3 +967,112 @@ html[data-snapshot] #offline { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .step .rail.indet i { width: 50%; animation: none; transform: none; }
 }
+
+/* ============================================================================
+   STATUS FEEDBACK BATCH  (2026-07-18 · additive; Live-page only)
+   Night band + per-card night chips, fixed film-meta grid, ⓘ icon toggles,
+   compact in-header controls, and the Sessions history panel. Every class here
+   is new except the two .step tweaks above; nothing the review page uses is
+   touched. Tokens only, no raw hex.
+   ========================================================================== */
+
+/* ---- night band: film + coverage + science grouped as one unit (§1) ------ */
+.night-band {
+  border: 1px solid color-mix(in srgb, var(--blue) 22%, var(--grid));
+  border-radius: var(--radius-l);
+  background: color-mix(in srgb, var(--blue) 4%, var(--surface));
+  padding: var(--sp-3);
+  display: flex; flex-direction: column; gap: var(--sp-3);
+}
+.night-band .band-head { display: flex; align-items: baseline; flex-wrap: wrap;
+                         gap: var(--sp-1) var(--sp-3); padding: 0 var(--sp-1); }
+.night-band .band-head .section-title { margin: 0; }
+.night-band .band-sub { margin: 0; font: var(--fs-11) var(--font-data); color: var(--muted);
+                        letter-spacing: 0; text-transform: none; }
+.night-band > .grid2 { gap: var(--sp-3); }
+/* science card spans the band full-width; keep its light curve from upscaling */
+#science-card .media { max-width: 620px; }
+
+/* per-card night label chip: target · night · date (+ optional verdict badge) */
+.night-chip-row { margin: 0 0 var(--sp-2); min-height: 24px; }
+.night-chip { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 5px;
+              padding: 3px 10px; border-radius: var(--radius-pill);
+              border: 1px solid var(--grid); background: var(--plane);
+              font: var(--fs-11) var(--font-data); color: var(--sec); }
+.night-chip b { color: var(--ink); font-weight: 600; }
+.night-chip .nc-night { color: var(--sec); font-variant-numeric: tabular-nums; }
+.night-chip .nc-date { color: var(--muted); }
+.night-chip .nc-sep { color: var(--muted); opacity: .55; margin: 0 1px; }
+.night-note { margin: 0 0 var(--sp-2); font: var(--fs-11)/1.5 var(--font-data);
+              color: var(--sec); border-left: 2px solid color-mix(in srgb, var(--warn) 55%, transparent);
+              padding-left: var(--sp-2); }
+
+/* ---- fixed two-row film-meta grid: card never resizes during playback (§2) */
+.film-meta-grid { display: grid; grid-template-columns: repeat(3, 1fr);
+                  gap: 4px var(--sp-3); min-height: 46px; align-content: start;
+                  margin-top: var(--sp-2); }
+.film-meta-grid .fm-cell { display: flex; flex-direction: column; min-width: 0; }
+.film-meta-grid .fm-l { font: 400 9px/1.4 var(--font-data); color: var(--muted);
+                        text-transform: uppercase; letter-spacing: .08em; }
+.film-meta-grid .fm-v { font: var(--fs-11)/1.4 var(--font-data); color: var(--sec);
+                        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---- round ⓘ icon toggle: replaces inline ".why" text links (§4) ---------- */
+.why-i { display: inline-flex; align-items: center; justify-content: center;
+         width: 19px; height: 19px; padding: 0; margin-left: var(--sp-2);
+         border: 1px solid var(--grid); border-radius: 50%; background: transparent;
+         color: var(--blue); cursor: pointer; vertical-align: middle;
+         text-transform: none; letter-spacing: 0; }
+.why-i::before { content: "i"; font: italic 700 12px/1 var(--font-display); }
+.why-i:hover { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 10%, transparent); }
+.why-i:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* legend collapsed to an ⓘ trigger + popover (§4) */
+.legend-pop { display: inline-block; margin: 0 0 var(--sp-2); }
+.legend-pop > summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  list-style: none; font: var(--fs-11) var(--font-ui); color: var(--blue);
+  border: 1px solid var(--grid); border-radius: var(--radius-pill); padding: 3px 11px 3px 9px; }
+.legend-pop > summary::-webkit-details-marker { display: none; }
+.legend-pop > summary::before { content: "ⓘ"; font-size: 12px; }
+.legend-pop > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.legend-pop[open] { display: block; }
+.legend-pop[open] > summary { margin-bottom: var(--sp-2); }
+.legend-pop .legend-body { border: 1px solid var(--grid); border-radius: var(--radius-s);
+  background: var(--surface); padding: var(--sp-3); }
+
+/* ---- controls cluster relocated into the Tonight card header (§3) --------- */
+.tonight-head { display: flex; flex-direction: column; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+.tonight-head > .section-title { flex: 0 0 auto; }
+.controls-cluster { display: flex; flex-direction: column; gap: var(--sp-2); align-items: flex-start; }
+.controls.compact { gap: var(--sp-2); }
+.controls.compact .btn { padding: 6px 10px; font: 600 var(--fs-12)/1 var(--font-ui); }
+.controls.compact .seg button { padding: 5px 10px; font-size: var(--fs-12); }
+.controls.compact .ctl-label { font-size: 10px; }
+.ctl-state-line { font-size: 10.5px; margin-top: var(--sp-1); max-width: 66ch; }
+
+/* ---- Sessions panel: current vs past loop runs (§8) ----------------------- */
+/* last 10 rows, scroll past that — keeps the card compact next to Session results */
+.sessions-body { margin-top: var(--sp-1); max-height: 296px; overflow-y: auto; }
+.sessions-body::-webkit-scrollbar { width: 8px; }
+.sessions-body::-webkit-scrollbar-thumb { background: var(--grid); border-radius: 4px; }
+.sess-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1) var(--sp-3);
+            padding: 6px var(--sp-1); border-bottom: 1px solid var(--grid);
+            font: var(--fs-11) var(--font-data); color: var(--sec); }
+.sess-row:last-child { border-bottom: 0; }
+.sess-row.is-current { background: color-mix(in srgb, var(--blue) 8%, transparent);
+                       border-radius: var(--radius-s); }
+.sess-row .sess-name { flex: 1 1 130px; min-width: 0; display: inline-flex; align-items: center; gap: 6px; }
+.sess-row .sess-name b { color: var(--ink); font-weight: 600; }
+.sess-live { font: 600 9px/1 var(--font-ui); text-transform: uppercase; letter-spacing: .06em;
+             color: var(--good-txt); }
+.sess-bf { color: var(--muted); font-size: 9px; }
+.sess-row .sess-nights, .sess-row .sess-rate, .sess-row .sess-dl {
+  flex: 0 0 auto; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+.sess-row .sess-nights b { color: var(--ink); }
+.sess-row .sess-u { color: var(--muted); }
+.sess-row .sess-rate { color: var(--sec); }
+.sess-mix { flex: 1 1 80px; min-width: 64px; margin-top: 0; height: 7px; }
+.sess-nomix { flex: 1 1 80px; color: var(--muted); }
+.sessions-empty { color: var(--muted); }
+/* neutral swatch for verdict keys outside the standard set (e.g. INITS-FAILED) */
+.vc-other { background: var(--serious); }

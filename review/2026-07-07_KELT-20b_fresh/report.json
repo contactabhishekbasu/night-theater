@@ -110,7 +110,7 @@
   },
   "provenance": {
     "dataset_sha256": "c39bb7f00a9e8cd105c907966362254528201def9bebb8c578099cef7373830a",
-    "audit_head": "45ac4472a731a413b302747fcee6c562dab119aca4816c39c9cbcf1863371b2f",
+    "audit_head": "38f6ca29969f5d54576ea372b0124ae38770bf4395422557c552022b990d5c85",
     "exotic": "4.3.1",
     "ultranest": "3.6.5",
     "inits_sha256": "c7ebcaa9ac1f077749006db8b597c4668cc37a919df1fed4dea7854c1be533fe",
@@ -120,5 +120,73 @@
     "name": "AAVSO_KELT-20 b_2026-07-02.txt",
     "text": "#TYPE=EXOPLANET\n#OBSCODE=ABGA\n#SECONDARY_OBSCODES=MOBS\n#SOFTWARE=EXOTIC v4.3.1\n#DELIM=,\n#DATE_TYPE=BJD_TDB\n#OBSTYPE=CCD\n#STAR_NAME=KELT-20\n#EXOPLANET_NAME=KELT-20 b\n#BINNING=2x2\n#EXPOSURE_TIME=20.0\n#COMP_STAR-XC={\"ra\": null, \"dec\": null, \"x\": \"430\", \"y\": \"23\"}\n#NOTES=MicroObservatory Cecilia public archive; pipeline test \u2014 not for submission\n#DETREND_PARAMETERS=AIRMASS, AIRMASS CORRECTION FUNCTION\n#MEASUREMENT_TYPE=Rnflux\n#FILTER=CV\n#FILTER-XC={\"name\": \"CV\", \"desc\": \"MObs CV\", \"fwhm\": [{\"value\": \"350.0\", \"units\": \"nm\"}, {\"value\": \"850.0\", \"units\": \"nm\"}]}\n#PRIORS=Period=3.47410042 +/- 2.2e-07,Rp/R*=0.11441 +/- 0.00061,a/R*=7.457 +/- 0.033,inc=86.054 +/- 0.06,ecc=0.0,u0=2.487 +/- 0.026,u1=-4.054 +/- 0.099,u2=3.91 +/- 0.12,u3=-1.348 +/- 0.051\n#PRIORS-XC={\"Period\": {\"value\": \"3.47410042\", \"uncertainty\": \"2.2e-07\", \"units\": \"days\"}, \"Rp/R*\": {\"value\": \"0.11441\", \"uncertainty\": \"0.00061\"}, \"a/R*\": {\"value\": \"7.457\", \"uncertainty\": \"0.033\"}, \"inc\": {\"value\": \"86.054\", \"uncertainty\": \"0.06\", \"units\": \"degrees\"}, \"ecc\": {\"value\": \"0.0\", \"uncertainty\": null}, \"u0\": {\"value\": \"2.487\", \"uncertainty\": \"0.026\"}, \"u1\": {\"value\": \"-4.054\", \"uncertainty\": \"0.099\"}, \"u2\": {\"value\": \"3.91\", \"uncertainty\": \"0.12\"}, \"u3\": {\"value\": \"-1.348\", \"uncertainty\": \"0.051\"}}\n#RESULTS=Tc=2461223.885 +/- 0.0024,Rp/R*=0.083 +/- 0.041,inc=82.26 +/- 2.51,Am1=0.117081 +/- 1.2e-05,Am2=1.73 +/- 0.98\n#RESULTS-XC={\"Tc\": {\"value\": \"2461223.885\", \"uncertainty\": \"0.0024\", \"units\": \"BJD_TDB\"}, \"Rp/R*\": {\"value\": \"0.083\", \"uncertainty\": \"0.041\"}, \"inc\": {\"value\": \"82.26\", \"uncertainty\": \"2.51\"}, \"Am1\": {\"value\": \"0.117081\", \"uncertainty\": \"1.2e-05\"}, \"Am2\": {\"value\": \"1.73\", \"uncertainty\": \"0.98\"}, \"Duration\": {\"value\": \"0.061\", \"uncertainty\": \"0.057\", \"units\": \"days\"}}\n# EXOTIC is developed by Exoplanet Watch (exoplanets.nasa.gov/exoplanet-watch/), a citizen science project managed by NASA's Jet Propulsion Laboratory on behalf of NASA's Universe of Learning. This work is supported by NASA under award number NNX16AC65A to the Space Telescope Science Institute.\n# Use of this data is governed by the AAVSO Data Usage Guidelines: aavso.org/data-usage-guidelines\n#DATE,DIFF,ERR,DETREND_1,DETREND_2\n2461223.76566276,0.8138021,0.1967146,1.1186198,0.8130452\n2461223.98897041,1.1861979,0.1932872,1.3361419,1.1851517\n"
   },
+  "model": {
+    "p_good": null,
+    "model_version": null,
+    "ts": null,
+    "agree": null
+  },
+  "recommend_line": "RECOMMEND: AUTO-FILED \u2014 benchmark/validation run, not submitted to any science database.",
+  "lane": "archive",
+  "decision_required": false,
+  "checklist": [
+    {
+      "key": "verdict",
+      "label": "Benchmark verdict",
+      "value": "NON-DETECTION",
+      "status": "fail",
+      "note": "fails benchmark gates"
+    },
+    {
+      "key": "model",
+      "label": "Model grade",
+      "value": null,
+      "status": "na",
+      "note": "no grader prediction"
+    },
+    {
+      "key": "depth_snr",
+      "label": "Depth SNR",
+      "value": 2.0,
+      "status": "fail",
+      "note": "detection floor SNR 3"
+    },
+    {
+      "key": "scatter",
+      "label": "Residual scatter",
+      "value": 0.014,
+      "unit": "%",
+      "status": "pass",
+      "note": "benchmark noise gate 5%"
+    },
+    {
+      "key": "rednoise",
+      "label": "\u03b2 red noise",
+      "value": 1.0,
+      "status": "pass",
+      "note": "Pont-2006 factor; >2 flags time-correlated noise"
+    },
+    {
+      "key": "oc",
+      "label": "O\u2212C significance",
+      "value": "n/a",
+      "status": "na",
+      "note": "mid-time undefined \u2014 no transit detected"
+    },
+    {
+      "key": "crosscheck",
+      "label": "Catalog cross-check",
+      "value": "n/a",
+      "status": "na",
+      "note": "not in the Open Exoplanet Catalogue"
+    },
+    {
+      "key": "coverage",
+      "label": "Frames",
+      "value": 111,
+      "status": "pass",
+      "note": "benchmark minimum 30 frames"
+    }
+  ],
   "pdf": "2026-07-07_KELT-20b_fresh/report.pdf"
 }

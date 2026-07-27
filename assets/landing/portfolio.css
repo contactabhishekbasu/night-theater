@@ -53,12 +53,14 @@ button { font: inherit; }
 .button--solid { border-color: var(--blue); background: var(--blue); color: #061221; }
 .button--solid:hover, .button--solid:focus-visible { background: #67a7f3; }
 
+/* nav unified with the app-page site-header (compact bar, sans brand, Title-Case tabs);
+   kept dark + translucent so it still reads over the hero video (landing has no light mode) */
 .site-nav { position: fixed; inset: 0 0 auto; z-index: 50; border-bottom: 1px solid rgba(255,255,255,.12); background: rgba(13,13,13,.72); backdrop-filter: blur(18px); }
-.nav-inner { width: var(--wrap); min-height: 72px; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
-.brand { display: inline-flex; align-items: center; gap: 12px; min-width: max-content; color: var(--ink); text-decoration: none; }
-.brand img { width: 36px; height: 36px; object-fit: contain; }
-.brand strong { display: block; font-family: var(--serif); font-size: 18px; font-weight: 400; }
-.brand small { display: block; margin-top: 3px; color: var(--muted); font-family: var(--mono); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; }
+.nav-inner { width: var(--wrap); min-height: 54px; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 8px 0; }
+.brand { display: inline-flex; align-items: center; gap: 8px; min-width: max-content; color: var(--ink); text-decoration: none; }
+.brand img { width: 26px; height: 26px; object-fit: contain; }
+.brand strong { display: block; font-family: var(--sans); font-size: 15px; font-weight: 650; letter-spacing: .01em; line-height: 1.15; }
+.brand small { display: block; color: var(--muted); font-family: var(--sans); font-size: 11px; font-weight: 400; letter-spacing: .01em; text-transform: none; }
 .nav-links { display: flex; align-items: center; gap: 24px; }
 .nav-links a { color: var(--soft); font-family: var(--mono); font-size: 9px; letter-spacing: .07em; text-decoration: none; text-transform: uppercase; }
 .nav-links a:hover, .nav-links a:focus-visible { color: var(--ink); }
@@ -384,9 +386,10 @@ footer { padding: 36px 0; border-top: 1px solid var(--grid); background: var(--p
 /* four flat tabs, aria-current marks the page you're on (F4/F9/F10) */
 .site-tabs { display: flex; align-items: center; gap: 4px; }
 .site-tab {
-  padding: 8px 11px; border-radius: 4px; white-space: nowrap;
-  color: var(--soft); font-family: var(--mono); font-size: 9px;
-  letter-spacing: .07em; text-transform: uppercase; text-decoration: none;
+  display: inline-flex; align-items: center; white-space: nowrap;
+  padding: 6px 12px; border-radius: 6px;
+  color: var(--soft); font-family: var(--sans); font-size: 13px; font-weight: 600;
+  letter-spacing: 0; text-transform: none; text-decoration: none;
   transition: color .2s ease, background .2s ease;
 }
 .site-tab:hover { color: var(--ink); background: rgba(57,135,229,.12); }

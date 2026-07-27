@@ -47,6 +47,29 @@ function badge(v) {                                  // verdict → always colou
   const dv = KNOWN_VERDICTS.has(v) ? ` data-verdict="${v}"` : "";
   return `<span class="badge-verdict sm"${dv}>${esc(v)}</span>`;
 }
+/* "YYMMDD" → "18 Feb 2026" (2000-relative; null when not a plausible date) */
+const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function nightToDate(n) {
+  const s = String(n ?? "");
+  if (!/^\d{6}$/.test(s)) return null;
+  const mm = +s.slice(2, 4), dd = +s.slice(4, 6);
+  if (mm < 1 || mm > 12 || dd < 1 || dd > 31) return null;
+  return dd + " " + MON[mm - 1] + " 20" + s.slice(0, 2);
+}
+/* per-card night label chip: "target · night · date" (+ optional verdict badge).
+   Returns "" when neither target nor night is known (graceful on old telemetry). */
+function nightChip(target, night, verdict) {
+  const t = target != null && String(target) !== "" ? String(target) : null;
+  const n = night != null && String(night) !== "" ? String(night) : null;
+  if (!t && !n) return "";
+  const date = nightToDate(n);
+  const parts = [];
+  if (t) parts.push(`<b>${esc(t)}</b>`);
+  if (n) parts.push(`<span class="nc-night">${esc(n)}</span>`);
+  if (date) parts.push(`<span class="nc-date">${esc(date)}</span>`);
+  return `<span class="night-chip">${parts.join('<span class="nc-sep">·</span>')}` +
+         (verdict ? " " + badge(verdict) : "") + `</span>`;
+}
 const tgl = id => $(id).classList.toggle("open");
 window.tgl = tgl;                                    // used by inline .why handlers
 const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -80,16 +103,16 @@ $("themeBtn").addEventListener("click", () => {
   chartRenderers.forEach(fn => fn());                // uPlot colours are read at draw time
 });
 
-/* ---------- "Explain this page": one control reveals every .explain ------- */
+/* ---------- explain layer: all .explain blocks reveal together -------------
+   Retained for snapshot mode (the static capture defaults explanations ON — see
+   applySnapshot). The live "Explain this page" header button was removed; the
+   per-explainer ⓘ / .why toggles remain the way to open a single explanation. */
 function setExplain(on, persist) {
   document.documentElement.classList.toggle("explain-open", on);
   const b = $("explainBtn");
-  b.setAttribute("aria-pressed", on ? "true" : "false");
+  if (b) b.setAttribute("aria-pressed", on ? "true" : "false");
   if (persist) { try { localStorage.setItem("theater-explain", on ? "1" : "0"); } catch (e) {} }
 }
-$("explainBtn").addEventListener("click", () =>
-  setExplain(!document.documentElement.classList.contains("explain-open"), true));
-try { if (localStorage.getItem("theater-explain") === "1") setExplain(true, false); } catch (e) {}
 
 /* keyboard: Enter/Space toggles a focused ".why" explainer */
 document.addEventListener("keydown", e => {
@@ -178,13 +201,15 @@ function renderCmdbar(d) {
   const eta = k.eta_hours ?? summ.eta_hr;
   $("cb-eta").textContent = eta != null ? eta + " h" : "—";
 
-  /* review pending (v3 review{}; falls back to the :8323 queue fetch) */
+  /* review pending = runs needing a HUMAN decision (decision lane). Prefer the live queue
+     count (decision_required); auto-filed practice/spot-check/archive runs are not pending. */
   const rv = d.review || {};
-  const pending = rv.pending_n ?? reviewFallback.pending;
+  const pending = reviewFallback.pending ?? rv.pending_n;
   $("cb-review").textContent = pending != null ? pending : "—";
-  const oldest = rv.oldest_age_s ?? reviewFallback.oldest_age_s;
+  const oldest = (pending && pending > 0) ? (rv.oldest_age_s ?? reviewFallback.oldest_age_s) : null;
   $("cb-review-wrap").classList.toggle("is-warn", oldest != null && oldest > 48 * 3600);
-  $("cb-review-wrap").title = oldest != null ? "oldest pending " + fmtDur(oldest) : "";
+  $("cb-review-wrap").title = pending ? (oldest != null ? "oldest pending " + fmtDur(oldest) : "")
+                                      : "all auto-filed — none pending";
 
   /* gauges: mem / cpu / disk */
   const res = d.resources || {};
@@ -258,10 +283,11 @@ function renderFlow(d) {
   setStage("st-scored", scored, "this session", false);
 
   const rv = d.review || {};
-  const pending = rv.pending_n ?? reviewFallback.pending;
-  const oldest = rv.oldest_age_s ?? reviewFallback.oldest_age_s;
+  const pending = reviewFallback.pending ?? rv.pending_n;
+  const oldest = (pending && pending > 0) ? (rv.oldest_age_s ?? reviewFallback.oldest_age_s) : null;
   setStage("st-review", pending,
-    oldest != null ? "oldest " + fmtDur(oldest) + (oldest > 48 * 3600 ? " ⚠" : "") : "needs you", false);
+    pending ? (oldest != null ? "oldest " + fmtDur(oldest) + (oldest > 48 * 3600 ? " ⚠" : "") : "needs you")
+            : "auto-filed — none pending", false);
   $("st-review").classList.toggle("gate", true);
 
   setStage("st-approved", reviewFallback.approved, "in queue", false);
@@ -389,7 +415,10 @@ function updateLane(entry, w, d, info) {
   const chip = el.querySelector(".role-chip");
   chip.className = "role-chip " + (w.role === "acquire" ? "acquire" : "reduce");
   chip.textContent = w.role === "acquire" ? "acquire" : "reduce";
-  el.querySelector(".id").textContent = w.id;
+  /* primary label = stable lane slot ("R1 · W14" / "A · A1"); fall back to the
+     raw worker id when workers[].lane is absent (old telemetry). */
+  const lane = w.lane != null && String(w.lane) !== "" ? String(w.lane) : null;
+  el.querySelector(".id").textContent = lane ? lane + " · " + w.id : w.id;
   el.querySelector(".t-name").textContent = w.target || (w.state === "idle" ? "idle — waiting for handoff" : "waiting");
   const sub = [];
   if (w.night) sub.push("night " + w.night);
@@ -403,7 +432,7 @@ function updateLane(entry, w, d, info) {
   el.querySelector(".meta").textContent = meta.join(" · ");
   const verb = STATE_VERB[w.state] || w.state || "idle";
   el.setAttribute("aria-label",
-    `worker ${w.id}: ${verb}${stale ? ", no heartbeat" : ""}` +
+    `worker ${lane ? lane + " (" + w.id + ")" : w.id}: ${verb}${stale ? ", no heartbeat" : ""}` +
     (w.target ? ` on ${w.target}${w.night ? " " + w.night : ""}` : ""));
 
   const stepEls = el.querySelectorAll(".step");
@@ -521,10 +550,20 @@ function showFrame(i) {
     img.style.transform = `translate(${(f.dx * scale).toFixed(1)}px, ${(f.dy * scale).toFixed(1)}px)`;
   } else img.style.transform = "";
   $("scrub").value = film.idx;
-  $("film-meta").textContent =
-    `frame ${film.idx + 1}/${N} · ${f.t} UT · drift dx ${f.dx}px dy ${f.dy}px` +
-    (f.flux_ratio ? ` · target/comp ${f.flux_ratio}` : "") +
-    (film.manifest.stabilized ? ` · ${film.variant === "stab" ? "stabilized" : "raw drift"}` : "");
+  /* fixed two-row meta grid (frame/time/drift · ratio/mode) so the card never
+     resizes as values change length; full value also lives in each cell's title */
+  const modeTxt = film.manifest.stabilized
+    ? (film.variant === "stab" ? "stabilized" : "raw drift") : "—";
+  const ratioTxt = f.flux_ratio != null ? "target/comp " + f.flux_ratio : "—";
+  const cell = (label, value) =>
+    `<span class="fm-cell"><span class="fm-l">${esc(label)}</span>` +
+    `<span class="fm-v" title="${esc(value)}">${esc(value)}</span></span>`;
+  $("film-meta").innerHTML =
+    cell("frame", `${film.idx + 1}/${N}`) +
+    cell("time", `${f.t} UT`) +
+    cell("drift", `dx ${f.dx} dy ${f.dy} px`) +
+    cell("ratio", ratioTxt) +
+    cell("mode", modeTxt);
   ensureCache();
   updatePreviewLC();
 }
@@ -580,7 +619,11 @@ async function loadFilm(path) {
   film.lcPts = null;
   clearInterval(film.timer); film.playing = false;
   try { film.manifest = await (await fetch(path + "manifest.json?" + Date.now())).json(); }
-  catch (e) { film.manifest = null; return; }
+  catch (e) {                                          // film unreachable (public snapshot)
+    film.manifest = null;
+    showMidframe(nightOf(lastProgress));
+    return;
+  }
   const N = film.manifest.frames.length;
   $("scrub").max = N - 1;
   $("theater-controls").hidden = false;
@@ -603,6 +646,41 @@ async function loadFilm(path) {
   buildPreviewLC();
   showFrame(0);
   if (!reduceMotion()) play(true);                   // respect prefers-reduced-motion
+}
+/* ---------- public-snapshot fallback: ONE mid frame -------------------------
+   status/film/ never publishes (publish_site.py excludes it and strips
+   progress.film), so on the static snapshot there is no film to play. Instead of
+   an empty stage, show the single mid-transit JPEG scripts/midframes.py extracts
+   per night (status/midframes/<night>.jpg) — a picture of the night, never a
+   measurement. Private behaviour is untouched: this runs only when there is no
+   film, and both handlers bail the moment a real manifest is loaded. */
+function nightOf(d) {
+  const RN = (d && d.reduced_night) || null;
+  const sc = (RN && RN.science_card) || (d && d.science_card) || {};
+  return (RN && RN.night) || sc.night || (d && d.film_night) || null;
+}
+const MIDFRAME_NOTE = "mid-transit frame — one representative frame from this " +
+  "night; the frame-by-frame film stays on the private dashboard";
+function showMidframe(night) {
+  const img = $("film-frame");
+  if (!img || night == null || night === "") return;
+  const src = "./midframes/" + encodeURIComponent(String(night)) + ".jpg";
+  if (img.dataset.mid === src) return;                 // already showing this night
+  img.dataset.mid = src;
+  img.alt = "mid-transit frame from night " + night;
+  img.style.transform = "";
+  img.onload = () => {
+    if (film.manifest) return;                         // a real film took over — leave it alone
+    img.hidden = false;
+    $("preview-note").textContent = MIDFRAME_NOTE;
+  };
+  img.onerror = () => {                                // no mid frame for this night
+    if (film.manifest) return;
+    img.hidden = true;
+    $("preview-note").textContent = "";
+  };
+  img.src = src;
+  $("theater-controls").hidden = true;                 // nothing to scrub — a still
 }
 function setVariantUI() {
   $("film-variant").querySelectorAll("button").forEach(b => {
@@ -639,13 +717,13 @@ function covLine(x1, y1, x2, y2, stroke, sw) {
   return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${stroke}" stroke-width="${sw || 1}"/>`;
 }
 function renderCoverage(d) {
-  const c = d.coverage;
+  const c = d.reduced_night?.coverage || d.coverage;   // reduced-night bundle first, legacy fallback
   if (!c?.frames) return;
   const w = 400, bandY = 30, bandH = 22;
   const nPre = c.n_pre ?? c.frames.filter(f => f < c.ingress).length;
   const nIn  = c.n_in  ?? c.frames.filter(f => f >= c.ingress && f <= c.egress).length;
   const nPost= c.n_post?? c.frames.filter(f => f > c.egress).length;
-  const utc = s => s ? String(s).slice(11, 16) : null;   // "…Thh:mm…" → hh:mm
+  const utc = s => { const m = String(s || "").match(/(\d{1,2}:\d{2})/); return m ? m[1] : null; };  // "hh:mm" from "06:01" or ISO
   const tIn = utc(c.ingress_utc), tMid = utc(c.mid_utc), tEg = utc(c.egress_utc);
   let svg = `<rect x="0" y="${bandY}" width="${w}" height="${bandH}" fill="var(--grid)" rx="3"/>
     <rect x="${(c.ingress * w).toFixed(1)}" y="${bandY}" width="${Math.max((c.egress - c.ingress) * w, 1).toFixed(1)}"
@@ -666,31 +744,35 @@ function renderCoverage(d) {
   });
   svg += `<g stroke="var(--aqua)" stroke-width="1.4">${inTicks}</g>
           <g stroke="var(--muted)" stroke-width="1.4">${outTicks}</g>`;
-  /* absolute-time anchor (v3 *_utc fields) enables the UT axis + dawn marker */
-  const spanMs = (c.span_hours || 0) * 3600e3;
-  const t0 = (tIn && spanMs) ? Date.parse(c.ingress_utc) - c.ingress * spanMs : null;
-  if (t0 != null && c.dawn_utc) {                    // dawn marker (v3 dawn_utc)
-    const df = (Date.parse(c.dawn_utc) - t0) / spanMs;
-    if (df >= 0 && df <= 1.02) {
+  /* UT axis from the *_utc fields — plain "hh:mm" same-night times, so anchor on
+     minutes-of-day: phase 0 sits ingress·span before the ingress time. */
+  const hm2min = s => { const m = String(s || "").match(/(\d{1,2}):(\d{2})/); return m ? +m[1] * 60 + +m[2] : null; };
+  const inMin = hm2min(c.ingress_utc);
+  const t0min = (inMin != null && c.span_hours) ? inMin - c.ingress * c.span_hours * 60 : null;
+  const fmtMin = m => { const x = ((Math.round(m) % 1440) + 1440) % 1440;
+    return String(Math.floor(x / 60)).padStart(2, "0") + ":" + String(x % 60).padStart(2, "0"); };
+  if (t0min != null && c.dawn_utc) {                 // dawn marker (v3 dawn_utc)
+    const dMin = hm2min(c.dawn_utc);
+    let df = dMin != null ? (dMin - t0min) / (c.span_hours * 60) : null;
+    if (df != null && df < -0.02) df += 1440 / (c.span_hours * 60);   // wrap past midnight
+    if (df != null && df >= 0 && df <= 1.02) {
       const dx = Math.min(df, 1) * w;
       svg += covLine(dx, bandY - 6, dx, bandY + bandH + 6, "var(--warn)", 1.4) +
         `<text x="${dx}" y="${bandY + bandH + 16}" fill="var(--warn-txt)" font-size="8.5"
-          text-anchor="${anchor(df)}">dawn ${String(c.dawn_utc).slice(11, 16)}</text>`;
+          text-anchor="${anchor(df)}">dawn ${utc(c.dawn_utc)}</text>`;
     }
   }
-  /* UT axis: real times when v3 gives them, else relative hours over the span */
   svg += covLine(0, 62, w, 62, "var(--grid)");
   let axis = "";
-  if (t0 != null) {
-    for (let q = 0; q <= 4; q++) {
-      const x = q * w / 4;
-      const tt = new Date(t0 + (q / 4) * c.span_hours * 3600e3);
-      axis += `<text x="${x}" y="74" text-anchor="${q === 0 ? "start" : q === 4 ? "end" : "middle"}">${String(tt.getUTCHours()).padStart(2, "0")}:${String(tt.getUTCMinutes()).padStart(2, "0")}</text>`;
+  if (t0min != null) {
+    for (let qi = 0; qi <= 4; qi++) {
+      const x = qi * w / 4;
+      axis += `<text x="${x}" y="74" text-anchor="${qi === 0 ? "start" : qi === 4 ? "end" : "middle"}">${fmtMin(t0min + (qi / 4) * c.span_hours * 60)}</text>`;
     }
     axis += `<text x="${w}" y="86" text-anchor="end">UT</text>`;
   } else {
-    for (let q = 0; q <= 4; q++)
-      axis += `<text x="${q * w / 4}" y="74" text-anchor="${q === 0 ? "start" : q === 4 ? "end" : "middle"}">${(q / 4 * (c.span_hours || 0)).toFixed(1)}h</text>`;
+    for (let qi = 0; qi <= 4; qi++)
+      axis += `<text x="${qi * w / 4}" y="74" text-anchor="${qi === 0 ? "start" : qi === 4 ? "end" : "middle"}">${(qi / 4 * (c.span_hours || 0)).toFixed(1)}h</text>`;
     axis += `<text x="${w}" y="86" text-anchor="end">UT axis — awaiting telemetry v3</text>`;
   }
   svg += `<g fill="var(--muted)" font-size="8.5">${axis}</g>`;
@@ -710,9 +792,50 @@ function renderCoverage(d) {
 
 /* ---------- frame quality (uPlot, zone 2) ---------------------------------- */
 const SAT_ADU = 4095;
+/* per-frame health ribbon — one cell per frame, from EXOTIC's own per-frame ledger
+   (reduced_night.frame_health). "used" = the frame EXOTIC kept in the final light curve;
+   "saturated" is judged on the TARGET's raw aperture peak vs the sensor ceiling, NOT the
+   whole-frame max (a bright field star or hot pixel would falsely rail every frame). The
+   ribbon is present only for a reduced night — during acquisition target health is
+   unknowable, so it stays hidden rather than guessing. */
+const REASON_LABEL = {align: "align failed", fits: "corrupt FITS", lowflux: "target fit failed",
+  offframe: "target off-frame", skybg: "sky-bg failed", comp: "comp-star bad", clipped: "outlier-clipped"};
+function renderFrameHealth(fh) {
+  const el = $("frame-health");
+  if (!el) return;
+  const F = fh && fh.frames;
+  if (!F || F.length < 3) { el.innerHTML = ""; return; }   // live/legacy night → hide, don't lie
+  const C = fh.ceiling || SAT_ADU;
+  const used = fh.n_used != null ? fh.n_used : F.filter(f => f.used).length;
+  const total = fh.n_total != null ? fh.n_total : F.length;
+  const isSat = f => f.peak != null && f.peak >= C;
+  const sat = F.filter(f => f.used && isSat(f)).length;            // kept a saturated frame
+  const clipped = F.filter(f => f.reason === "clipped").length;
+  const rejected = F.filter(f => !f.used && f.reason !== "clipped").length;
+  const cellCls = f => !f.used ? (f.reason === "clipped" ? "clip" : "rej")
+    : isSat(f) ? "sat" : (f.peak != null && f.peak >= 0.9 * C) ? "near" : "ok";
+  const cells = F.map(f => {
+    const pk = f.peak != null ? ` · target peak ${f.peak} ADU` : "";
+    const st = f.used ? "used" : (REASON_LABEL[f.reason] || "rejected");
+    return `<i class="fh-cell ${cellCls(f)}" title="${esc(f.t)} · ${st}${pk}"></i>`;
+  }).join("");
+  const bits = [];
+  if (clipped) bits.push(`${clipped} outlier-clipped`);
+  if (rejected) bits.push(`<span class="fh-warn">${rejected} rejected</span>`);
+  if (sat) bits.push(`<span class="fh-warn">${sat} target-saturated</span>`);
+  el.innerHTML =
+    `<div class="fh-head">Frame health — <b>${used}/${total}</b> used for photometry` +
+    `${bits.length ? " · " + bits.join(" · ") : ""}</div>` +
+    `<div class="fh-strip" role="img" aria-label="${used} of ${total} frames used, ${sat} target-saturated, ${clipped} outlier-clipped">${cells}</div>` +
+    `<div class="fh-legend"><span><i class="fh-cell ok"></i>used</span>` +
+    `<span><i class="fh-cell clip"></i>outlier-clipped</span>` +
+    `<span><i class="fh-cell rej"></i>rejected</span>` +
+    `<span><i class="fh-cell sat"></i>target-saturated (&ge; ${C} ADU)</span></div>`;
+}
 function renderQuality(d) {
-  const q = d.quality_strip;
+  const q = d.reduced_night?.quality_strip || d.quality_strip;   // reduced-night bundle first
   const el = $("quality-chart");
+  renderFrameHealth(d.reduced_night?.frame_health);  // EXOTIC per-frame ledger (reduced night only)
   const qSig = q && q.length ? q.length + ":" + q[q.length - 1].t : "none";
   registerChart("quality", () => {
     el.replaceChildren();
@@ -761,10 +884,11 @@ function renderQuality(d) {
   if (!q || q.length < 3) { $("quality-legend").innerHTML = ""; return; }
   const lo = Math.min(...q.map(p => p.sky)), hi = Math.max(...q.map(p => p.sky));
   const pk = Math.max(...q.map(p => p.peak));
-  const dawn = d.coverage?.dawn_utc ? ` · dawn limit ${String(d.coverage.dawn_utc).slice(11, 16)} UT` : "";
+  const cov = d.reduced_night?.coverage || d.coverage;
+  const dawn = cov?.dawn_utc ? ` · dawn limit ${String(cov.dawn_utc).slice(11, 16)} UT` : "";
   $("quality-legend").innerHTML =
     `<span><i style="background:var(--aqua)"></i>sky ${Math.round(lo)}→${Math.round(hi)} ADU</span>` +
-    `<span><i style="background:var(--muted)"></i>peak ADU (brightest pixel) · max ${pk}${pk >= SAT_ADU ? " — at ceiling" : ""}</span>` +
+    `<span><i style="background:var(--muted)"></i>whole-frame peak ADU (acquisition) · max ${pk}${pk >= SAT_ADU ? " — a pixel at ceiling" : ""}</span>` +
     (dawn ? `<span style="color:var(--warn-txt)">${esc(dawn.slice(3))}</span>` : "");
 }
 
@@ -946,7 +1070,7 @@ function kpiCard(id, value, unit, caption, capCls, ser, colorVar, warn) {
   const sig = ser ? ser.xs.length + ":" + ser.xs[ser.xs.length - 1] + ":" + ser.ys[ser.ys.length - 1] : "ph";
   registerChart(id, () => {
     chart.replaceChildren();
-    if (!ser) { chart.innerHTML = `<span class="tel3">awaiting telemetry v3</span>`; return; }
+    if (!ser) { chart.innerHTML = `<span class="tel3">trend builds as nights log</span>`; return; }
     const col = cssVar(colorVar || "--aqua");
     new uPlot({
       width: chart.clientWidth || 150, height: 34,
@@ -1003,15 +1127,26 @@ function renderKpis(d) {
     (k.eta_hours != null ? `ETA ${k.eta_hours} h at this rate` : "") + (qDelta ? " · " + qDelta.txt : ""),
     qDelta?.cls, qSer, "--blue");
 
-  const slaSer = histSeries(p => p.review_oldest_age_s != null ? p.review_oldest_age_s / 3600 : null);
-  const oldest = rv.oldest_age_s;
-  const slaWarn = oldest != null && oldest > 48 * 3600;
-  const pending = rv.pending_n;
-  kpiCard("kpi-sla", oldest != null ? (oldest / 3600 < 48 ? (oldest / 3600).toFixed(1) : (oldest / 86400).toFixed(1)) : "—",
-    oldest != null ? (oldest / 3600 < 48 ? "h" : "d") : "",
-    oldest != null ? `oldest pending${slaWarn ? " — needs you" : ""}${pending != null ? " · " + pending + " pending" : ""}`
-                   : "awaiting telemetry v3 — review age",
-    slaWarn ? "down" : "", slaSer, "--warn", slaWarn);
+  /* probe breakdown — this slot used to be Review SLA, which is always 0 in practice
+     mode (nothing needs a human). Shows the acquisition-probe budget + circuit-breaker
+     health + how much probe budget was spent on nights that dead-ended (no frames). */
+  const probeSer = histSeries(p => p.probe_p50_s != null ? p.probe_p50_s / 60 : null);
+  const sbP = sb.probe, sbW = sb.walk, dls = d.deadletter_stats || {};
+  const probingNow = d.summary?.by_state?.probe || 0;
+  const brkOpen = !!h.breaker_open;
+  if (sbP && sbP.p50_s != null) {
+    const parts = [`p90 ${(sbP.p90_s / 60).toFixed(1)}m`];
+    if (sbW && sbW.p50_s != null) parts.push(`walk ${(sbW.p50_s / 60).toFixed(1)}m`);
+    parts.push(`breaker ${brkOpen ? "OPEN" : "closed"}`);
+    if (probingNow) parts.push(`${probingNow} probing`);
+    if (dls.probe_cost_s_est) parts.push(`≈${(dls.probe_cost_s_est / 3600).toFixed(0)} h on dead-ends`);
+    kpiCard("kpi-probe", (sbP.p50_s / 60).toFixed(1), "min", parts.join(" · "),
+      brkOpen ? "down" : "", probeSer, "--aqua", brkOpen);
+  } else {
+    kpiCard("kpi-probe", "—", "",
+      brkOpen ? "circuit breaker OPEN — archive throttled" : "awaiting probe telemetry",
+      brkOpen ? "down" : "", probeSer, "--aqua", brkOpen);
+  }
 
   const errSer = histSeries(p => (p.err_hiccups || 0) + (p.err_inits || 0) + (p.err_run || 0));
   const errN = (h.hiccups || 0) + (h.inits_failed || 0) + (h.run_failed || 0);
@@ -1030,32 +1165,131 @@ async function kpiHistRefresh() {
   if (lastProgress) renderKpis(lastProgress);
 }
 
+/* ---------- per-card night chips (zone 2 band) -----------------------------
+   Labels each card with the night IT shows so the async-rendered playback (a
+   PAST completed night) is never mistaken for the current night on the other
+   cards. Film chip ← film_target/film_night/film_verdict; when film_night ≠ the
+   live `night` a quiet note names what is reducing now. Coverage + science share
+   the displayed current-night identity (science_card). All fields optional:
+   absent → no chip / no note (old telemetry degrades cleanly). */
+function renderNightChips(d) {
+  const RN = d.reduced_night || null;
+  const sc = (RN && RN.science_card) || d.science_card || {};
+  const fm = (RN && RN.film_meta) ||
+    {film_target: d.film_target, film_night: d.film_night, film_verdict: d.film_verdict};
+  // playback, coverage and science now show the SAME last-reduced night → one identity,
+  // stamped on all three cards (the science card wins; film_meta is the fallback).
+  const tgt = sc.target ?? fm.film_target;
+  const night = sc.night ?? fm.film_night;
+  const vd = sc.verdict ?? fm.film_verdict;
+  const fEl = $("film-chip"), covEl = $("cov-chip"), sciEl = $("sci-chip");
+  if (fEl) fEl.innerHTML = nightChip(tgt, night, vd);
+  if (covEl) covEl.innerHTML = nightChip(tgt, night, null);
+  if (sciEl) sciEl.innerHTML = nightChip(tgt, night, vd);
+  const fNote = $("film-note"); if (fNote) { fNote.textContent = ""; fNote.hidden = true; }
+}
+
+/* ---------- band status: "last reduced night" + graceful "next incoming" ------
+   One calm line above the three night cards: what reduced night you're looking at,
+   when it scored, and — when the pipeline is already working a newer night — a quiet
+   "Next · reducing …" pill so the swap is expected, not surprising. On an actual night
+   change the line pulses once. Poll cadence is 5 s, so a finished night surfaces here
+   well inside the 30 s target. */
+let prevReducedNight = null;
+const STAGE_PHRASE = {probe: "probing archive", walk: "walking cadence", fetch: "downloading frames",
+  film: "rendering film", reduce: "fitting the light curve", align: "aligning frames",
+  sample: "nested sampling", paused: "paused"};
+function agoText(iso) {
+  const t = Date.parse(iso);
+  if (isNaN(t)) return null;
+  const s = Math.max(0, (Date.now() - t) / 1000);
+  if (s < 90) return "just now";
+  if (s < 5400) return Math.round(s / 60) + " min ago";
+  if (s < 172800) return Math.round(s / 3600) + " h ago";
+  return Math.round(s / 86400) + " d ago";
+}
+function renderBandStatus(d) {
+  const el = $("band-status");
+  if (!el) return;
+  const RN = d.reduced_night || null;
+  const sc = (RN && RN.science_card) || d.science_card || {};
+  const rNight = (RN && RN.night) || sc.night || null;
+  const rTgt = (RN && RN.target) || sc.target || null;
+  if (!rNight) { el.hidden = true; return; }
+  const lNight = d.night != null && String(d.night) !== "" ? String(d.night) : null;
+  const lTgt = d.target != null && String(d.target) !== "" ? String(d.target) : null;
+  const scored = (RN && RN.scored_utc) ? agoText(RN.scored_utc) : null;
+  let html = `Showing the <b>last reduced night</b> · ${esc(rTgt || "")} ${esc(rNight)}` +
+    (scored ? ` · scored ${esc(scored)}` : "");
+  if (lNight && lNight !== String(rNight)) {           // a newer night is already in flight
+    const phase = STAGE_PHRASE[d.stage] || null;
+    html += ` <span class="next-pill" title="the panels above update here automatically when this night finishes">` +
+      `↻ Next · reducing ${esc(lTgt || "")} ${esc(lNight)}${phase ? " · " + esc(phase) : ""}</span>`;
+  }
+  el.innerHTML = html;
+  el.hidden = false;
+  if (prevReducedNight && String(rNight) !== String(prevReducedNight)) {   // night just swapped
+    el.classList.remove("just-updated"); void el.offsetWidth; el.classList.add("just-updated");
+  }
+  prevReducedNight = String(rNight);
+}
+
+/* fit-vs-catalogue σ-deviation gauges — how far each measurement sits from the
+   published value (0σ = catalogue, ±3σ scale, colour by |σ|). O−C is skipped for
+   non-detections, where a fitted mid-time is noise and its σ is meaningless. */
+function catalogPanel(sc) {
+  const q = v => (v == null || v === "") ? "?" : esc(v);
+  const cls = a => a < 1.5 ? "ok" : a < 2 ? "aqua" : a < 3 ? "warn" : "crit";
+  const gauge = (label, z, detail) => {
+    const n = Number(z);
+    if (z == null || isNaN(n)) return "";
+    const a = Math.abs(n), left = (50 + Math.max(-3, Math.min(3, n)) / 3 * 50).toFixed(1);
+    return `<div class="cat-row">
+        <span class="cat-label">${esc(label)}</span>
+        <span class="cat-track"><i class="cat-zero"></i><b class="cat-dot ${cls(a)}" style="left:${left}%"></b></span>
+        <span class="cat-val ${cls(a)}">${n > 0 ? "+" : ""}${esc(n.toFixed(2))}σ</span>
+      </div><div class="cat-detail">${detail}</div>`;
+  };
+  const rows = [
+    gauge("Rp/R★", sc.rprs_z, `${q(sc.rprs_fit)} ± ${q(sc.rprs_err)} vs ${q(sc.rprs_pub)} published`),
+    gauge("Duration", sc.dur_z, `${q(sc.dur_fit_min)} vs ${q(sc.dur_pub_min)} min published`),
+  ];
+  if (sc.verdict !== "NON-DETECTION" && sc.oc_sigma != null && Math.abs(Number(sc.oc_sigma)) < 50)
+    rows.push(gauge("Mid-time O−C", sc.oc_sigma, `${q(sc.oc_minutes)} min from schedule`));
+  const body = rows.filter(Boolean).join("");
+  return body ? `<div class="cat-panel"><div class="cat-h">Fit vs catalogue · σ deviation (0 = published)</div>${body}</div>` : "";
+}
+
 /* ---------- science card (zone 5, binding kept incl. record_id link) ------- */
 function renderScience(d) {
-  if (!d.science_card) return;
-  const sc = d.science_card;
+  const RN = d.reduced_night || null;
+  const sc = (RN && RN.science_card) || d.science_card;   // reduced-night bundle first
+  if (!sc) return;
   const scId = sc.record_id || sc.id || sc.record || null;
   const scLink = $("sci-review-link");
   if (scLink) scLink.href = "../review/" + (scId ? "#" + encodeURIComponent(scId) : "");
+  // identity (target · night · verdict) is shown once, in the sci-chip above — no duplicate header here.
+  const q = v => (v == null || v === "") ? "?" : esc(v);   // graceful "?" until the loop emits the new fields
   $("science").innerHTML = `
-    <p style="margin:0 0 8px"><b class="mono" style="font-size:14px">${esc(sc.target)}</b>
-      <span style="color:var(--muted)">· night ${esc(sc.night)} ·</span> ${badge(sc.verdict)}</p>
-    <table class="kv">
+    <table class="kv sci-kv">
       <tr><td>depth: fit vs expected</td><td>${esc(sc.fit_depth_pct)}% vs ${esc(sc.expected_depth_pct)}%</td></tr>
-      <tr><td>Rp/R★ deviation</td><td>${esc(sc.rprs_z)}σ</td></tr>
-      <tr><td>duration deviation</td><td>${esc(sc.dur_z)}σ</td></tr>
-      <tr><td>mid-time O−C</td><td>${esc(sc.oc_minutes)} min</td></tr>
+      <tr><td>depth SNR</td><td>${q(sc.depth_snr)}</td></tr>
+      <tr><td>Rp/R★: fit vs published</td><td>${q(sc.rprs_fit)} ± ${q(sc.rprs_err)} vs ${q(sc.rprs_pub)} · ${esc(sc.rprs_z)}σ</td></tr>
+      <tr><td>duration: fit vs published</td><td>${q(sc.dur_fit_min)} vs ${q(sc.dur_pub_min)} min · ${esc(sc.dur_z)}σ</td></tr>
+      <tr><td>mid-time O−C</td><td>${esc(sc.oc_minutes)} min${(sc.oc_sigma != null && sc.verdict !== "NON-DETECTION" && Math.abs(Number(sc.oc_sigma)) < 50) ? " · " + esc(sc.oc_sigma) + "σ" : ""}</td></tr>
       <tr><td>scatter · β · χ²</td><td>${esc(sc.scatter_pct)}% · ${esc(sc.beta)} · ${esc(sc.chi2_rescale)}</td></tr>
       <tr><td>runtime · peak RSS</td><td>${esc(sc.runtime_s)}s · ${esc(sc.max_rss_mb ?? "?")} MB</td></tr>
     </table>`;
-  const rs = d.verdict_reasons || [];
+  $("sci-catalog").innerHTML = catalogPanel(sc);
+  const rs = (RN && RN.reasons) || d.verdict_reasons || [];
+  const mv = (RN && RN.model_view) || d.model_view;
   $("reasons").innerHTML =
     `<h2 class="section-title" style="margin-top:var(--sp-3)">Why this verdict</h2><ul class="reason-list">` +
     (rs.length ? rs.map(x => `<li>${esc(x)}</li>`).join("") : "<li>all quality gates passed</li>") + "</ul>" +
-    (d.model_view && d.model_view.p_good != null
-      ? `<p class="detail">model: p(good) = <b>${esc(d.model_view.p_good)}</b>
-         (${esc(d.model_view.verdict)}; trained on ${esc(d.model_view.n_train)} runs,
-         AUC ${esc(d.model_view.cv_auc)}) — advisory only</p>`
+    (mv && mv.p_good != null
+      ? `<p class="detail">model: p(good) = <b>${esc(mv.p_good)}</b>
+         (${esc(mv.verdict)}; trained on ${esc(mv.n_train)} runs,
+         AUC ${esc(mv.cv_auc)}) — advisory only</p>`
       : `<p class="detail">model: not yet authoritative — transparent rules decide</p>`);
 }
 
@@ -1112,6 +1346,60 @@ function renderSession(d) {
       <span class="bar blue" style="display:block;max-width:300px;margin-top:5px"><i style="width:${toRetrain.toFixed(0)}%"></i></span>
       <span style="font:10.5px var(--font-data);color:var(--muted)">retrain ${m.cycles != null ? "#" + (m.cycles + 1) : ""} auto-triggers at +60 new labels — ${s.labels_added}/60 · eval page updates itself</span></div>`;
   } else $("train-body").innerHTML = TEL3("session labels");
+}
+
+/* ---------- Sessions panel: past vs current loop runs ----------------------
+   Renders status/sessions.json (own poll, 60 s). One row per loop run, newest
+   first, current highlighted: completed/attempted nights, median nights/hr,
+   dead-letters, and a verdict-mix mini-bar. Honest empty state before the file
+   exists; unknown verdict keys (e.g. INITS-FAILED) fall back to a neutral swatch. */
+const SESSION_ROWS = 10;
+function sessMixBar(mix) {
+  const entries = Object.entries(mix || {}).filter(([, n]) => n > 0);
+  const total = entries.reduce((a, [, n]) => a + n, 0);
+  if (!total) return `<span class="sess-nomix" title="no scored nights">—</span>`;
+  return `<span class="mixbar sess-mix" aria-hidden="true">` + entries.map(([k, n]) => {
+    const cls = KNOWN_VERDICTS.has(k) ? "vc-" + k : "vc-other";
+    return `<i class="${cls}" style="width:${(100 * n / total).toFixed(1)}%" title="${esc(k)} ${n}"></i>`;
+  }).join("") + `</span>`;
+}
+function renderSessions(arr) {
+  const host = $("sessions-body");
+  if (!host) return;
+  if (!Array.isArray(arr) || !arr.length) {
+    host.innerHTML = `<p class="detail sessions-empty">no session history yet — the loop writes one row per run to ` +
+      `<span class="mono">sessions.json</span> at each tranche boundary</p>`;
+    return;
+  }
+  const rows = arr.slice(-SESSION_ROWS).reverse();   // newest first, current on top
+  host.innerHTML = rows.map(s => {
+    const cur = !!s.current;
+    const att = s.nights_attempted ?? 0, comp = s.nights_completed ?? 0;
+    const rate = s.nights_per_hr_median != null && !isNaN(+s.nights_per_hr_median)
+      ? (+s.nights_per_hr_median).toFixed(1) + "/hr" : "—";
+    const dl = s.deadletters != null ? s.deadletters : 0;
+    const bf = s.backfilled ? ` <span class="sess-bf" title="reconstructed from historical logs">~est</span>` : "";
+    const live = cur ? ` <span class="sess-live">live</span>` : "";
+    const led = cur ? `<span class="led ok" aria-hidden="true"></span>` : "";
+    return `<div class="sess-row${cur ? " is-current" : ""}">` +
+      `<span class="sess-name">${led}<b>${esc(s.session ?? "?")}</b>${live}${bf}</span>` +
+      `<span class="sess-nights" title="nights completed / attempted"><b>${esc(comp)}</b>/${esc(att)}<span class="sess-u"> nights</span></span>` +
+      `<span class="sess-rate" title="median completion rate">${esc(rate)}</span>` +
+      `<span class="sess-dl" title="dead-lettered nights">${esc(dl)}<span class="sess-u"> dl</span></span>` +
+      sessMixBar(s.verdict_mix) + `</div>`;
+  }).join("");
+}
+let sessionsData = null;
+async function sessionsRefresh() {
+  // bail only once we already HAVE data (mirrors refresh()): the FIRST call must render
+  // even in a hidden/background tab, else the panel is stuck on "loading session history…"
+  // until the 60 s tick fires with the tab foregrounded.
+  if (document.hidden && sessionsData) return;
+  try {
+    const res = await fetch("sessions.json?" + Date.now(), {cache: "no-store"});
+    sessionsData = res.ok ? await res.json() : null;
+  } catch (e) { sessionsData = null; }
+  renderSessions(sessionsData);
 }
 
 /* ---------- dead-letter panel (zone 6) -------------------------------------
@@ -1217,7 +1505,7 @@ function renderModel(d) {
   const allOk = gp && ge && stable === true && gp.now >= gp.target && ge.now <= ge.target;
   const chipEl = $("model-chip");
   chipEl.hidden = !allOk;
-  if (allOk) chipEl.textContent = "challenger passed all 3 gates — promotion awaits your decision";
+  if (allOk) chipEl.textContent = "health checks pass — rules stay authoritative; the promotion gate lives on the Evaluation page";
   $("model-live").textContent = m.live_accuracy_100 != null
     ? m.live_accuracy_100 + "%" : "coming online";
 
@@ -1366,7 +1654,8 @@ async function reviewStats() {
   if (document.hidden || snapshot) return;
   try {
     const rows = await (await fetch(API + "/api/queue")).json();
-    reviewFallback.pending = rows.filter(r => (r.review?.status || "pending") === "pending").length;
+    // pending = runs that need a HUMAN decision (decision lane), not every auto-filed run
+    reviewFallback.pending = rows.filter(r => r.decision_required).length;
     reviewFallback.approved = rows.filter(r => r.review?.status === "approved").length;
   } catch (e) { reviewFallback.pending = reviewFallback.approved = null; }
 }
@@ -1384,15 +1673,21 @@ async function refresh() {
   renderCmdbar(d);
   renderFlow(d);
   renderLanes(d);
-  if (d.film) loadFilm(d.film);
-  if (d.lightcurve) {
+  const RN = d.reduced_night || null;                  // coherent last-reduced-night bundle
+  const filmPath = (RN && RN.film) || d.film;          // playback follows the reduced night
+  if (filmPath) loadFilm(filmPath);
+  else showMidframe(nightOf(d));                       // snapshot: still frame instead of film
+  const lcRef = (RN && RN.lightcurve) || d.lightcurve;
+  if (lcRef) {
     const lc = $("lightcurve");
-    if (lc.getAttribute("src") !== d.lightcurve) lc.src = d.lightcurve;   // only on change
+    if (lc.getAttribute("src") !== lcRef) lc.src = lcRef;   // only on change
     lc.hidden = false;
   }
   renderCoverage(d);
   renderQuality(d);
   renderKpis(d);
+  renderNightChips(d);
+  renderBandStatus(d);
   renderScience(d);
   renderSession(d);
   renderDeadletter(d);
@@ -1413,8 +1708,10 @@ function stopPolling() { pollTimers.forEach(clearInterval); pollTimers = []; }
 refresh();
 kpiHistRefresh();
 reviewStats();
+sessionsRefresh();
 pollTimers.push(
   setInterval(refresh, 5000),
   setInterval(kpiHistRefresh, 60000),
   setInterval(reviewStats, 60000),
+  setInterval(sessionsRefresh, 60000),
 );

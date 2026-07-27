@@ -106,16 +106,16 @@
     "airmass_range": "1.61\u20131.64"
   },
   "crosscheck": {
-    "in_oec": true,
+    "coord_sep_arcsec": 1.9,
     "flags": [],
+    "in_oec": true,
     "period_oec": 2.152175,
     "period_rel_diff": 2.2e-05,
-    "coord_sep_arcsec": 1.9,
     "rprs_oec": 0.1248
   },
   "provenance": {
     "dataset_sha256": "d1764e181f72f2a1d3cccf777a32b73a20d1e493db54fceaa53701ee97f3fedf",
-    "audit_head": "45ac4472a731a413b302747fcee6c562dab119aca4816c39c9cbcf1863371b2f",
+    "audit_head": "38f6ca29969f5d54576ea372b0124ae38770bf4395422557c552022b990d5c85",
     "exotic": "4.3.1",
     "ultranest": "3.6.5",
     "inits_sha256": "ed5a2b82cb8e2266ff8440aba5d9e0544156dd73a9a34b71297843c259b5fdad",
@@ -127,5 +127,74 @@
     "name": "AAVSO_WASP-2 b_2026-06-29.txt",
     "text": "#TYPE=EXOPLANET\n#OBSCODE=ABGA\n#SECONDARY_OBSCODES=MOBS\n#SOFTWARE=EXOTIC v4.3.1\n#DELIM=,\n#DATE_TYPE=BJD_TDB\n#OBSTYPE=CCD\n#STAR_NAME=WASP-2\n#EXOPLANET_NAME=WASP-2 b\n#BINNING=2x2\n#EXPOSURE_TIME=60.0\n#COMP_STAR-XC={\"ra\": null, \"dec\": null, \"x\": \"151\", \"y\": \"42\"}\n#NOTES=MicroObservatory Cecilia public archive; pipeline test \u2014 not for submission\n#DETREND_PARAMETERS=AIRMASS, AIRMASS CORRECTION FUNCTION\n#MEASUREMENT_TYPE=Rnflux\n#FILTER=CV\n#FILTER-XC={\"name\": \"CV\", \"desc\": \"MObs CV\", \"fwhm\": [{\"value\": \"350.0\", \"units\": \"nm\"}, {\"value\": \"850.0\", \"units\": \"nm\"}]}\n#PRIORS=Period=2.15222216 +/- 1.3e-07,Rp/R*=0.1283 +/- 0.00097,a/R*=8.08 +/- 0.12,inc=84.81 +/- 0.17,ecc=0.013,u0=1.832 +/- 0.014,u1=-3.188 +/- 0.057,u2=3.657 +/- 0.075,u3=-1.301 +/- 0.032\n#PRIORS-XC={\"Period\": {\"value\": \"2.15222216\", \"uncertainty\": \"1.3e-07\", \"units\": \"days\"}, \"Rp/R*\": {\"value\": \"0.1283\", \"uncertainty\": \"0.00097\"}, \"a/R*\": {\"value\": \"8.08\", \"uncertainty\": \"0.12\"}, \"inc\": {\"value\": \"84.81\", \"uncertainty\": \"0.17\", \"units\": \"degrees\"}, \"ecc\": {\"value\": \"0.013\", \"uncertainty\": null}, \"u0\": {\"value\": \"1.832\", \"uncertainty\": \"0.014\"}, \"u1\": {\"value\": \"-3.188\", \"uncertainty\": \"0.057\"}, \"u2\": {\"value\": \"3.657\", \"uncertainty\": \"0.075\"}, \"u3\": {\"value\": \"-1.301\", \"uncertainty\": \"0.032\"}}\n#RESULTS=Tc=2461218.6867 +/- 0.0087,Rp/R*=0.147 +/- 0.046,inc=86.34 +/- 2.92,Am1=0.00758 +/- 0.00061,Am2=3.0 +/- 1.67\n#RESULTS-XC={\"Tc\": {\"value\": \"2461218.6867\", \"uncertainty\": \"0.0087\", \"units\": \"BJD_TDB\"}, \"Rp/R*\": {\"value\": \"0.147\", \"uncertainty\": \"0.046\"}, \"inc\": {\"value\": \"86.34\", \"uncertainty\": \"2.92\"}, \"Am1\": {\"value\": \"0.00758\", \"uncertainty\": \"0.00061\"}, \"Am2\": {\"value\": \"3.0\", \"uncertainty\": \"1.67\"}, \"Duration\": {\"value\": \"2.6e-06\", \"uncertainty\": \"6.4e-05\", \"units\": \"days\"}}\n# EXOTIC is developed by Exoplanet Watch (exoplanets.nasa.gov/exoplanet-watch/), a citizen science project managed by NASA's Jet Propulsion Laboratory on behalf of NASA's Universe of Learning. This work is supported by NASA under award number NNX16AC65A to the Space Telescope Science Institute.\n# Use of this data is governed by the AAVSO Data Usage Guidelines: aavso.org/data-usage-guidelines\n#DATE,DIFF,ERR,DETREND_1,DETREND_2\n2461220.76198576,1.1138209,0.1138915,1.6359896,1.0258428\n2461220.76406236,0.8861791,0.1139097,1.6139063,0.9600867\n"
   },
+  "model": {
+    "p_good": null,
+    "model_version": null,
+    "ts": null,
+    "agree": null
+  },
+  "recommend_line": "RECOMMEND: AUDIT \u2014 auto-filed spot-check sample; confirm the automated verdict INACCURATE independently.",
+  "lane": "spotcheck",
+  "decision_required": false,
+  "checklist": [
+    {
+      "key": "verdict",
+      "label": "Benchmark verdict",
+      "value": "INACCURATE",
+      "status": "fail",
+      "note": "fails benchmark gates"
+    },
+    {
+      "key": "model",
+      "label": "Model grade",
+      "value": null,
+      "status": "na",
+      "note": "no grader prediction"
+    },
+    {
+      "key": "depth_snr",
+      "label": "Depth SNR",
+      "value": 3.2,
+      "status": "pass",
+      "note": "detection floor SNR 3"
+    },
+    {
+      "key": "scatter",
+      "label": "Residual scatter",
+      "value": 8.09,
+      "unit": "%",
+      "status": "warn",
+      "note": "benchmark noise gate 5%"
+    },
+    {
+      "key": "rednoise",
+      "label": "\u03b2 red noise",
+      "value": 1.0,
+      "status": "pass",
+      "note": "Pont-2006 factor; >2 flags time-correlated noise"
+    },
+    {
+      "key": "oc",
+      "label": "O\u2212C significance",
+      "value": 245.93,
+      "unit": "\u03c3",
+      "status": "fail",
+      "note": "vs inflated combined \u03c3"
+    },
+    {
+      "key": "crosscheck",
+      "label": "Catalog cross-check",
+      "value": "agrees",
+      "status": "pass",
+      "note": "OEC"
+    },
+    {
+      "key": "coverage",
+      "label": "Frames",
+      "value": 78,
+      "status": "pass",
+      "note": "benchmark minimum 30 frames"
+    }
+  ],
   "pdf": "2026-bench_WASP-2_260629/report.pdf"
 }
