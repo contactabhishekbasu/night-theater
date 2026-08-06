@@ -769,9 +769,16 @@ async function loadBundle(id) {
   state.report = report;
 
   if (!manifest && !report) {
-    main.innerHTML = `<div class="placeholder"><h2>Bundle not found</h2>
-      <p>No <code>manifest.json</code> or <code>report.json</code> under
-      <code>${esc(id)}/</code>. Re-run <code>report_bundle.py</code> for this run.</p></div>`;
+    const row = state.index.find(r => r.id === id);
+    main.innerHTML = row && row.assets === false
+      ? `<div class="placeholder"><h2>Archived night</h2>
+        <p>The verdict and scores for this night live in the table on the left,
+        but its full dossier (figures, light curve, report) is not mirrored on
+        the public snapshot — only curated and recent nights carry files here.
+        The complete bundle exists in the project archive.</p></div>`
+      : `<div class="placeholder"><h2>Bundle not found</h2>
+        <p>No <code>manifest.json</code> or <code>report.json</code> under
+        <code>${esc(id)}/</code>. Re-run <code>report_bundle.py</code> for this run.</p></div>`;
     document.getElementById("gate").hidden = true;
     return;
   }
