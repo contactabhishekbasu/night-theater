@@ -1,0 +1,205 @@
+{
+  "id": "deep-bench_WASP-43_190331",
+  "target": "WASP-43b",
+  "night": "2019-03-30",
+  "verdict": "ACCURATE",
+  "run_no": "R-1271",
+  "disposition": "Benchmark / validation run \u2014 automated verdict ACCURATE. Not submitted to any science database; shown for pipeline transparency.",
+  "params": [
+    {
+      "name": "Mid-transit time (Tc)",
+      "fit": "2458573.703",
+      "sigma": "0.0012",
+      "unit": "BJD_TDB",
+      "prior": null,
+      "published": null,
+      "is_midtime": true,
+      "sigma_inflated_min": 1.889
+    },
+    {
+      "name": "Rp/R*",
+      "fit": "0.165",
+      "sigma": "0.014",
+      "prior": "0.15854 \u00b1 0.00079",
+      "published": 0.1594
+    },
+    {
+      "name": "Inclination",
+      "fit": "82.69",
+      "sigma": "1.13",
+      "unit": "\u00b0",
+      "prior": "82.133 \u00b1 0.001",
+      "published": 82.11
+    },
+    {
+      "name": "a/R*",
+      "fit": null,
+      "sigma": null,
+      "prior": "4.86 \u00b1 0.01",
+      "published": null
+    },
+    {
+      "name": "Period",
+      "fit": null,
+      "sigma": null,
+      "unit": "d",
+      "prior": "0.81347407 \u00b1 2e-08",
+      "published": 0.813474057
+    },
+    {
+      "name": "Airmass a1",
+      "fit": "1.099",
+      "sigma": "0.011"
+    },
+    {
+      "name": "Airmass a2",
+      "fit": "-0.065",
+      "sigma": "0.029"
+    }
+  ],
+  "metrics": {
+    "scatter_pct": 1.0,
+    "depth_snr": 10.8,
+    "rprs_z": 0.37,
+    "dur_z": 0.5,
+    "oc_minutes": 1.2,
+    "oc_sigma": 0.65,
+    "beta_rednoise": 1.093,
+    "chi2_rescale": 1.0
+  },
+  "limb_darkening": [
+    {
+      "coeff": "u0",
+      "value": "1.706",
+      "err": "0.012",
+      "source": "LDTk"
+    },
+    {
+      "coeff": "u1",
+      "value": "-2.725",
+      "err": "0.048",
+      "source": "LDTk"
+    },
+    {
+      "coeff": "u2",
+      "value": "3.065",
+      "err": "0.064",
+      "source": "LDTk"
+    },
+    {
+      "coeff": "u3",
+      "value": "-1.045",
+      "err": "0.027",
+      "source": "LDTk"
+    }
+  ],
+  "observation": {
+    "frames": 64,
+    "exposure_s": 60.0,
+    "binning": "1x1",
+    "filter": "CV",
+    "aperture": "5.1",
+    "annulus": "11.53",
+    "comps": 3,
+    "telescope": "MicroObservatory (MObs)",
+    "cadence_s": 180,
+    "airmass_range": "1.34\u20131.53"
+  },
+  "crosscheck": {
+    "coord_sep_arcsec": 0.0,
+    "flags": [],
+    "in_oec": true,
+    "period_oec": 0.81347753,
+    "period_rel_diff": 4e-06,
+    "rprs_oec": 0.156
+  },
+  "provenance": {
+    "seed": 1753095370,
+    "dataset_sha256": "0e30e5991810a2604e415daf8a40290a5ea719701e1b5f2b790798e9ec7f7efb",
+    "audit_head": "4dd467c46c433122bfa3fc2486e8ab6cf9e43e65966eb25d892f4511038bf3dd",
+    "exotic": "4.3.1",
+    "ultranest": "3.6.5",
+    "inits_sha256": "38aff589b5af0f0febfdf16055fe3ab85e52e4dce76fa0c52ff5c9855e8f674d",
+    "config_snapshot_sha256": "a7e225c9d2e630a844d2de4a2f21a47be7cb64465294b6aac8c25145faef1991",
+    "runtime_s": 140.3,
+    "host": "mac-mini-m1-8gb"
+  },
+  "aavso": {
+    "name": "AAVSO_WASP-43 b_2019-03-30.txt",
+    "text": "#TYPE=EXOPLANET\n#OBSCODE=ABGA\n#SECONDARY_OBSCODES=MOBS\n#SOFTWARE=EXOTIC v4.3.1\n#DELIM=,\n#DATE_TYPE=BJD_TDB\n#OBSTYPE=CCD\n#STAR_NAME=WASP-43\n#EXOPLANET_NAME=WASP-43 b\n#BINNING=2x2\n#EXPOSURE_TIME=60.0\n#COMP_STAR-XC=null\n#NOTES=MicroObservatory Cecilia public archive; pipeline test \u2014 not for submission\n#DETREND_PARAMETERS=AIRMASS, AIRMASS CORRECTION FUNCTION\n#MEASUREMENT_TYPE=Rnflux\n#FILTER=CV\n#FILTER-XC={\"name\": \"CV\", \"desc\": \"MObs CV\", \"fwhm\": [{\"value\": \"350.0\", \"units\": \"nm\"}, {\"value\": \"850.0\", \"units\": \"nm\"}]}\n#PRIORS=Period=0.81347407 +/- 2e-08,Rp/R*=0.15854 +/- 0.00079,a/R*=4.86 +/- 0.01,inc=82.133 +/- 0.001,ecc=0.0062,u0=1.706 +/- 0.012,u1=-2.725 +/- 0.048,u2=3.065 +/- 0.064,u3=-1.045 +/- 0.027\n#PRIORS-XC={\"Period\": {\"value\": \"0.81347407\", \"uncertainty\": \"2e-08\", \"units\": \"days\"}, \"Rp/R*\": {\"value\": \"0.15854\", \"uncertainty\": \"0.00079\"}, \"a/R*\": {\"value\": \"4.86\", \"uncertainty\": \"0.01\"}, \"inc\": {\"value\": \"82.133\", \"uncertainty\": \"0.001\", \"units\": \"degrees\"}, \"ecc\": {\"value\": \"0.0062\", \"uncertainty\": null}, \"u0\": {\"value\": \"1.706\", \"uncertainty\": \"0.012\"}, \"u1\": {\"value\": \"-2.725\", \"uncertainty\": \"0.048\"}, \"u2\": {\"value\": \"3.065\", \"uncertainty\": \"0.064\"}, \"u3\": {\"value\": \"-1.045\", \"uncertainty\": \"0.027\"}}\n#RESULTS=Tc=2458573.703 +/- 0.0012,Rp/R*=0.165 +/- 0.014,inc=82.69 +/- 1.13,Am1=1.099 +/- 0.011,Am2=-0.065 +/- 0.029\n#RESULTS-XC={\"Tc\": {\"value\": \"2458573.703\", \"uncertainty\": \"0.0012\", \"units\": \"BJD_TDB\"}, \"Rp/R*\": {\"value\": \"0.165\", \"uncertainty\": \"0.014\"}, \"inc\": {\"value\": \"82.69\", \"uncertainty\": \"1.13\"}, \"Am1\": {\"value\": \"1.099\", \"uncertainty\": \"0.011\"}, \"Am2\": {\"value\": \"-0.065\", \"uncertainty\": \"0.029\"}, \"Duration\": {\"value\": \"0.053\", \"uncertainty\": \"0.0032\", \"units\": \"days\"}}\n# EXOTIC is developed by Exoplanet Watch (exoplanets.nasa.gov/exoplanet-watch/), a citizen science project managed by NASA's Jet Propulsion Laboratory on behalf of NASA's Universe of Learning. This work is supported by NASA under award number NNX16AC65A to the Space Telescope Science Institute.\n# Use of this data is governed by the AAVSO Data Usage Guidelines: aavso.org/data-usage-guidelines\n#DATE,DIFF,ERR,DETREND_1,DETREND_2\n2458573.64565633,0.9958916,0.0100362,1.5323607,0.9938929\n2458573.64773901,0.9965588,0.0100457,1.5206536,0.9946548\n2458573.64982189,0.9864907,0.0100549,1.5094583,0.995384\n2458573.65190503,0.9924122,0.0100637,1.4986353,0.9960894\n2458573.65398749,1.006995,0.0100722,1.4882846,0.9967645\n2458573.65607,0.988043,0.0100803,1.4783579,0.9974124\n2458573.65815269,0.9873647,0.0100881,1.4688378,0.9980342\n2458573.66023537,1.0058987,0.0100956,1.4597079,0.9986308\n2458573.66231813,0.9947152,0.0101027,1.451006,0.9991998\n2458573.66440076,0.9854011,0.0101095,1.4426624,0.9997457\n2458573.66648368,0.9845588,0.0101161,1.4346895,1.0002676\n2458573.66856889,1.0177941,0.0101223,1.4270984,1.0007647\n2458573.67065133,1.0063255,0.0101283,1.41985,1.0012397\n2458573.67273513,1.0060306,0.0101339,1.4129564,1.0016916\n2458573.67481829,1.0000287,0.0101393,1.4064051,1.0021212\n2458573.67690151,1.0136668,0.0101444,1.4001842,1.0025294\n2458573.67898586,0.9967065,0.0101493,1.3942589,1.0029183\n2458573.68107393,0.9947041,0.0101539,1.3886432,1.003287\n2458573.6831575,0.995357,0.0101583,1.3833733,1.0036332\n2458573.68524014,0.9807025,0.0101624,1.3784158,1.0039589\n2458573.68732358,0.9707682,0.0101662,1.3737616,1.0042648\n2458573.68940641,0.9963277,0.0101698,1.3693797,1.0045529\n2458573.69148928,0.9860139,0.0101732,1.3653071,1.0048208\n2458573.69357195,0.9927214,0.0101763,1.3615139,1.0050703\n2458573.695654,0.9890868,0.0101792,1.3579935,1.0053019\n2458573.69773687,0.9620331,0.0101819,1.3547827,1.0055132\n2458573.70190209,0.9735944,0.0101865,1.3491579,1.0058835\n2458573.70398437,0.9652213,0.0101885,1.3467338,1.0060432\n2458573.70606768,0.989026,0.0101903,1.3445978,1.0061838\n2458573.708153,0.9691746,0.0101919,1.3427247,1.0063072\n2458573.71023557,0.9668654,0.0101932,1.3411109,1.0064135\n2458573.71231783,0.9558884,0.0101943,1.3397536,1.0065029\n2458573.71440044,0.984764,0.0101952,1.3386709,1.0065743\n2458573.71648267,0.9763445,0.0101959,1.33784,1.006629\n2458573.71856521,0.9775118,0.0101964,1.3372594,1.0066673\n2458573.72065913,0.9955686,0.0101966,1.3369487,1.0066878\n2458573.72274143,0.9931171,0.0101967,1.3369072,1.0066905\n2458573.72482379,0.9999018,0.0101965,1.3371143,1.0066768\n2458573.72690525,1.0046202,0.0101961,1.3375703,1.0066468\n2458573.7289873,1.011841,0.0101955,1.3382968,1.0065989\n2458573.73106988,0.9982119,0.0101947,1.3392743,1.0065345\n2458573.73315185,1.0078406,0.0101937,1.3405048,1.0064534\n2458573.7373158,1.0085886,0.010191,1.343776,1.006238\n2458573.73939768,0.9973418,0.0101893,1.3458019,1.0061045\n2458573.74149132,1.0001891,0.0101874,1.3481143,1.0059523\n2458573.74356424,0.9931923,0.0101853,1.3506748,1.0057837\n2458573.74565799,0.9931687,0.0101829,1.3535311,1.0055956\n2458573.74773399,0.9898052,0.0101804,1.3566238,1.0053921\n2458573.74981633,0.9946437,0.0101776,1.3600235,1.0051684\n2458573.75190021,1.0235431,0.0101745,1.3636931,1.0049269\n2458573.7539819,1.025687,0.0101713,1.3676614,1.0046659\n2458573.75606447,1.0180594,0.0101677,1.3719136,1.0043863\n2458573.75814635,0.9999713,0.010164,1.3764573,1.0040877\n2458573.76024019,0.9954474,0.01016,1.381324,1.0037678\n2458573.76232254,1.0090704,0.0101558,1.3864534,1.0034309\n2458573.76439615,1.003557,0.0101513,1.3918773,1.0030747\n2458573.76648092,1.0028237,0.0101465,1.3976524,1.0026956\n2458573.76856694,1.0068642,0.0101415,1.4037425,1.0022959\n2458573.77065257,1.0163667,0.0101362,1.4102074,1.0018719\n2458573.77273828,1.0040139,0.0101306,1.4169613,1.001429\n2458573.77482411,0.9968632,0.0101248,1.4240649,1.0009635\n2458573.77689777,0.9826339,0.0101187,1.4314545,1.0004794\n"
+  },
+  "film": {
+    "path": "../status/film/190331/",
+    "n": 64
+  },
+  "model": {
+    "p_good": 0.819,
+    "model_version": "quality-model-n1215",
+    "ts": "2026-07-31T13:55:17+00:00",
+    "agree": "agree"
+  },
+  "recommend_line": "RECOMMEND: AUTO-FILED \u2014 benchmark/validation run, not submitted to any science database.",
+  "lane": "archive",
+  "decision_required": false,
+  "checklist": [
+    {
+      "key": "verdict",
+      "label": "Benchmark verdict",
+      "value": "ACCURATE",
+      "status": "pass",
+      "note": "clears all benchmark gates (z\u22642, O\u2212C\u22642\u03c3)"
+    },
+    {
+      "key": "model",
+      "label": "Model grade",
+      "value": 0.82,
+      "status": "pass",
+      "note": "champion vquality-model-n1215, calibrated"
+    },
+    {
+      "key": "depth_snr",
+      "label": "Depth SNR",
+      "value": 10.8,
+      "status": "pass",
+      "note": "detection floor SNR 3"
+    },
+    {
+      "key": "scatter",
+      "label": "Residual scatter",
+      "value": 1.0,
+      "unit": "%",
+      "status": "pass",
+      "note": "benchmark noise gate 5%"
+    },
+    {
+      "key": "rednoise",
+      "label": "\u03b2 red noise",
+      "value": 1.093,
+      "status": "pass",
+      "note": "Pont-2006 factor; >2 flags time-correlated noise"
+    },
+    {
+      "key": "oc",
+      "label": "O\u2212C significance",
+      "value": 0.65,
+      "unit": "\u03c3",
+      "status": "pass",
+      "note": "vs inflated combined \u03c3"
+    },
+    {
+      "key": "crosscheck",
+      "label": "Catalog cross-check",
+      "value": "agrees",
+      "status": "pass",
+      "note": "OEC"
+    },
+    {
+      "key": "coverage",
+      "label": "Frames",
+      "value": 64,
+      "status": "pass",
+      "note": "benchmark minimum 30 frames"
+    }
+  ],
+  "pdf": "deep-bench_WASP-43_190331/report.pdf"
+}

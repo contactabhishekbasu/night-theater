@@ -993,9 +993,10 @@ $("ctl-scale").addEventListener("click", e => {
 });
 $("ctl-breaker").addEventListener("click", e =>
   armThen(e.currentTarget, () => postControl({reset_breaker: true}, "Breaker reset queued.")));
-$("ctl-dlretry").addEventListener("click", e =>
-  armThen(e.currentTarget, () => postControl({deadletter_retry_shift: true},
-    "±1-day sweep queued — rate-limited, breaker-aware; hits requeue, misses stay dead.")));
+/* the "retry all with ±1-day shift" button is retired: the date-edge retry runs
+   automatically before any night is dead-lettered, so a manual sweep only re-burns
+   probe budget on nights that already failed the night AND both neighbours. The
+   deadletter_retry_shift control stays server-side for exceptional manual use. */
 /* target/night mini-form for requeue / prioritize / restore */
 let formMode = null;
 function openCtlForm(mode, label, needNight) {
@@ -1139,7 +1140,8 @@ function renderKpis(d) {
     if (sbW && sbW.p50_s != null) parts.push(`walk ${(sbW.p50_s / 60).toFixed(1)}m`);
     parts.push(`breaker ${brkOpen ? "OPEN" : "closed"}`);
     if (probingNow) parts.push(`${probingNow} probing`);
-    if (dls.probe_cost_s_est) parts.push(`≈${(dls.probe_cost_s_est / 3600).toFixed(0)} h on dead-ends`);
+    const dlCost = dls.probe_cost_s || dls.probe_cost_s_est;
+    if (dlCost) parts.push(`${dls.probe_cost_s ? "" : "≈"}${(dlCost / 3600).toFixed(0)} h on dead-ends`);
     kpiCard("kpi-probe", (sbP.p50_s / 60).toFixed(1), "min", parts.join(" · "),
       brkOpen ? "down" : "", probeSer, "--aqua", brkOpen);
   } else {
@@ -1421,7 +1423,7 @@ function renderDeadletter(d) {
             ? d.deadletter.length * d.kpis.stage_medians_s.probe : null};
   }
   if (!st || !st.total) { host.innerHTML = `<span class="tel3">no dead-lettered nights — nothing skipped yet</span>`; return; }
-  const pct = st.tried_total ? Math.round(100 * st.total / st.tried_total) : null;
+  const cum = st.cumulative_total ?? st.total;
   const days = Object.entries(st.by_day || {}).sort((a, b) => a[0] < b[0] ? -1 : 1).slice(-3);
   const maxDay = Math.max(...days.map(x => x[1]), 1);
   const targets = Object.entries(st.by_target || {}).sort((a, b) => b[1] - a[1]);
@@ -1429,13 +1431,17 @@ function renderDeadletter(d) {
     (targets.length > 6 ? ` · ${targets.length - 6} more` : "");
   const reasons = Array.isArray(d.deadletter)
     ? [...new Set(d.deadletter.map(x => x.reason || "barren"))] : [];
-  const edgeN = (d.events || []).filter(e => /date edge/.test(e.msg || "")).length;
+  // prefer the measured per-night probe durations; the total × median estimate is
+  // the legacy fallback (pre-v3 payloads) and undercounts long probes badly
+  const costS = st.probe_cost_s || st.probe_cost_s_est;
+  const costEst = !st.probe_cost_s;
   const today = new Date().toISOString().slice(0, 10);
   host.innerHTML = `
     <div style="display:flex;gap:var(--sp-5);align-items:baseline;flex-wrap:wrap">
-      <span class="dl-big">${st.total}</span>
-      <span class="dl-sub">${pct != null ? pct + "% of " + st.tried_total + " probed nights" : "share of probed — awaiting telemetry v3"}
-        ${st.probe_cost_s_est ? ` · ≈${(st.probe_cost_s_est / 3600).toFixed(1)} h of probe budget${derived ? " (est.)" : ""}` : ""}</span>
+      <span class="dl-big">${cum}</span>
+      <span class="dl-sub">skipped nights all-time${st.capped || cum !== st.total
+          ? ` · ${st.total} retained (list caps at ${st.cap ?? st.total}, oldest evicted)` : ""}
+        ${costS ? ` · ${(costS / 3600).toFixed(1)} h of probe budget${costEst || derived ? " (est.)" : " (measured, retained window)"}` : ""}</span>
     </div>
     <div class="dl-days" aria-label="dead-lettered nights per day, last 3 days">
       ${days.map(([day, n]) => `<span class="db${day === today ? "" : " old"}"
@@ -1447,8 +1453,9 @@ function renderDeadletter(d) {
     <p class="dl-copy">${reasons.length === 1
       ? `One reason, ${st.total} times: <b>“${esc(reasons[0])}.”</b>`
       : reasons.length ? `Reasons: ${reasons.map(esc).join(" · ")}` : ""}
-      ${edgeN ? ` Correlates with the <span style="color:var(--warn-txt)">${edgeN} “oracle said observed but no frames (date edge?)”</span>
-      warnings in the log — the schedule may point at nights whose frames live under the <b>adjacent calendar date</b>.` : ""}</p>`;
+      Every entry already failed its night <b>and</b> both ±1-day neighbours — the
+      date-edge retry runs before any night is dead-lettered, so rescued nights never
+      land here.</p>`;
 }
 
 /* ---------- backlog panel (zone 6) ----------------------------------------- */

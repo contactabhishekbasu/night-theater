@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-07-23T09:07:19+00:00",
+  "generated_utc": "2026-07-30T08:45:08+00:00",
   "note": "flags are candidates for HUMAN review \u2014 the pipeline never claims a detection",
   "thresholds": {
     "stale": ">3\u03c3_pred & >5.0 min",
@@ -9,8 +9,10 @@
   },
   "counts": {
     "decay": 4,
+    "ok": 26,
     "ttv": 1,
-    "ok": 19
+    "insufficient": 12,
+    "stale": 1
   },
   "targets": [
     {
@@ -95,25 +97,25 @@
       "target": "WASP-12b",
       "flag": "decay",
       "reasons": [
-        "dP/dE -1.07e-09 d/epoch at 35.2\u03c3 over 17.9 yr / 505 epochs (strong)"
+        "dP/dE -1.07e-09 d/epoch at 35.1\u03c3 over 17.9 yr / 505 epochs (strong)"
       ],
-      "n_midtimes": 765,
+      "n_midtimes": 767,
       "n_epochs": 505,
       "baseline_years": 17.85,
       "sources": {
-        "ours": 138,
+        "ours": 140,
         "literature": 627,
-        "dropped_dup_ours": 88
+        "dropped_dup_ours": 92
       },
-      "P_days": 1.091419101052734,
-      "P_err": 2.1080574949058987e-08,
-      "dPdE_days_per_epoch": -1.0742074141429926e-09,
-      "decay_significance_sigma": 35.154922616133334,
-      "chi2_reduced": 0.991,
-      "rms_minutes": 3.486,
+      "P_days": 1.0914190998538396,
+      "P_err": 2.1065076101173624e-08,
+      "dPdE_days_per_epoch": -1.072293509366796e-09,
+      "decay_significance_sigma": 35.117195638330195,
+      "chi2_reduced": 0.989,
+      "rms_minutes": 3.478,
       "vs_published": {
-        "mean_oc_min": 0.19,
-        "rms_oc_min": 3.68
+        "mean_oc_min": 0.17,
+        "rms_oc_min": 3.66
       },
       "oc_diagram": "status/oc/WASP-12b_oc.png"
     },
@@ -142,6 +144,58 @@
         "rms_oc_min": 0.78
       },
       "oc_diagram": "status/oc/HAT-P-13b_oc.png"
+    },
+    {
+      "target": "WASP-50b",
+      "flag": "stale",
+      "reasons": [
+        "mean O\u2212C vs published 21.5 min > 3\u00d7\u03c3_pred (0.6 min)"
+      ],
+      "n_midtimes": 15,
+      "n_epochs": 15,
+      "baseline_years": 8.13,
+      "sources": {
+        "ours": 15,
+        "literature": 0,
+        "dropped_dup_ours": 0
+      },
+      "P_days": 1.9550852161384296,
+      "P_err": 5.273334038522784e-06,
+      "dPdE_days_per_epoch": 2.4265641600538728e-08,
+      "decay_significance_sigma": 1.706841247554094,
+      "chi2_reduced": 1.087,
+      "rms_minutes": 55.328,
+      "vs_published": {
+        "mean_oc_min": 21.51,
+        "rms_oc_min": 56.48
+      },
+      "oc_diagram": "status/oc/WASP-50b_oc.png"
+    },
+    {
+      "target": "HAT-P-12b",
+      "flag": "ok",
+      "reasons": [
+        "consistent with published ephemeris"
+      ],
+      "n_midtimes": 13,
+      "n_epochs": 13,
+      "baseline_years": 10.24,
+      "sources": {
+        "ours": 13,
+        "literature": 0,
+        "dropped_dup_ours": 0
+      },
+      "P_days": 3.213067824846552,
+      "P_err": 1.3619395016891026e-05,
+      "dPdE_days_per_epoch": -1.6310345577456337e-08,
+      "decay_significance_sigma": 0.8441475095577413,
+      "chi2_reduced": 1.643,
+      "rms_minutes": 7.637,
+      "vs_published": {
+        "mean_oc_min": -2.34,
+        "rms_oc_min": 7.99
+      },
+      "oc_diagram": "status/oc/HAT-P-12b_oc.png"
     },
     {
       "target": "HAT-P-16b",
@@ -227,25 +281,51 @@
       "reasons": [
         "consistent with published ephemeris"
       ],
-      "n_midtimes": 270,
-      "n_epochs": 173,
+      "n_midtimes": 271,
+      "n_epochs": 174,
       "baseline_years": 18.22,
       "sources": {
-        "ours": 24,
+        "ours": 25,
         "literature": 246,
         "dropped_dup_ours": 10
       },
-      "P_days": 2.150008059649806,
-      "P_err": 9.967596689516822e-08,
-      "dPdE_days_per_epoch": -2.0548864898298947e-10,
-      "decay_significance_sigma": 1.0918108603017405,
-      "chi2_reduced": 1.104,
-      "rms_minutes": 3.535,
+      "P_days": 2.150008059648308,
+      "P_err": 9.973535195529138e-08,
+      "dPdE_days_per_epoch": -2.0380456704830431e-10,
+      "decay_significance_sigma": 1.0822935121673747,
+      "chi2_reduced": 1.106,
+      "rms_minutes": 3.572,
       "vs_published": {
-        "mean_oc_min": -0.01,
-        "rms_oc_min": 3.55
+        "mean_oc_min": 0.03,
+        "rms_oc_min": 3.58
       },
       "oc_diagram": "status/oc/HAT-P-32b_oc.png"
+    },
+    {
+      "target": "HAT-P-36b",
+      "flag": "ok",
+      "reasons": [
+        "consistent with published ephemeris"
+      ],
+      "n_midtimes": 31,
+      "n_epochs": 31,
+      "baseline_years": 4.13,
+      "sources": {
+        "ours": 31,
+        "literature": 0,
+        "dropped_dup_ours": 0
+      },
+      "P_days": 1.3273681704199003,
+      "P_err": 3.101757587259066e-05,
+      "dPdE_days_per_epoch": -1.4764824604828603e-08,
+      "decay_significance_sigma": 0.7372152890015966,
+      "chi2_reduced": 1.107,
+      "rms_minutes": 7.433,
+      "vs_published": {
+        "mean_oc_min": 1.55,
+        "rms_oc_min": 7.66
+      },
+      "oc_diagram": "status/oc/HAT-P-36b_oc.png"
     },
     {
       "target": "HAT-P-55b",
@@ -331,25 +411,51 @@
       "reasons": [
         "consistent with published ephemeris"
       ],
-      "n_midtimes": 472,
-      "n_epochs": 384,
+      "n_midtimes": 479,
+      "n_epochs": 387,
       "baseline_years": 13.75,
       "sources": {
-        "ours": 308,
+        "ours": 315,
         "literature": 164,
         "dropped_dup_ours": 85
       },
-      "P_days": 1.4200243176548986,
-      "P_err": 4.444926948096354e-08,
-      "dPdE_days_per_epoch": 1.806644209234598e-10,
-      "decay_significance_sigma": 2.91032139882673,
-      "chi2_reduced": 0.941,
-      "rms_minutes": 0.853,
+      "P_days": 1.4200243172416402,
+      "P_err": 4.445660291239136e-08,
+      "dPdE_days_per_epoch": 1.7824556257526225e-10,
+      "decay_significance_sigma": 2.8684194464468495,
+      "chi2_reduced": 0.945,
+      "rms_minutes": 1.027,
       "vs_published": {
-        "mean_oc_min": -0.09,
-        "rms_oc_min": 0.87
+        "mean_oc_min": -0.1,
+        "rms_oc_min": 1.05
       },
       "oc_diagram": "status/oc/Qatar-1b_oc.png"
+    },
+    {
+      "target": "Qatar-2b",
+      "flag": "ok",
+      "reasons": [
+        "consistent with published ephemeris"
+      ],
+      "n_midtimes": 9,
+      "n_epochs": 9,
+      "baseline_years": 8.8,
+      "sources": {
+        "ours": 9,
+        "literature": 0,
+        "dropped_dup_ours": 0
+      },
+      "P_days": 1.3371134300149445,
+      "P_err": 3.874390374697765e-06,
+      "dPdE_days_per_epoch": 2.145686097319515e-09,
+      "decay_significance_sigma": 0.8766694007546703,
+      "chi2_reduced": 1.525,
+      "rms_minutes": 1.933,
+      "vs_published": {
+        "mean_oc_min": 0.31,
+        "rms_oc_min": 1.86
+      },
+      "oc_diagram": "status/oc/Qatar-2b_oc.png"
     },
     {
       "target": "TrES-1b",
@@ -357,23 +463,23 @@
       "reasons": [
         "consistent with published ephemeris"
       ],
-      "n_midtimes": 437,
+      "n_midtimes": 439,
       "n_epochs": 220,
       "baseline_years": 22.15,
       "sources": {
-        "ours": 65,
+        "ours": 67,
         "literature": 372,
-        "dropped_dup_ours": 49
+        "dropped_dup_ours": 55
       },
-      "P_days": 3.0300695694649447,
-      "P_err": 8.677101946475805e-08,
-      "dPdE_days_per_epoch": -5.713823025832454e-10,
-      "decay_significance_sigma": 2.318144731602381,
+      "P_days": 3.0300695726402584,
+      "P_err": 8.686418462413518e-08,
+      "dPdE_days_per_epoch": -5.51550985439242e-10,
+      "decay_significance_sigma": 2.2352269754361527,
       "chi2_reduced": 1.049,
-      "rms_minutes": 3.063,
+      "rms_minutes": 3.073,
       "vs_published": {
-        "mean_oc_min": -0.15,
-        "rms_oc_min": 3.08
+        "mean_oc_min": -0.18,
+        "rms_oc_min": 3.09
       },
       "oc_diagram": "status/oc/TrES-1b_oc.png"
     },
@@ -383,20 +489,20 @@
       "reasons": [
         "consistent with published ephemeris"
       ],
-      "n_midtimes": 636,
+      "n_midtimes": 637,
       "n_epochs": 413,
       "baseline_years": 19.88,
       "sources": {
-        "ours": 103,
+        "ours": 104,
         "literature": 533,
-        "dropped_dup_ours": 31
+        "dropped_dup_ours": 34
       },
-      "P_days": 2.470613455926679,
-      "P_err": 5.123088429565822e-08,
-      "dPdE_days_per_epoch": 5.031469002583558e-11,
-      "decay_significance_sigma": 0.6846099945019076,
-      "chi2_reduced": 1.838,
-      "rms_minutes": 1.714,
+      "P_days": 2.470613442916806,
+      "P_err": 5.047212621110029e-08,
+      "dPdE_days_per_epoch": 6.760245500112765e-11,
+      "decay_significance_sigma": 0.932411881239645,
+      "chi2_reduced": 1.846,
+      "rms_minutes": 1.715,
       "vs_published": {
         "mean_oc_min": 0.08,
         "rms_oc_min": 1.72
@@ -409,18 +515,18 @@
       "reasons": [
         "consistent with published ephemeris"
       ],
-      "n_midtimes": 1408,
+      "n_midtimes": 1409,
       "n_epochs": 729,
       "baseline_years": 19.29,
       "sources": {
-        "ours": 165,
+        "ours": 166,
         "literature": 1243,
-        "dropped_dup_ours": 136
+        "dropped_dup_ours": 146
       },
-      "P_days": 1.3061862408669227,
-      "P_err": 2.420668810301116e-08,
-      "dPdE_days_per_epoch": -6.675834864295765e-11,
-      "decay_significance_sigma": 1.5937583408945655,
+      "P_days": 1.3061862400765196,
+      "P_err": 2.420740428066094e-08,
+      "dPdE_days_per_epoch": -6.976168930975895e-11,
+      "decay_significance_sigma": 1.6668361974443497,
       "chi2_reduced": 0.996,
       "rms_minutes": 23.766,
       "vs_published": {
@@ -428,6 +534,84 @@
         "rms_oc_min": 23.74
       },
       "oc_diagram": "status/oc/TrES-3b_oc.png"
+    },
+    {
+      "target": "TrES-5b",
+      "flag": "ok",
+      "reasons": [
+        "consistent with published ephemeris"
+      ],
+      "n_midtimes": 22,
+      "n_epochs": 22,
+      "baseline_years": 9.03,
+      "sources": {
+        "ours": 22,
+        "literature": 0,
+        "dropped_dup_ours": 0
+      },
+      "P_days": 1.4822508603062474,
+      "P_err": 6.293965797259288e-06,
+      "dPdE_days_per_epoch": -3.6396665719527037e-09,
+      "decay_significance_sigma": 0.6513731062526712,
+      "chi2_reduced": 1.152,
+      "rms_minutes": 6.988,
+      "vs_published": {
+        "mean_oc_min": 0.05,
+        "rms_oc_min": 7.09
+      },
+      "oc_diagram": "status/oc/TrES-5b_oc.png"
+    },
+    {
+      "target": "WASP-10b",
+      "flag": "ok",
+      "reasons": [
+        "consistent with published ephemeris"
+      ],
+      "n_midtimes": 17,
+      "n_epochs": 17,
+      "baseline_years": 8.13,
+      "sources": {
+        "ours": 17,
+        "literature": 0,
+        "dropped_dup_ours": 0
+      },
+      "P_days": 3.09271366407863,
+      "P_err": 2.3210584126591372e-05,
+      "dPdE_days_per_epoch": 1.790314925095035e-08,
+      "decay_significance_sigma": 0.6623328619860102,
+      "chi2_reduced": 1.358,
+      "rms_minutes": 6.412,
+      "vs_published": {
+        "mean_oc_min": -1.9,
+        "rms_oc_min": 6.71
+      },
+      "oc_diagram": "status/oc/WASP-10b_oc.png"
+    },
+    {
+      "target": "WASP-11b",
+      "flag": "ok",
+      "reasons": [
+        "consistent with published ephemeris"
+      ],
+      "n_midtimes": 9,
+      "n_epochs": 9,
+      "baseline_years": 9.18,
+      "sources": {
+        "ours": 9,
+        "literature": 0,
+        "dropped_dup_ours": 0
+      },
+      "P_days": 3.722463257219575,
+      "P_err": 1.1637408771242643e-05,
+      "dPdE_days_per_epoch": 3.492575216171553e-08,
+      "decay_significance_sigma": 1.5370691230883797,
+      "chi2_reduced": 0.81,
+      "rms_minutes": 2.829,
+      "vs_published": {
+        "mean_oc_min": -1.38,
+        "rms_oc_min": 3.71
+      },
+      "oc_diagram": "status/oc/WASP-11b_oc.png"
     },
     {
       "target": "WASP-135b",
@@ -508,28 +692,54 @@
       "oc_diagram": "status/oc/WASP-33b_oc.png"
     },
     {
+      "target": "WASP-36b",
+      "flag": "ok",
+      "reasons": [
+        "consistent with published ephemeris"
+      ],
+      "n_midtimes": 11,
+      "n_epochs": 11,
+      "baseline_years": 6.12,
+      "sources": {
+        "ours": 11,
+        "literature": 0,
+        "dropped_dup_ours": 0
+      },
+      "P_days": 1.5373255165729784,
+      "P_err": 2.6826173980128576e-05,
+      "dPdE_days_per_epoch": 3.178641079774106e-08,
+      "decay_significance_sigma": 1.5694035658532763,
+      "chi2_reduced": 1.364,
+      "rms_minutes": 6.96,
+      "vs_published": {
+        "mean_oc_min": 0.12,
+        "rms_oc_min": 8.38
+      },
+      "oc_diagram": "status/oc/WASP-36b_oc.png"
+    },
+    {
       "target": "WASP-3b",
       "flag": "ok",
       "reasons": [
         "consistent with published ephemeris"
       ],
-      "n_midtimes": 83,
-      "n_epochs": 83,
-      "baseline_years": 7.29,
+      "n_midtimes": 84,
+      "n_epochs": 84,
+      "baseline_years": 8.21,
       "sources": {
-        "ours": 83,
+        "ours": 84,
         "literature": 0,
         "dropped_dup_ours": 0
       },
-      "P_days": 1.8468364825381274,
-      "P_err": 1.527499054201981e-06,
-      "dPdE_days_per_epoch": -1.052288893649095e-09,
-      "decay_significance_sigma": 0.9133629003152205,
-      "chi2_reduced": 0.818,
-      "rms_minutes": 0.951,
+      "P_days": 1.8468367983562075,
+      "P_err": 1.4699707630186578e-06,
+      "dPdE_days_per_epoch": -1.2872506949257456e-09,
+      "decay_significance_sigma": 1.1596427908721698,
+      "chi2_reduced": 0.82,
+      "rms_minutes": 1.052,
       "vs_published": {
-        "mean_oc_min": 0.01,
-        "rms_oc_min": 0.87
+        "mean_oc_min": -0.05,
+        "rms_oc_min": 1.03
       },
       "oc_diagram": "status/oc/WASP-3b_oc.png"
     },
@@ -539,23 +749,23 @@
       "reasons": [
         "consistent with published ephemeris"
       ],
-      "n_midtimes": 169,
-      "n_epochs": 164,
-      "baseline_years": 7.09,
+      "n_midtimes": 185,
+      "n_epochs": 180,
+      "baseline_years": 9.92,
       "sources": {
-        "ours": 169,
+        "ours": 185,
         "literature": 0,
         "dropped_dup_ours": 0
       },
-      "P_days": 0.8134740202358159,
-      "P_err": 1.1524651447582798e-07,
-      "dPdE_days_per_epoch": 1.125770310306251e-11,
-      "decay_significance_sigma": 0.2645528396674127,
-      "chi2_reduced": 0.99,
-      "rms_minutes": 1.789,
+      "P_days": 0.8134740310541702,
+      "P_err": 1.1391031159428628e-07,
+      "dPdE_days_per_epoch": 7.715529604102045e-12,
+      "decay_significance_sigma": 0.1831592437746426,
+      "chi2_reduced": 1.006,
+      "rms_minutes": 1.878,
       "vs_published": {
-        "mean_oc_min": -0.12,
-        "rms_oc_min": 1.79
+        "mean_oc_min": -0.17,
+        "rms_oc_min": 1.88
       },
       "oc_diagram": "status/oc/WASP-43b_oc.png"
     },
@@ -591,22 +801,22 @@
       "reasons": [
         "consistent with published ephemeris"
       ],
-      "n_midtimes": 36,
-      "n_epochs": 35,
+      "n_midtimes": 37,
+      "n_epochs": 36,
       "baseline_years": 8.02,
       "sources": {
-        "ours": 36,
+        "ours": 37,
         "literature": 0,
         "dropped_dup_ours": 0
       },
-      "P_days": 1.7497781694918253,
-      "P_err": 8.161868151866148e-06,
-      "dPdE_days_per_epoch": 1.6037014576787393e-09,
-      "decay_significance_sigma": 0.26168019179795343,
-      "chi2_reduced": 0.945,
-      "rms_minutes": 4.338,
+      "P_days": 1.7497774704534095,
+      "P_err": 8.039383836931574e-06,
+      "dPdE_days_per_epoch": 2.195709392083245e-09,
+      "decay_significance_sigma": 0.3643115836788088,
+      "chi2_reduced": 0.944,
+      "rms_minutes": 4.365,
       "vs_published": {
-        "mean_oc_min": 0.01,
+        "mean_oc_min": -0.11,
         "rms_oc_min": 4.45
       },
       "oc_diagram": "status/oc/WASP-52b_oc.png"
@@ -636,6 +846,128 @@
         "rms_oc_min": 6.67
       },
       "oc_diagram": "status/oc/XO-1b_oc.png"
+    },
+    {
+      "target": "HAT-P-19b",
+      "flag": "insufficient",
+      "reasons": [
+        "only 2 epochs (< 8)"
+      ],
+      "n_midtimes": 2,
+      "n_epochs": 2,
+      "baseline_years": 0.03,
+      "sources": {
+        "ours": 2,
+        "literature": 0,
+        "dropped_dup_ours": 0
+      },
+      "P_days": 4.006700100945643,
+      "P_err": 0.002133253760027879,
+      "dPdE_days_per_epoch": null,
+      "decay_significance_sigma": null,
+      "chi2_reduced": 0.0,
+      "rms_minutes": 0.038,
+      "vs_published": {
+        "mean_oc_min": 6.29,
+        "rms_oc_min": 7.74
+      },
+      "oc_diagram": "status/oc/HAT-P-19b_oc.png"
+    },
+    {
+      "target": "HAT-P-20b",
+      "flag": "insufficient",
+      "reasons": [
+        "HAT-P-20b: only 1 usable mid-time(s) \u2014 need \u22652 to fit"
+      ]
+    },
+    {
+      "target": "HAT-P-3b",
+      "flag": "insufficient",
+      "reasons": [
+        "HAT-P-3b: only 0 usable mid-time(s) \u2014 need \u22652 to fit"
+      ]
+    },
+    {
+      "target": "HAT-P-54b",
+      "flag": "insufficient",
+      "reasons": [
+        "HAT-P-54b: only 1 usable mid-time(s) \u2014 need \u22652 to fit"
+      ]
+    },
+    {
+      "target": "HATS-18b",
+      "flag": "insufficient",
+      "reasons": [
+        "HATS-18b: only 0 usable mid-time(s) \u2014 need \u22652 to fit"
+      ]
+    },
+    {
+      "target": "WASP-1b",
+      "flag": "insufficient",
+      "reasons": [
+        "WASP-1b: only 0 usable mid-time(s) \u2014 need \u22652 to fit"
+      ]
+    },
+    {
+      "target": "WASP-25b",
+      "flag": "insufficient",
+      "reasons": [
+        "WASP-25b: only 0 usable mid-time(s) \u2014 need \u22652 to fit"
+      ]
+    },
+    {
+      "target": "WASP-35b",
+      "flag": "insufficient",
+      "reasons": [
+        "WASP-35b: only 1 usable mid-time(s) \u2014 need \u22652 to fit"
+      ]
+    },
+    {
+      "target": "WASP-39b",
+      "flag": "insufficient",
+      "reasons": [
+        "WASP-39b: only 0 usable mid-time(s) \u2014 need \u22652 to fit"
+      ]
+    },
+    {
+      "target": "WASP-49b",
+      "flag": "insufficient",
+      "reasons": [
+        "only 2 epochs (< 8)"
+      ],
+      "n_midtimes": 2,
+      "n_epochs": 2,
+      "baseline_years": 1.84,
+      "sources": {
+        "ours": 2,
+        "literature": 0,
+        "dropped_dup_ours": 0
+      },
+      "P_days": 2.7817128099140764,
+      "P_err": 2.4741886139414145e-05,
+      "dPdE_days_per_epoch": null,
+      "decay_significance_sigma": null,
+      "chi2_reduced": 0.0,
+      "rms_minutes": 0.0,
+      "vs_published": {
+        "mean_oc_min": -8.49,
+        "rms_oc_min": 9.5
+      },
+      "oc_diagram": "status/oc/WASP-49b_oc.png"
+    },
+    {
+      "target": "WASP-77Ab",
+      "flag": "insufficient",
+      "reasons": [
+        "WASP-77Ab: only 0 usable mid-time(s) \u2014 need \u22652 to fit"
+      ]
+    },
+    {
+      "target": "WASP-84b",
+      "flag": "insufficient",
+      "reasons": [
+        "WASP-84b: only 0 usable mid-time(s) \u2014 need \u22652 to fit"
+      ]
     }
   ]
 }

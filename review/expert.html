@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scientific Report &amp; Review — Expert view — Backyard Meridian</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/theater.css?v=20260718c">
+<script>
+  /* set the manual theme before first paint to avoid a flash */
+  try {
+    var t = localStorage.getItem("theater-theme");
+    if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+  } catch (e) {}
+</script>
+<style>
+  /* ---- Page-2-specific layout (shared tokens/components live in theater.css) ---- */
+  :root { --rail-w: 288px; }   /* rail width AND the fixed gate's left offset — one source */
+  body { min-height: 100vh; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: var(--sp-4);
+    padding: var(--sp-3) var(--sp-4);
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--grid);
+  }
+  .topbar h1 { font-size: 15px; margin: 0; letter-spacing: .01em; }
+  .topbar .spacer { flex: 1; }
+  .topbar a.nav { font-size: 13px; color: var(--sec); }
+  .topbar a.nav:hover { color: var(--blue); }
+  .icon-btn {
+    background: transparent; border: 1px solid var(--grid); color: var(--ink);
+    border-radius: var(--r-1); padding: 6px 10px; cursor: pointer; font-size: 13px;
+  }
+  .icon-btn:hover { border-color: var(--blue); }
+
+  #offline { display: none; margin: var(--sp-3) var(--sp-4) 0; }
+  #offline.show { display: flex; }
+
+  .app { display: flex; align-items: flex-start; gap: 0; }
+
+  /* ---- left rail ---- */
+  aside.rail {
+    width: var(--rail-w); flex: none; position: sticky; top: 53px;
+    height: calc(100vh - 53px); overflow-y: auto;
+    border-right: 1px solid var(--grid); padding: var(--sp-4) var(--sp-3);
+    background: var(--plane);
+  }
+  aside.rail .rail-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: var(--sp-3);
+  }
+  aside.rail .rail-head h2 {
+    font-size: 12px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--muted); margin: 0;
+  }
+  .queue-row {
+    display: grid; grid-template-columns: 1fr auto; gap: 3px var(--sp-2);
+    align-items: center; padding: var(--sp-2) var(--sp-2);
+    border-radius: var(--r-1); cursor: pointer; margin-bottom: 2px;
+    border: 1px solid transparent;
+  }
+  .queue-row:hover { background: color-mix(in srgb, var(--blue) 8%, transparent); }
+  .queue-row.sel { background: color-mix(in srgb, var(--blue) 12%, transparent);
+                   border-color: color-mix(in srgb, var(--blue) 35%, transparent); }
+  .queue-row .qt { font-weight: 600; font-size: 13px; }
+  .queue-row .qn { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+  .queue-row .qmeta { grid-column: 1 / -1; display: flex; align-items: center;
+                      gap: var(--sp-2); flex-wrap: wrap; }
+  .rail-group-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em;
+                      color: var(--muted); margin: var(--sp-3) 0 var(--sp-2) 2px; }
+  /* worked examples: a curated cross-section, above the working queue */
+  .rail-examples-note { font-size: 11px; line-height: 1.45; color: var(--muted);
+                        margin: 0 2px var(--sp-2); }
+  .queue-row .ex-why { grid-column: 1 / -1; font-size: 11px; line-height: 1.4;
+                       color: var(--sec); }
+
+  /* mobile rail toggle */
+  #railToggle { display: none; }
+
+  /* ---- main ---- */
+  main.main { flex: 1; min-width: 0; padding: var(--sp-4) var(--sp-4) 120px; }
+
+  .header-band {
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3);
+    padding: var(--sp-4); margin-bottom: var(--sp-4);
+    background: var(--surface); border: 1px solid var(--grid); border-radius: var(--r-2);
+    box-shadow: var(--shadow-1);
+  }
+  .header-band .tgt { font-size: 22px; font-weight: 650; }
+  .header-band .night { font-family: var(--font-mono); color: var(--sec); font-size: 14px; }
+  .header-band .rno { font-family: var(--font-mono); color: var(--blue); font-weight: 600; }
+  .header-band .dot { color: var(--muted); }
+  .header-band .disposition {
+    flex-basis: 100%; color: var(--sec); font-size: 13px; margin-top: 2px;
+  }
+
+  section.block { margin-bottom: var(--sp-5); }
+  section.block > h2 {
+    font-size: 12px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 var(--sp-3);
+  }
+
+  /* figure grid */
+  .hero { margin-bottom: var(--sp-3); }
+  .fig-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--sp-3);
+  }
+
+  /* tables: each scrolls horizontally inside its own container */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--grid); border-radius: var(--r-2);
+                background: var(--surface); box-shadow: var(--shadow-1); }
+  .table-wrap + .table-wrap { margin-top: var(--sp-3); }
+  .table-title { font-size: 12px; letter-spacing: .04em; text-transform: uppercase;
+                 color: var(--muted); padding: var(--sp-3) var(--sp-3) 0; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+              gap: var(--sp-3); }
+
+  /* AAVSO artifact */
+  details.aavso { background: var(--surface); border: 1px solid var(--grid);
+                  border-radius: var(--r-2); box-shadow: var(--shadow-1); }
+  details.aavso > summary {
+    cursor: pointer; padding: var(--sp-3) var(--sp-4); font-weight: 600; font-size: 13px;
+    display: flex; align-items: center; gap: var(--sp-2); list-style: none;
+  }
+  details.aavso > summary::-webkit-details-marker { display: none; }
+  details.aavso > summary::before { content: "▸"; color: var(--muted); }
+  details.aavso[open] > summary::before { content: "▾"; }
+  details.aavso .body { padding: 0 var(--sp-4) var(--sp-4); }
+  pre.artifact {
+    background: var(--plane); border: 1px solid var(--grid); border-radius: var(--r-1);
+    padding: var(--sp-3); font-family: var(--font-mono); font-size: 11.5px; line-height: 1.5;
+    overflow-x: auto; max-height: 460px; white-space: pre; margin: var(--sp-2) 0 0;
+  }
+  .copy-btn { font-size: 12px; }
+
+  /* sticky gate */
+  .gate {
+    /* start at the main-content edge so the fixed bar never paints over the sticky rail.
+       three zones: actions (left) · context: note+reason (center) · status (right). */
+    position: fixed; left: var(--rail-w); right: 0; bottom: 0; z-index: 15;
+    display: flex; align-items: center; gap: var(--sp-3) var(--sp-4); flex-wrap: wrap;
+    padding: var(--sp-3) var(--sp-4);
+    background: color-mix(in srgb, var(--surface) 94%, transparent);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--grid);
+    box-shadow: 0 -8px 28px rgba(0,0,0,.22);
+  }
+  .gate .gate-actions { display: inline-flex; align-items: center; gap: var(--sp-2); flex: none; }
+  .gate .reason {
+    flex: 1 1 200px; min-width: 160px;
+    background: var(--plane); color: var(--ink);
+    border: 1px solid var(--grid); border-radius: var(--r-1);
+    padding: 8px 10px; font: 13px var(--font-sans); resize: none; height: 38px;
+  }
+  .gate .reason:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+  /* status zone: progress · state · PDF, pushed right behind a hairline divider */
+  .gate .gate-meta {
+    display: inline-flex; align-items: center; gap: var(--sp-3); flex: none;
+    margin-left: auto; padding-left: var(--sp-4); border-left: 1px solid var(--grid);
+  }
+  .gate .gate-state { font-size: 12.5px; color: var(--muted); }
+  .gate .grow { flex: 1; }
+
+  /* lightbox */
+  dialog.lightbox {
+    border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 94vh;
+  }
+  dialog.lightbox::backdrop { background: rgba(0,0,0,.82); }
+  dialog.lightbox img { max-width: 96vw; max-height: 82vh; display: block;
+                        border-radius: var(--r-1); }
+  dialog.lightbox .lb-cap { color: var(--ink-media); font-size: 12.5px; margin-top: var(--sp-2);
+                            font-family: var(--font-mono); text-align: center; }
+  dialog.lightbox .lb-close {
+    position: absolute; top: -6px; right: -6px; background: var(--surface);
+    color: var(--ink); border: 1px solid var(--grid); border-radius: 50%;
+    width: 34px; height: 34px; cursor: pointer; font-size: 18px;
+  }
+  dialog.lightbox .lb-inner { position: relative; }
+
+  /* empty / loading states */
+  .placeholder { color: var(--muted); text-align: center; padding: 60px var(--sp-4); }
+  .placeholder code { font-family: var(--font-mono); color: var(--sec);
+                      background: var(--surface); padding: 2px 6px; border-radius: 4px;
+                      border: 1px solid var(--grid); }
+  .placeholder h2 { color: var(--ink); }
+
+  /* responsive: collapse the rail on narrow screens */
+  @media (max-width: 820px) {
+    #railToggle { display: inline-block; }
+    aside.rail {
+      position: fixed; top: 53px; left: 0; z-index: 18;
+      width: min(320px, 88vw); height: calc(100vh - 53px);
+      transform: translateX(-102%); transition: transform .3s ease;
+      box-shadow: var(--shadow-2);
+    }
+    aside.rail.open { transform: none; }
+    main.main { padding-bottom: 150px; }
+    .header-band .tgt { font-size: 19px; }
+    .gate { left: 0; }        /* rail is an off-canvas drawer here — gate spans full width again */
+  }
+
+  /* scoring-state LED alias (token, not hex) — used by the color legend */
+  .led.led-aqua { --_c: var(--aqua); }
+
+  /* F5 — two-step armed Approve: the armed state borrows the --warn tokens */
+  .btn--approve.armed {
+    background: var(--warn); border-color: var(--warn); color: var(--ink-on-fill);
+  }
+
+  /* F6 — compact collapsible color legend */
+  .explain-details {
+    background: var(--surface); border: 1px solid var(--grid);
+    border-radius: var(--r-1); margin-bottom: var(--sp-3);
+  }
+  .explain-details > summary {
+    cursor: pointer; list-style: none;
+    padding: var(--sp-2) var(--sp-3);
+    font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted);
+  }
+  .explain-details > summary::-webkit-details-marker { display: none; }
+  .explain-details > summary::before { content: "▸ "; color: var(--muted); }
+  .explain-details[open] > summary::before { content: "▾ "; }
+  .explain-details > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 3px; }
+  .legend-body { padding: 0 var(--sp-3) var(--sp-3); display: grid; gap: var(--sp-3); }
+  .legend-title { font-size: 10px; letter-spacing: .05em; text-transform: uppercase;
+                  color: var(--muted); margin-bottom: var(--sp-1); }
+  .legend-item { display: flex; align-items: center; gap: var(--sp-2); margin: 4px 0; font-size: var(--fs-12); }
+  .legend-led  { display: inline-flex; align-items: center; gap: 6px; min-width: 92px;
+                 font-family: var(--font-mono); font-size: var(--fs-11); color: var(--sec); }
+  .legend-desc { color: var(--sec); }
+
+  /* unified appendix footer sits below the app; pad it so the fixed decision
+     gate (position:fixed; bottom:0) never overlaps the appendix links */
+  .site-footer { padding-bottom: calc(var(--sp-5) + 96px); }
+  @media (max-width: 820px) { .site-footer { padding-bottom: calc(var(--sp-5) + 130px); } }
+
+  /* ===== review-workflow redesign (spec 2026-07-17) — tokens only ========= */
+
+  /* T2-1 — rail lanes: empty needs-decision note + collapsed Archive group */
+  .rail-empty {
+    color: var(--muted); font-size: 12px; line-height: 1.5;
+    padding: var(--sp-2) 2px var(--sp-3);
+  }
+  details.rail-archive { margin-top: var(--sp-3); }
+  details.rail-archive > summary {
+    cursor: pointer; list-style: none;
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--muted); padding: var(--sp-2) 2px;
+  }
+  details.rail-archive > summary::-webkit-details-marker { display: none; }
+  details.rail-archive > summary::before { content: "▸ "; }
+  details.rail-archive[open] > summary::before { content: "▾ "; }
+  details.rail-archive > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 3px; }
+
+  /* T2-2 — p_good chip (band-coloured) + model-disagreement marker on rows */
+  .pchip {
+    font: 600 var(--fs-11)/1.4 var(--font-mono);
+    padding: 1px 7px; border-radius: var(--r-pill);
+    border: 1px solid var(--grid); white-space: nowrap;
+  }
+  .pchip.good { color: var(--good-txt); border-color: color-mix(in srgb, var(--good) 45%, transparent);
+                background: color-mix(in srgb, var(--good) 12%, transparent); }
+  .pchip.warn { color: var(--warn-txt); border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+                background: color-mix(in srgb, var(--warn) 12%, transparent); }
+  .pchip.crit { color: var(--crit-txt); border-color: color-mix(in srgb, var(--crit) 45%, transparent);
+                background: color-mix(in srgb, var(--crit) 12%, transparent); }
+  .model-flag { font: 600 var(--fs-11)/1.4 var(--font-mono); color: var(--crit-txt); white-space: nowrap; }
+
+  /* T2-3 — verdict strip: RECOMMEND banner + checklist tiles */
+  .recommend {
+    display: flex; align-items: baseline; gap: var(--sp-2) var(--sp-3); flex-wrap: wrap;
+    padding: var(--sp-3); border-radius: var(--r-2);
+    border: 1px solid var(--grid); border-left-width: 3px; background: var(--surface);
+    box-shadow: var(--shadow-1); margin-bottom: var(--sp-3);
+  }
+  .recommend .rec-tag {
+    font: 600 var(--fs-11)/1 var(--font-mono); letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .recommend .rec-line { font-size: 13px; color: var(--ink); line-height: 1.5; }
+  .recommend.good { border-left-color: var(--good); }
+  .recommend.good .rec-tag { color: var(--good-txt); }
+  .recommend.warn { border-left-color: var(--warn); }
+  .recommend.warn .rec-tag { color: var(--warn-txt); }
+  .recommend.muted { border-left-color: var(--muted); }
+  .chk-tile .l { display: flex; align-items: center; gap: 6px; }
+
+  /* T2-4 — progressive disclosure: measurements tables in a collapsed details */
+  details.measurements > summary {
+    cursor: pointer; list-style: none;
+    font-size: var(--fs-12); letter-spacing: .05em; text-transform: uppercase; color: var(--muted);
+    padding: var(--sp-2) 0 var(--sp-3); display: flex; align-items: center; gap: var(--sp-2);
+  }
+  details.measurements > summary::-webkit-details-marker { display: none; }
+  details.measurements > summary::before { content: "▸"; color: var(--muted); }
+  details.measurements[open] > summary::before { content: "▾"; }
+  details.measurements > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 3px; }
+  .measurements-body > .table-wrap:first-child { margin-top: 0; }
+
+  /* T2-5 — gate: auto-filed note + session progress readout */
+  /* legible enough to read as an intentional state, not "missing buttons" */
+  .gate .gate-note { flex: 2 1 260px; min-width: 210px; font-size: 12.5px; color: var(--sec); line-height: 1.45;
+                     display: inline-flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+  .gate .gate-note-tag { flex: none; font: 600 10.5px/1 var(--font-ui); letter-spacing: .04em;
+                         text-transform: uppercase; padding: 4px 8px; border-radius: var(--r-1);
+                         color: var(--sec); background: color-mix(in srgb, var(--muted) 14%, transparent);
+                         border: 1px solid var(--grid); }
+  .gate .gate-note b { color: var(--ink); font-weight: 600; }
+  .gate .gate-progress { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  /* T2-8 — snapshot mode hides the decision gate entirely (rail stays as a
+     read-only portfolio); belt-and-suspenders alongside the JS state.snapshot guard */
+  html[data-snapshot] .gate { display: none !important; }
+
+  /* ===== A4 — Night playback (film) player: lean, self-contained ============ */
+  /* hidden until frame 0 probes OK (JS reveals it); on probe failure the whole
+     section is removed — so a film-less public snapshot never shows a dead player */
+  .film-section:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px;
+                                border-radius: var(--r-1); }
+  /* contained media — the frames are small square crops; a full-column player looks
+     oversized, so cap the stage + controls to a modest, left-aligned block. */
+  .film-stage {
+    margin: 0 0 var(--sp-3); background: var(--plane);
+    border: 1px solid var(--grid); border-radius: var(--r-2);
+    overflow: hidden; display: flex; justify-content: center; align-items: center;
+    min-height: 120px; max-width: 420px;
+  }
+  .film-frame { display: block; max-width: 100%; height: auto; }
+  .film-controls {
+    display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap;
+    max-width: 420px;
+  }
+  .film-play {
+    min-width: 42px; font-size: 14px; line-height: 1; padding: 6px 12px;
+  }
+  .film-scrub { flex: 1; min-width: 160px; accent-color: var(--blue); cursor: pointer; }
+  .film-speed-l { display: inline-flex; align-items: center; gap: var(--sp-2);
+                  font-size: 12px; color: var(--sec); }
+  .film-speed {
+    background: var(--surface); color: var(--ink); border: 1px solid var(--grid);
+    border-radius: var(--r-1); padding: 4px 6px; font: inherit; cursor: pointer;
+  }
+  .film-counter { font-family: var(--font-mono); font-size: 12px; color: var(--muted);
+                  min-width: 70px; text-align: right; }
+  /* mid-frame fallback caption (public snapshot: a still, not a film) */
+  .film-still-note { font-size: 12px; color: var(--muted); max-width: 420px;
+                     margin: calc(-1 * var(--sp-2)) 0 0; }
+
+  /* ===== decision-first "at a glance": light curve + grade, side-by-side ===== */
+  /* the reviewer's question — is this measurement trustworthy? — is answered
+     above the fold: the curve (left) and the automated grade (right) sit together
+     instead of a full screen apart, halving the scroll to the same conclusion. */
+  .decision-row {
+    display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+    gap: var(--sp-4); align-items: start;
+  }
+  .decision-row.single { grid-template-columns: 1fr; }
+  .decision-fig, .decision-verdict { min-width: 0; }
+  .decision-fig > .section-title:first-child { margin-top: 0; }
+  .decision-verdict > .recommend:first-child { margin-top: 0; }
+  /* denser tiles in the narrower right column so 8 fit in a tidy 2-up grid */
+  .decision-verdict .stat-row { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  @media (max-width: 900px) { .decision-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <button id="railToggle" class="icon-btn" aria-label="Toggle review queue">☰</button>
+  <a class="site-header__brand" href="../" aria-label="Backyard Meridian — case study home">
+    <img src="../assets/landing/backyard-meridian-mark.png" alt="Backyard Meridian mark: a horizon line crossed by a meridian arc meeting at a star point">
+    <span><strong>Backyard Meridian</strong><small>From observation to evidence</small></span>
+  </a>
+  <nav class="site-header__tabs" aria-label="Primary">
+    <a class="site-tab" href="../">Case study</a>
+    <a class="site-tab" href="../status/">Workflow</a>
+    <a class="site-tab" href="../review/" aria-current="page">Review</a>
+    <a class="site-tab" href="../eval/">Evaluation</a>
+  </nav>
+  <div class="site-header__tools">
+    <a class="icon-btn" href="./" id="guidedLink" title="Guided walkthrough view" onclick="try{localStorage.setItem('review-view','guided')}catch(e){}">Guided view</a>
+    <span class="snapshot-badge" id="snapshot-badge" title="This is the static weekly snapshot">snapshot</span>
+    <button id="themeBtn" class="icon-btn" aria-label="Toggle light / dark theme" title="Toggle theme">◐</button>
+  </div>
+</header>
+<div class="snapshot-ribbon" id="snapshot-ribbon" role="status">
+  <span class="led ok" aria-hidden="true"></span>
+  <span><strong>Static weekly snapshot</strong> — the live pipeline runs locally · captured <span class="num" id="snapshot-date">—</span></span>
+</div>
+
+<div id="offline" class="banner crit">
+  <span class="led crit" aria-hidden="true"></span>
+  <span>Review API offline (<span class="mono">localhost:8323</span>). Decisions can’t be recorded — start
+  <span class="mono">scripts/review_server.py</span> to enable Approve / Redo / Reject.</span>
+</div>
+
+<div class="app">
+  <aside class="rail" id="rail">
+    <div class="rail-head">
+      <h2>Review Queue</h2>
+      <span class="mono" id="queueCount" style="font-size:11px;color:var(--muted)"></span>
+    </div>
+
+    <details class="explain-details">
+      <summary>Color legend</summary>
+      <div class="legend-body">
+        <div>
+          <div class="legend-title">Benchmark verdict</div>
+          <div class="legend-item"><span class="badge-verdict sm" data-verdict="ACCURATE">ACCURATE</span><span class="legend-desc">agrees with published</span></div>
+          <div class="legend-item"><span class="badge-verdict sm" data-verdict="MARGINAL">MARGINAL</span><span class="legend-desc">2–3σ from published</span></div>
+          <div class="legend-item"><span class="badge-verdict sm" data-verdict="NOISY-CONSISTENT">NOISY-CONSISTENT</span><span class="legend-desc">right value, unusable precision</span></div>
+          <div class="legend-item"><span class="badge-verdict sm" data-verdict="NON-DETECTION">NON-DETECTION</span><span class="legend-desc">transit below the noise</span></div>
+          <div class="legend-item"><span class="badge-verdict sm" data-verdict="INACCURATE">INACCURATE</span><span class="legend-desc">disagrees with published</span></div>
+        </div>
+        <div>
+          <div class="legend-title">Worker state</div>
+          <div class="legend-item"><span class="legend-led"><span class="led idle" aria-hidden="true"></span> idle</span><span class="legend-desc">no work assigned</span></div>
+          <div class="legend-item"><span class="legend-led"><span class="led active" aria-hidden="true"></span> active</span><span class="legend-desc">probing / fetching / fitting</span></div>
+          <div class="legend-item"><span class="legend-led"><span class="led led-aqua" aria-hidden="true"></span> scoring</span><span class="legend-desc">grading against published</span></div>
+          <div class="legend-item"><span class="legend-led"><span class="led warn" aria-hidden="true"></span> warn</span><span class="legend-desc">retiring / caution</span></div>
+          <div class="legend-item"><span class="legend-led"><span class="led crit" aria-hidden="true"></span> stale</span><span class="legend-desc">no heartbeat &gt;2 min</span></div>
+          <div class="legend-item"><span class="legend-led"><span class="led throttled" aria-hidden="true"></span> throttled</span><span class="legend-desc">archive breaker open</span></div>
+        </div>
+        <div>
+          <div class="legend-title">Keyboard</div>
+          <div class="legend-item"><span class="legend-led">j / k</span><span class="legend-desc">previous / next in the queue order</span></div>
+          <div class="legend-item"><span class="legend-led">a</span><span class="legend-desc">arm, then confirm Approve</span></div>
+          <div class="legend-item"><span class="legend-led">r</span><span class="legend-desc">Redo (reason required)</span></div>
+          <div class="legend-item"><span class="legend-led">x</span><span class="legend-desc">Reject (reason required)</span></div>
+          <div class="legend-item"><span class="legend-led">/</span><span class="legend-desc">focus the reason box</span></div>
+          <div class="legend-item"><span class="legend-led">Esc</span><span class="legend-desc">leave the reason box</span></div>
+        </div>
+      </div>
+    </details>
+
+    <div id="queue"></div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="placeholder" id="boot"><span class="mono">loading…</span></div>
+  </main>
+</div>
+
+<div class="gate" id="gate" hidden>
+  <div class="gate-actions">
+    <button class="btn btn--approve" id="btnApprove">Approve</button>
+    <button class="btn btn--redo"    id="btnRedo">Redo</button>
+    <button class="btn btn--reject"  id="btnReject">Reject</button>
+  </div>
+  <span class="gate-note" id="gateNote" hidden></span>
+  <textarea class="reason" id="reason" placeholder="Reason (required to Redo or Reject)…" rows="1"></textarea>
+  <div class="gate-meta">
+    <span class="gate-progress mono" id="gateProgress"></span>
+    <span class="gate-state" id="gateState"></span>
+    <a class="btn btn--ghost" id="pdfLink" href="#" target="_blank" rel="noopener" hidden>Download PDF</a>
+  </div>
+</div>
+
+<dialog class="lightbox" id="lightbox">
+  <div class="lb-inner">
+    <button class="lb-close" id="lbClose" aria-label="Close">×</button>
+    <img id="lbImg" alt="">
+    <div class="lb-cap mono" id="lbCap"></div>
+  </div>
+</dialog>
+
+<script>
+"use strict";
+/* view preference: opening the expert page opts into it for future visits */
+try { localStorage.setItem("review-view", "expert"); } catch (e) {}
+/* =========================================================================
+   Page 2 — scientific report & review.
+   Data sources (all relative, served from http://localhost:8321/review/):
+     ./index.json               — queue of reviewable runs (bundle builder output)
+     <id>/manifest.json         — figure grid for a run
+     <id>/report.json           — tables + AAVSO artifact for a run
+   Decision API (cross-origin, hardcoded — CORS allow-origin is localhost:8321):
+     POST http://localhost:8323/api/decision  {record,decision,reason}
+   Every interpolated string is escaped via esc()/escAttr().
+   ========================================================================= */
+
+const REVIEW_API = "http://localhost:8323";
+
+/* ---------- escaping ---------- */
+function esc(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+const escAttr = esc;
+/* build a same-origin asset URL, encoding each path segment (filenames have spaces) */
+function assetURL(id, file) {
+  const segs = String(file).split("/").map(encodeURIComponent).join("/");
+  return "./" + encodeURIComponent(id) + "/" + segs;
+}
+const DASH = "—";
+const show = v => (v === null || v === undefined || v === "" || (typeof v === "number" && !isFinite(v))) ? DASH : v;
+
+/* ---------- verdict helpers ---------- */
+const VERDICTS = ["ACCURATE","MARGINAL","NOISY-CONSISTENT","NON-DETECTION","INACCURATE","RUN-FAILED"];
+function verdictBadge(v, small) {
+  const val = VERDICTS.includes(v) ? v : (v || "");
+  if (!val) return "";
+  return `<span class="badge-verdict${small ? " sm" : ""}" data-verdict="${escAttr(val)}">${esc(val)}</span>`;
+}
+/* map a review status to a decision pill */
+const DECIDED = new Set(["approved","rejected","redo-requested"]);
+function decisionPill(status) {
+  if (!status) return `<span class="pill pending">awaiting review</span>`;
+  if (status === "approved") return `<span class="pill approved">✓ approved</span>`;
+  if (status === "rejected") return `<span class="pill rejected">✕ rejected</span>`;
+  if (status === "redo-requested") return `<span class="pill redo">↻ redo requested</span>`;
+  return `<span class="pill">${esc(status)}</span>`;
+}
+function isDecided(status) { return DECIDED.has(String(status || "")); }
+
+/* ---------- lane / grader helpers (pinned schema; degrade when absent) ----------
+   Old index rows / report.json without lane|p_good|agree|checklist are treated as
+   lane "archive" with no verdict strip — they render like today. */
+const LANES = new Set(["decision", "spotcheck", "archive"]);
+function laneOf(row) {
+  const l = row && row.lane;
+  return LANES.has(l) ? l : "archive";
+}
+/* the visual rail group: a recorded human decision pulls a row into "decided"
+   regardless of its computed lane (a fresh index files decided rows as archive,
+   but within a live session the lane field still reads "decision"). */
+function groupOf(row) {
+  if (isDecided(decisionOf(row))) return "decided";
+  return laneOf(row);
+}
+/* p_good band -> token flavour: pass >=.60 (good) / warn .40–.60 / fail <.40 (crit) */
+function pgoodBand(p) {
+  if (p == null || typeof p !== "number" || !isFinite(p)) return null;
+  if (p >= 0.6) return "good";
+  if (p >= 0.4) return "warn";
+  return "crit";
+}
+function fmtP(p) { return (typeof p === "number" && isFinite(p)) ? p.toFixed(2) : ""; }
+/* small p_good chip; empty string when the grader has no row for this record */
+function pgoodChip(p) {
+  const band = pgoodBand(p);
+  if (!band) return "";
+  return `<span class="pchip ${band}" title="${escAttr("model p_good " + fmtP(p) + " (calibrated)")}">p ${esc(fmtP(p))}</span>`;
+}
+/* model-vs-verdict disagreement marker */
+function modelFlag(agree) {
+  return agree === "disagree"
+    ? `<span class="model-flag" title="model disagrees with the benchmark verdict">model⚠</span>`
+    : "";
+}
+
+/* ---------- app state ---------- */
+const state = {
+  index: [],            // rows from index.json
+  examples: [],         // curated cross-section from examples.json (report_bundle.pick_examples)
+  examplesNote: "",     // the honest label that ships with it
+  examplesOpen: true,   // persist the Worked-examples <details> state across re-renders
+  decisions: {},        // id -> review status (from API /api/queue, overlaid on clicks)
+  apiOnline: false,
+  currentId: null,
+  report: null,         // current report.json
+  manifest: null,       // current manifest.json
+  snapshot: false,      // T2-8: static weekly snapshot => no decision gate
+  sessionDecided: 0,    // T2-5: decisions recorded in this browser session
+  railOrder: [],        // T2-6: flat id list matching rail display order (j/k nav)
+  archiveOpen: false,   // T2-1: persist the Archive <details> open state across re-renders
+};
+
+/* ---------- boot ---------- */
+async function boot() {
+  let idx;
+  try {
+    const r = await fetch("./index.json?" + Date.now());
+    if (!r.ok) throw new Error("http " + r.status);
+    idx = await r.json();
+  } catch (e) {
+    return renderEmptyState();
+  }
+  state.index = Array.isArray(idx) ? idx : (idx.runs || []);
+  if (!state.index.length) return renderEmptyState();
+
+  await loadExamples();         // best-effort: the rail just omits the group without it
+  await refreshDecisions();     // best-effort overlay from the review API
+  renderQueue();
+
+  const fromHash = decodeURIComponent((location.hash || "").replace(/^#/, ""));
+  const pick = state.index.find(r => r.id === fromHash)
+            || firstNeedsDecision()
+            || state.index[0];
+  if (pick) loadBundle(pick.id);
+}
+
+/* ---------- worked examples ----------
+   ./examples.json is written by report_bundle.pick_examples: 20 rows spanning every
+   verdict class and ~20 targets, deterministic and seeded. It is a cross-section, not
+   a highlight reel — the note says so, and it ships with the data rather than being
+   invented here. Absent file => the group simply does not render. */
+async function loadExamples() {
+  const d = await fetchJSON("./examples.json");
+  const rows = d && Array.isArray(d.examples) ? d.examples : [];
+  state.examples = rows.filter(e => e && e.id);
+  state.examplesNote = (d && d.note) || "";
+}
+function decisionOf(row) {
+  return state.decisions[row.id] || row.decision || row.status || null;
+}
+/* run-number / id descending (newest-ish first) — the default rail ordering */
+function cmpDefault(a, b) {
+  return String(b.run_no || b.id).localeCompare(String(a.run_no || a.id));
+}
+/* T2-2 — needs-decision ordering: model disagreement first, then p_good ascending
+   (nulls last), then run_no descending. The queue never decides; it only orders. */
+function cmpNeedsDecision(a, b) {
+  const da = a.agree === "disagree" ? 0 : 1;
+  const db = b.agree === "disagree" ? 0 : 1;
+  if (da !== db) return da - db;
+  const pa = (typeof a.p_good === "number" && isFinite(a.p_good)) ? a.p_good : Infinity;
+  const pb = (typeof b.p_good === "number" && isFinite(b.p_good)) ? b.p_good : Infinity;
+  if (pa !== pb) return pa - pb;
+  return cmpDefault(a, b);
+}
+/* group + sort the index into the four rail lanes */
+function laneOrderedRows() {
+  const rows = state.index.slice();
+  return {
+    decision: rows.filter(r => groupOf(r) === "decision").sort(cmpNeedsDecision),
+    spot:     rows.filter(r => groupOf(r) === "spotcheck").sort(cmpDefault),
+    decided:  rows.filter(r => groupOf(r) === "decided").sort(cmpDefault),
+    archive:  rows.filter(r => groupOf(r) === "archive").sort(cmpDefault),
+  };
+}
+function firstNeedsDecision() {
+  return laneOrderedRows().decision[0] || null;
+}
+
+async function refreshDecisions() {
+  try {
+    const r = await fetch(REVIEW_API + "/api/queue", { cache: "no-store" });
+    if (!r.ok) throw new Error("http " + r.status);
+    const rows = await r.json();
+    state.apiOnline = true;
+    setOffline(false);
+    for (const row of rows) {
+      const st = (row.review && row.review.status) || null;
+      if (st) state.decisions[row.id] = st;
+    }
+  } catch (e) {
+    state.apiOnline = false;
+    setOffline(true);
+  }
+}
+function setOffline(on) {
+  document.getElementById("offline").classList.toggle("show", !!on);
+}
+
+/* ---------- queue rail (T2-1) ---------- */
+function renderQueue() {
+  const g = laneOrderedRows();
+  /* keyboard-nav order follows the display order: needs-decision -> spot-check
+     -> decided -> archive */
+  state.railOrder = [].concat(g.decision, g.spot, g.decided, g.archive).map(r => r.id);
+
+  const n = g.decision.length;
+  /* honest headline: decisions REQUIRED only — never conflate "exists" with "needs me" */
+  document.getElementById("queueCount").textContent =
+    n === 1 ? "1 decision required" : `${n} decisions required`;
+
+  const parts = [];
+
+  /* Worked examples — the curated cross-section, above the working queue */
+  if (state.examples.length) {
+    const body = state.examples.map(exampleRowHTML).join("");
+    parts.push(`<details class="rail-archive rail-examples"${state.examplesOpen ? " open" : ""}>
+        <summary>Worked examples (${esc(state.examples.length)})</summary>
+        <div class="rail-archive-body">
+          <p class="rail-examples-note">${esc(state.examplesNote)}</p>${body}</div>
+      </details>`);
+  }
+
+  /* Needs decision — always shown, with an explicit empty state */
+  parts.push(`<div class="rail-group-label">Needs decision (${n})</div>`);
+  if (!n) {
+    parts.push(`<div class="rail-empty">No decisions pending — pipeline is in practice mode; every archive night is auto-filed.</div>`);
+  } else {
+    for (const r of g.decision) parts.push(queueRowHTML(r));
+  }
+
+  /* Spot-check — optional audit that keeps the automation honest */
+  if (g.spot.length) {
+    parts.push(`<div class="rail-group-label">Spot-check (${g.spot.length} · optional)</div>`);
+    for (const r of g.spot) parts.push(queueRowHTML(r));
+  }
+
+  /* Decided — recorded this session or earlier */
+  if (g.decided.length) {
+    parts.push(`<div class="rail-group-label">Decided (${g.decided.length})</div>`);
+    for (const r of g.decided) parts.push(queueRowHTML(r));
+  }
+
+  /* Archive — browsable, collapsed by default */
+  if (g.archive.length) {
+    const body = g.archive.map(queueRowHTML).join("");
+    parts.push(`<details class="rail-archive"${state.archiveOpen ? " open" : ""}>
+        <summary>Archive (${g.archive.length})</summary>
+        <div class="rail-archive-body">${body}</div>
+      </details>`);
+  }
+
+  document.getElementById("queue").innerHTML = parts.join("");
+  /* preserve each group's open/closed choice across the frequent re-renders */
+  const ex = document.querySelector("details.rail-examples");
+  if (ex) ex.addEventListener("toggle", () => { state.examplesOpen = ex.open; });
+  const arch = document.querySelector("details.rail-archive:not(.rail-examples)");
+  if (arch) arch.addEventListener("toggle", () => { state.archiveOpen = arch.open; });
+}
+/* one example row: target · night · verdict chip · one-line reason; the click and
+   keyboard handlers on #queue treat it exactly like a queue row (data-id) */
+function exampleRowHTML(e) {
+  const sel = e.id === state.currentId ? " sel" : "";
+  const night = show(e.night);
+  return `<div class="queue-row ex-row${sel}" data-id="${escAttr(e.id)}" role="button" tabindex="0"
+        aria-label="${escAttr("Open worked example " + show(e.target) + " " + night)}">
+      <span class="qt">${esc(show(e.target))}</span>
+      <span class="qn">${esc(night)}</span>
+      <span class="qmeta">${verdictBadge(e.verdict, true)}</span>
+      ${e.reason ? `<span class="ex-why">${esc(e.reason)}</span>` : ""}
+    </div>`;
+}
+function queueRowHTML(r) {
+  const sel = r.id === state.currentId ? " sel" : "";
+  const night = show(r.night);
+  const rno = r.run_no ? `<span class="qn">${esc(r.run_no)}</span>` : "";
+  return `<div class="queue-row${sel}" data-id="${escAttr(r.id)}" role="button" tabindex="0"
+        aria-label="${escAttr("Open review for " + show(r.target) + " " + night)}">
+      <span class="qt">${esc(show(r.target))}</span>${rno}
+      <span class="qn">${esc(night)}</span>
+      <span class="qmeta">${verdictBadge(r.verdict, true)}${pgoodChip(r.p_good)}${modelFlag(r.agree)}${decisionPill(decisionOf(r))}</span>
+    </div>`;
+}
+document.getElementById("queue").addEventListener("click", (e) => {
+  const row = e.target.closest(".queue-row");
+  if (row) { loadBundle(row.dataset.id); closeRailMobile(); }
+});
+/* F1 — keyboard: Enter/Space on a focused queue row loads its bundle */
+document.getElementById("queue").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const row = e.target.closest(".queue-row");
+  if (row) { e.preventDefault(); loadBundle(row.dataset.id); closeRailMobile(); }
+});
+
+/* ---------- load a run bundle ---------- */
+async function loadBundle(id) {
+  state.currentId = id;
+  location.hash = "#" + encodeURIComponent(id);
+  renderQueue();
+  const main = document.getElementById("main");
+  main.innerHTML = `<div class="placeholder"><span class="mono">loading ${esc(id)}…</span></div>`;
+
+  const [manifest, report] = await Promise.all([
+    fetchJSON(assetURL(id, "manifest.json")),
+    fetchJSON(assetURL(id, "report.json")),
+  ]);
+  state.manifest = manifest;
+  state.report = report;
+
+  if (!manifest && !report) {
+    main.innerHTML = `<div class="placeholder"><h2>Bundle not found</h2>
+      <p>No <code>manifest.json</code> or <code>report.json</code> under
+      <code>${esc(id)}/</code>. Re-run <code>report_bundle.py</code> for this run.</p></div>`;
+    document.getElementById("gate").hidden = true;
+    return;
+  }
+  renderRun(id, manifest || {}, report || {});
+}
+async function fetchJSON(url) {
+  try { const r = await fetch(url + "?" + Date.now()); return r.ok ? await r.json() : null; }
+  catch (e) { return null; }
+}
+
+/* ---------- render a run ---------- */
+function renderRun(id, manifest, rep) {
+  const row = state.index.find(r => r.id === id) || {};
+  const target = rep.target || row.target || id;
+  const night = rep.night || row.night || "";
+  const verdict = rep.verdict || row.verdict || "";
+  const runNo = rep.run_no || row.run_no || "";
+  const disposition = rep.disposition || defaultDisposition(verdict, decisionOf(row));
+
+  const html = [];
+  /* header band */
+  html.push(`<div class="header-band">
+    <span class="tgt">${esc(target)}</span>
+    ${night ? `<span class="dot">·</span><span class="night">${esc(night)}</span>` : ""}
+    ${verdict ? `<span class="dot">·</span>${verdictBadge(verdict)}` : ""}
+    ${runNo ? `<span class="dot">·</span><span class="rno">${esc(runNo)}</span>` : ""}
+    <span class="dot">·</span>${decisionPill(decisionOf(row))}
+    <div class="disposition">${esc(disposition)}</div>
+  </div>`);
+
+  const lane = laneOf(row);
+  stopFilm();                                /* A4 — halt any prior night's loop */
+  html.push(renderDecisionRow(id, manifest, rep, row)); /* light curve + verdict/grading, 2-col */
+  html.push(renderFilm(rep, id));            /* A4 — Night playback, contained (420px) */
+  html.push(renderFigures(id, manifest));    /* remaining figures — hero now in the decision row */
+  html.push(renderTables(rep));              /* T2-4 — tables in a collapsed <details> */
+  html.push(renderAAVSO(rep, lane));         /* T2-4 — artifact open when lane === decision */
+
+  document.getElementById("main").innerHTML = html.join("");
+  wireExplainers();
+  wireFilm(rep, id);                         /* A4 — probe frame 0, then wire controls */
+  wireFigureClicks(id, manifest);
+  wireAAVSOCopy();
+  renderGate(id, rep, row);
+}
+
+function defaultDisposition(verdict, status) {
+  const v = verdict || "unscored";
+  if (status === "approved") return `Approved for submission — benchmark ${v}.`;
+  if (status === "rejected") return `Rejected at human review — benchmark ${v}.`;
+  if (status === "redo-requested") return `Redo requested — benchmark ${v}.`;
+  return `Awaiting human decision — automated benchmark verdict ${v}.`;
+}
+
+/* ---------- decision-first "at a glance" (targeted-polish redesign) ----------
+   The reviewer's question is "is this measurement trustworthy?" — so the light
+   curve (left) and the automated grade (right) sit together, above the fold, in a
+   2-col row. Each half degrades independently: an old bundle with no checklist
+   shows the curve full-width; a run with no hero figure shows the grade alone. */
+function pickHero(manifest) {
+  const figs = ((manifest && manifest.figures) || []).slice();
+  if (!figs.length) return { hero: null, rest: [] };
+  const i = figs.findIndex(f => f.role === "hero" || f.id === "fig01" || f.n === 1);
+  const hero = i >= 0 ? figs.splice(i, 1)[0] : figs.shift();
+  return { hero, rest: figs };
+}
+function renderDecisionRow(id, manifest, rep, row) {
+  const { hero } = pickHero(manifest);
+  const verdict = verdictInner(rep, row);
+  if (!hero && !verdict) return "";
+  const single = !hero || !verdict;         // one column missing → don't force 2-up
+  const figCol = hero
+    ? `<div class="decision-fig">
+        <p class="section-title">Light curve — fit &amp; residuals</p>
+        ${figureCardHTML(id, hero, true)}
+      </div>`
+    : "";
+  const vCol = verdict ? `<div class="decision-verdict">${verdict}</div>` : "";
+  return `<section class="block"><h2>At a glance</h2>
+      <div class="decision-row${single ? " single" : ""}">${figCol}${vCol}</div>
+    </section>`;
+}
+/* verdict banner + grading tiles, WITHOUT the outer <section> — reused inside the
+   decision row. Returns "" on old bundles carrying neither checklist nor recommend. */
+function verdictInner(rep, row) {
+  const checklist = Array.isArray(rep.checklist) ? rep.checklist : null;
+  const recLine = rep.recommend_line || "";
+  if (!checklist && !recLine) return "";
+
+  const out = [];
+  /* RECOMMEND banner — advice the pipeline computed; never an action */
+  if (recLine) {
+    const kind = recommendKind(recLine, row);
+    out.push(`<div class="recommend ${kind}">
+        <span class="rec-tag">Recommend</span>
+        <span class="rec-line">${esc(stripRecommendPrefix(recLine))}</span>
+      </div>`);
+  }
+  /* what-is-p_good explainer (Page-1 .why/.explain pattern) */
+  out.push(`<p class="section-title">Automated grading
+      <span class="why" data-explain="pgood" role="button" tabindex="0">what is p_good ▾</span></p>`);
+  out.push(`<div class="explain" id="explain-pgood">${EXPLAIN.pgood}</div>`);
+  /* checklist tiles */
+  if (checklist && checklist.length) {
+    out.push(`<div class="stat-row">${checklist.map(checklistTileHTML).join("")}</div>`);
+  }
+  return out.join("");
+}
+/* pass/warn/fail/na -> stat-tile with an LED and value(+unit); note via title attr */
+function checklistTileHTML(item) {
+  const it = item || {};
+  const status = ["pass","warn","fail","na"].includes(it.status) ? it.status : "na";
+  const led = status === "pass" ? "ok" : status === "warn" ? "warn" : status === "fail" ? "crit" : "idle";
+  const unit = it.unit ? ` <span class="u">${esc(it.unit)}</span>` : "";
+  const note = it.note ? ` title="${escAttr(it.note)}"` : "";
+  return `<div class="stat-tile chk-tile"${note}>
+      <div class="l"><span class="led ${led}" aria-hidden="true"></span> ${esc(show(it.label))}</div>
+      <div class="v">${esc(show(it.value))}${unit}</div>
+    </div>`;
+}
+/* banner colour by recommendation kind (SUBMIT->good, INSPECT->warn,
+   AUDIT/AUTO-FILED->muted); parsed from the line, falling back to the index row */
+function recommendKind(line, row) {
+  const m = /RECOMMEND:\s*([A-Z-]+)/.exec(String(line || ""));
+  const kw = (m && m[1]) || (row && row.recommend) || "";
+  if (kw === "SUBMIT") return "good";
+  if (kw === "INSPECT") return "warn";
+  return "muted";   // AUDIT, AUTO-FILED, unknown
+}
+function stripRecommendPrefix(line) {
+  return String(line || "").replace(/^\s*RECOMMEND:\s*/i, "");
+}
+
+/* ---------- figures (hero light curve now lives in the decision row) ---------- */
+function renderFigures(id, manifest) {
+  const { rest } = pickHero(manifest);
+  if (!rest.length) return "";              // only a hero existed → nothing left to show here
+
+  const out = [`<section class="block"><h2>Figures</h2>`];
+  out.push(`<p class="section-title">Corner plot / posterior
+      <span class="why" data-explain="corner" role="button" tabindex="0">why it matters ▾</span></p>`);
+  out.push(`<div class="explain" id="explain-corner">${EXPLAIN.corner}</div>`);
+  out.push(`<div class="fig-grid">`);
+  for (const f of rest) out.push(figureCardHTML(id, f, false));
+  out.push(`</div></section>`);
+  return out.join("");
+}
+function figureCardHTML(id, f, hero) {
+  if (!f) return "";
+  const n = f.n != null ? f.n : "";
+  const cap = f.caption || f.title || "";
+  const label = `<b>Figure ${esc(n)}</b>${cap ? " — " + esc(cap) : ""}`;
+  if (f.missing || !f.file) {
+    const reason = f.missing_reason || "figure not produced for this run";
+    return `<figure class="figure-card missing">
+        <div class="thumb">not available</div>
+        <figcaption><div class="cap">${label}</div>
+          <div class="sha">${esc(reason)}</div></figcaption>
+      </figure>`;
+  }
+  const sha = f.sha256 ? String(f.sha256).slice(0, 16) : "";
+  const url = assetURL(id, f.file);
+  return `<figure class="figure-card" data-fig="${escAttr(f.file)}"
+        data-cap="${escAttr("Figure " + n + (cap ? " — " + cap : ""))}">
+      <div class="thumb" role="button" tabindex="0" aria-label="${escAttr("Enlarge figure " + n)}"><img loading="lazy" src="${escAttr(url)}" alt="${escAttr(cap)}"></div>
+      <figcaption><div class="cap">${label}</div>
+        ${sha ? `<div class="sha">SHA-256 ${esc(sha)}…</div>` : ""}</figcaption>
+    </figure>`;
+}
+function wireFigureClicks(id) {
+  document.querySelectorAll(".figure-card:not(.missing)").forEach(card => {
+    const thumb = card.querySelector(".thumb");
+    const open = () => openLightbox(assetURL(id, card.dataset.fig), card.dataset.cap);
+    thumb.addEventListener("click", open);
+    /* F1 — keyboard: Enter/Space opens the lightbox from a focused thumb */
+    thumb.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
+    });
+  });
+}
+
+/* ---------- tables (T2-4) ----------
+   Collapsed by default — the verdict checklist summarises them; the full six
+   tables stay one click away. */
+function renderTables(rep) {
+  const tables = [
+    paramsTable(rep), metricsBlock(rep), limbDarkTable(rep),
+    observationTable(rep), crosscheckTable(rep), provenanceTable(rep),
+  ].filter(Boolean);
+  if (!tables.length) return "";
+  return `<section class="block"><details class="measurements">
+      <summary>Measurements — full tables</summary>
+      <div class="measurements-body">${tables.join("")}</div>
+    </details></section>`;
+}
+
+/* (a) Fitted parameters — Parameter | Fit ±σ | Prior | Published (ExoClock) */
+function paramsTable(rep) {
+  const rows = rep.params || [];
+  if (!rows.length) return "";
+  const body = rows.map(p => {
+    const isMid = p.is_midtime || /mid.?transit|tmid/i.test(p.name || "");
+    let fitCell;
+    if (isMid) {
+      const white = fmtPM(p.fit, p.sigma, p.unit, p.sigma_min);
+      const infl = p.sigma_inflated != null || p.sigma_inflated_min != null
+        ? `<div class="sub">red-noise σ <b style="color:var(--ink)">± ${esc(show(p.sigma_inflated_min != null ? p.sigma_inflated_min + " min" : p.sigma_inflated))}</b></div>`
+        : "";
+      fitCell = white + infl;
+    } else {
+      fitCell = fmtPM(p.fit, p.sigma, p.unit);
+    }
+    return `<tr><td class="label">${esc(show(p.name))}</td>
+        <td class="num">${fitCell}</td>
+        <td class="num">${esc(show(p.prior))}</td>
+        <td class="num">${esc(show(p.published))}</td></tr>`;
+  }).join("");
+  return `<div class="table-wrap"><div class="table-title">Fitted parameters</div>
+    <table class="data-table"><thead><tr>
+      <th>Parameter</th><th class="num">Fit ± σ</th><th class="num">Prior</th>
+      <th class="num">Published (ExoClock)</th></tr></thead>
+    <tbody>${body}</tbody></table></div>`;
+}
+function fmtPM(val, sig, unit, sigMin) {
+  if (val == null && sig == null) return DASH;
+  let s = esc(show(val));
+  if (sig != null && sig !== "") s += ` ± ${esc(sig)}`;
+  if (unit) s += ` <span class="sub">${esc(unit)}</span>`;
+  if (sigMin != null && sigMin !== "") s += ` <span class="sub">(± ${esc(sigMin)} min)</span>`;
+  return s;
+}
+
+/* (b) Detection & timing metrics */
+function metricsBlock(rep) {
+  const m = rep.metrics || {};
+  const cells = [
+    ["Residual scatter", m.scatter_pct, "%"],
+    ["Depth SNR", m.depth_snr, ""],
+    ["Rp/R* deviation", m.rprs_z, "σ"],
+    ["Duration deviation", m.dur_z, "σ"],
+    ["O−C", m.oc_minutes, "min"],
+    ["O−C significance", m.oc_sigma, "σ"],
+    ["β (red noise)", m.beta_rednoise, ""],
+    ["χ² rescale", m.chi2_rescale, ""],
+  ];
+  if (cells.every(c => c[1] == null)) return "";
+  const tiles = cells.map(([l, v, u]) => `<div class="stat-tile">
+      <div class="l">${esc(l)}</div>
+      <div class="v">${esc(show(v))}${u ? ` <span class="u">${esc(u)}</span>` : ""}</div>
+    </div>`).join("");
+  return `<div style="margin-top:var(--sp-3)">
+      <p class="section-title">Detection &amp; timing
+        <span class="why" data-explain="rms" role="button" tabindex="0">red noise &amp; timing ▾</span>
+        <span class="why" data-explain="oc" role="button" tabindex="0">O−C ▾</span></p>
+      <div class="explain" id="explain-rms">${EXPLAIN.rms}</div>
+      <div class="explain" id="explain-oc">${EXPLAIN.oc}</div>
+      <div class="stat-row">${tiles}</div>
+    </div>`;
+}
+
+/* (c) Limb darkening u0–u3 */
+function limbDarkTable(rep) {
+  const ld = rep.limb_darkening || rep.limbdark || [];
+  if (!ld.length) return "";
+  const body = ld.map(c => `<tr><td class="label">${esc(show(c.coeff || c.name))}</td>
+      <td class="num">${esc(show(c.value))}</td>
+      <td class="num">${esc(show(c.err != null ? "± " + c.err : ""))}</td>
+      <td class="label">${esc(show(c.source || "LDTk"))}</td></tr>`).join("");
+  return `<div class="table-wrap"><div class="table-title">Limb darkening (nonlinear, Claret 4-param)</div>
+    <table class="data-table"><thead><tr>
+      <th>Coefficient</th><th class="num">Value</th><th class="num">σ</th><th>Source</th>
+    </tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
+/* (d) Observation metadata */
+function observationTable(rep) {
+  const o = rep.observation || {};
+  const pairs = [
+    ["Frames", o.frames], ["Cadence", fmtUnit(o.cadence_s, "s")],
+    ["Exposure", fmtUnit(o.exposure_s, "s")], ["Binning", o.binning],
+    ["Airmass range", o.airmass_range], ["Comparison stars", o.comps],
+    ["Filter", o.filter], ["Telescope", o.telescope],
+    ["Optimal aperture", o.aperture], ["Optimal annulus", o.annulus],
+  ].filter(p => p[1] != null && p[1] !== "");
+  if (!pairs.length) return "";
+  const body = pairs.map(([k, v]) => `<tr><td class="label">${esc(k)}</td>
+      <td class="num">${esc(show(v))}</td></tr>`).join("");
+  return `<div class="table-wrap"><div class="table-title">Observation metadata</div>
+    <table class="data-table"><tbody>${body}</tbody></table></div>`;
+}
+function fmtUnit(v, u) { return (v == null || v === "") ? null : v + " " + u; }
+
+/* (e) OEC catalog cross-check */
+function crosscheckTable(rep) {
+  const c = rep.crosscheck || rep.oec;
+  if (!c) return "";
+  let rows;
+  if (c.in_oec === false) {
+    rows = `<tr><td class="label">Open Exoplanet Catalogue</td>
+        <td>not in OEC — no independent cross-check available</td></tr>`;
+  } else {
+    const flags = c.flags || [];
+    const agree = flags.length === 0;
+    const verdictCell = agree
+      ? `<td class="agree">✓ ephemeris agrees with the independent catalogue</td>`
+      : `<td class="flag">⚠ ${flags.map(esc).join("; ")}</td>`;
+    rows = `<tr><td class="label">Agreement</td>${verdictCell}</tr>
+      <tr><td class="label">Period Δ (relative)</td><td class="num">${esc(show(c.period_rel_diff))}</td></tr>
+      <tr><td class="label">Coordinate separation</td><td class="num">${esc(show(c.coord_sep_arcsec != null ? c.coord_sep_arcsec + "″" : null))}</td></tr>`;
+  }
+  return `<div class="table-wrap"><div class="table-title">Catalog cross-check (Open Exoplanet Catalogue)</div>
+    <table class="data-table"><tbody>${rows}</tbody></table></div>`;
+}
+
+/* (f) Provenance */
+function provenanceTable(rep) {
+  const p = rep.provenance || {};
+  const pairs = [
+    ["Random seed", p.seed],
+    ["Dataset SHA-256", p.dataset_sha256],
+    ["Audit chain head", p.audit_head],
+    ["EXOTIC version", p.exotic],
+    ["UltraNest", p.ultranest],
+    ["Inits SHA-256", p.inits_sha256],
+    ["Config snapshot", p.config_snapshot_sha256],
+    ["Runtime", p.runtime_s != null ? p.runtime_s + " s" : null],
+    ["Peak RSS", p.max_rss_mb != null ? p.max_rss_mb + " MB" : null],
+    ["Host", p.host],
+  ].filter(x => x[1] != null && x[1] !== "");
+  if (!pairs.length) return "";
+  const body = pairs.map(([k, v]) => `<tr><td class="label">${esc(k)}</td>
+      <td class="mono" style="word-break:break-all">${esc(v)}</td></tr>`).join("");
+  return `<div class="table-wrap"><div class="table-title">Provenance &amp; reproducibility</div>
+    <table class="data-table"><tbody>${body}</tbody></table></div>`;
+}
+
+/* ---------- AAVSO artifact ---------- */
+/* T2-4 — the artifact is promoted (open by default) when a decision is required */
+function renderAAVSO(rep, lane) {
+  const a = rep.aavso;
+  if (!a || !a.text) return "";
+  const open = lane === "decision" ? " open" : "";
+  return `<section class="block"><h2>Submission artifact</h2>
+    <details class="aavso"${open}>
+      <summary>AAVSO upload text — <span class="mono">${esc(a.name || "AAVSO_*.txt")}</span>
+        <span class="grow"></span></summary>
+      <div class="body">
+        <button class="btn btn--ghost copy-btn" id="copyAavso">Copy to clipboard</button>
+        <pre class="artifact" id="aavsoText"></pre>
+      </div>
+    </details></section>`;
+}
+function wireAAVSOCopy() {
+  const rep = state.report || {};
+  const pre = document.getElementById("aavsoText");
+  if (pre && rep.aavso) pre.textContent = rep.aavso.text || "";  // textContent = no injection
+  const btn = document.getElementById("copyAavso");
+  if (btn) btn.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText((rep.aavso && rep.aavso.text) || ""); btn.textContent = "Copied ✓"; }
+    catch (e) { btn.textContent = "Copy failed"; }
+    setTimeout(() => { btn.textContent = "Copy to clipboard"; }, 1800);
+  });
+}
+
+/* ---------- night playback (A4) ----------
+   A lean <img>-frame loop over export/site/status/film/<night6>/f####.jpg. The film
+   dir is local-only (publish_site.py excludes it), so we probe frame 0 and fall back
+   to the published one-per-night mid frame when it's unreachable — which is what the
+   public snapshot shows. Frame count arrives in report.json's pinned film block
+   ({path,n}); paths are only ever assigned to img.src (a DOM property, never
+   interpolated into innerHTML). */
+const player = { path: null, n: 0, idx: 0, playing: false, timer: null };
+
+function filmFrameSrc(i) {
+  return player.path + "f" + String(i).padStart(4, "0") + ".jpg";
+}
+/* Mid-frame fallback URL (producer: scripts/midframes.py). The film dir never
+   publishes, but ONE ~12 KB JPEG per night does. night6 comes from the pinned film
+   path when there is one, else from the record id's trailing _YYMMDD. */
+function midframeURL(rep, id) {
+  const p = rep && rep.film && rep.film.path;
+  const fromPath = p ? (String(p).match(/(\d{6})\/?$/) || [])[1] : null;
+  const n6 = fromPath || (String(id || "").match(/_(\d{6})$/) || [])[1];
+  return n6 ? "../status/midframes/" + n6 + ".jpg" : null;
+}
+/* section HTML, rendered above Figures; "" (no section) when there is neither a
+   usable film nor a mid frame to fall back to */
+function renderFilm(rep, id) {
+  const f = rep && rep.film;
+  const n = f && typeof f.n === "number" ? Math.max(0, f.n | 0) : 0;
+  const usableFilm = !!(f && f.path && n >= 1);
+  if (!usableFilm && !midframeURL(rep, id)) return "";
+  return `<section class="block film-section" id="filmSection" tabindex="0"
+        aria-label="Night playback" hidden>
+      <h2 id="filmHeading">Night playback</h2>
+      <figure class="film-stage">
+        <img id="filmFrame" class="film-frame" alt="Night playback frame" decoding="async">
+      </figure>
+      <p class="film-still-note" id="filmStillNote" hidden>mid-transit frame — one
+        representative frame from this night; the frame-by-frame film stays on the
+        private dashboard</p>
+      <div class="film-controls" id="filmControls">
+        <button class="icon-btn film-play" id="filmPlay" aria-label="Play playback">▶</button>
+        <input type="range" class="film-scrub" id="filmScrub" min="0"
+               max="${escAttr(Math.max(0, n - 1))}"
+               value="0" step="1" aria-label="Scrub playback frames">
+        <label class="film-speed-l">Speed
+          <select class="film-speed" id="filmSpeed" aria-label="Playback speed (frames per second)">
+            <option value="6">6 fps</option>
+            <option value="12" selected>12 fps</option>
+            <option value="24">24 fps</option>
+          </select>
+        </label>
+        <span class="film-counter" id="filmCounter">1 / ${esc(n)}</span>
+      </div>
+    </section>`;
+}
+/* No film reachable: show the night's mid frame as a labeled still (no controls).
+   If even that 404s the section is removed, so the page never shows a dead player. */
+function showFilmStill(section, url) {
+  const img = document.getElementById("filmFrame");
+  if (!url || !img) { section.remove(); return; }
+  img.onerror = () => { section.remove(); };
+  img.onload = () => {
+    const controls = document.getElementById("filmControls");
+    const note = document.getElementById("filmStillNote");
+    const head = document.getElementById("filmHeading");
+    if (controls) controls.hidden = true;
+    if (note) note.hidden = false;
+    if (head) head.textContent = "The night, one frame";
+    section.setAttribute("aria-label", "Mid-transit frame");
+    section.hidden = false;
+  };
+  img.alt = "Mid-transit frame from this night";
+  img.src = url;
+}
+/* stop any running loop — called on every run change so a prior night's timer never
+   ticks against a removed <img> */
+function stopFilm() {
+  if (player.timer) { clearInterval(player.timer); player.timer = null; }
+  player.playing = false;
+}
+function showFilmFrame(i) {
+  const n = player.n;
+  if (n < 1) return;
+  player.idx = ((i % n) + n) % n;
+  const img = document.getElementById("filmFrame");
+  if (img) img.src = filmFrameSrc(player.idx);
+  const scrub = document.getElementById("filmScrub");
+  if (scrub) scrub.value = player.idx;
+  const counter = document.getElementById("filmCounter");
+  if (counter) counter.textContent = (player.idx + 1) + " / " + n;
+}
+function filmPlay(on) {
+  player.playing = on;
+  const b = document.getElementById("filmPlay");
+  if (b) {
+    b.textContent = on ? "⏸" : "▶";
+    b.setAttribute("aria-label", on ? "Pause playback" : "Play playback");
+  }
+  if (player.timer) { clearInterval(player.timer); player.timer = null; }
+  if (on && player.n > 1) {
+    const sel = document.getElementById("filmSpeed");
+    const fps = (sel && +sel.value) || 12;
+    player.timer = setInterval(() => {
+      if (document.hidden) return;            // don't advance a hidden tab
+      showFilmFrame(player.idx + 1);
+    }, 1000 / fps);
+  }
+}
+/* probe frame 0, then (only on success) reveal the section + wire the controls;
+   on failure fall back to the night's published mid frame */
+function wireFilm(rep, id) {
+  const section = document.getElementById("filmSection");
+  if (!section) return;                        // no film block for this run
+  const f = (rep && rep.film) || {};
+  player.path = f.path;
+  player.n = typeof f.n === "number" ? Math.max(0, f.n | 0) : 0;
+  player.idx = 0;
+  stopFilm();
+  const mid = midframeURL(rep, id);
+  if (!player.path || player.n < 1) { showFilmStill(section, mid); return; }
+
+  const probe = new Image();
+  probe.onload = () => {
+    section.hidden = false;
+    showFilmFrame(0);
+    bindFilmControls(section);
+  };
+  probe.onerror = () => { showFilmStill(section, mid); };  // snapshot-safe: still, or no section
+  probe.src = filmFrameSrc(0);
+}
+function bindFilmControls(section) {
+  const play = document.getElementById("filmPlay");
+  const scrub = document.getElementById("filmScrub");
+  const speed = document.getElementById("filmSpeed");
+  if (play) play.onclick = () => filmPlay(!player.playing);
+  if (scrub) scrub.oninput = (e) => { filmPlay(false); showFilmFrame(+e.target.value); };
+  if (speed) speed.onchange = () => { if (player.playing) filmPlay(true); };  // restart at new fps
+  /* Space toggles play — but ONLY when focus is inside the player, because this
+     listener lives on the film section (not the document), so it never collides
+     with the page's global j/k/a/r/x review shortcuts. preventDefault stops the
+     page scroll and the focused button's native re-activation (no double-toggle).
+     The speed <select> keeps its native space (open the dropdown). */
+  section.addEventListener("keydown", (e) => {
+    if (e.key !== " " && e.key !== "Spacebar") return;
+    if (e.target && e.target.tagName === "SELECT") return;
+    e.preventDefault();
+    filmPlay(!player.playing);
+  });
+}
+
+/* ---------- gate (T2-5) ---------- */
+function renderGate(id, rep, row) {
+  const gate = document.getElementById("gate");
+  /* T2-8 — in the static snapshot there is no decision to make: no gate at all */
+  if (state.snapshot) { gate.hidden = true; return; }
+  gate.hidden = false;
+
+  const decisionLane = laneOf(row) === "decision";
+  const approve = document.getElementById("btnApprove");
+  const reject  = document.getElementById("btnReject");
+  const note    = document.getElementById("gateNote");
+
+  /* Approve/Reject only where a decision is required; Redo stays available
+     everywhere ("automation got it wrong, re-run" is always meaningful). Practice
+     records can never reach Approve — the founding rule, enforced in the UI too. */
+  approve.hidden = !decisionLane;
+  reject.hidden  = !decisionLane;
+  if (decisionLane) {
+    note.hidden = true; note.innerHTML = "";
+  } else {
+    /* Explain WHY there is no Approve/Reject here so the state reads as intentional,
+       not as missing buttons. Spot-check and archive get distinct copy. */
+    const spot = laneOf(row) === "spotcheck";
+    note.hidden = false;
+    note.innerHTML =
+      `<b class="gate-note-tag">${spot ? "Spot-check" : "Auto-filed"}</b>` +
+      (spot
+        ? `<span>Random 1-in-10 audit sample — <b>auto-filed, no decision needed</b>. Confirm the automated verdict looks right; use <b>Redo</b> only if it's wrong.</span>`
+        : `<span><b>Not a submission candidate</b> (benchmark / practice), so it auto-filed — no decision needed. Use <b>Redo</b> if the automated verdict looks wrong.</span>`);
+  }
+
+  const status = decisionOf(row);
+  document.getElementById("gateState").innerHTML =
+    (state.apiOnline ? "" : `<span class="led crit" aria-hidden="true"></span> API offline · `) +
+    `state: ${decisionPill(status)}`;
+  updateGateProgress();
+
+  /* PDF link — prefer an explicit href from the bundle; else reconstruct
+     the pdf_report.py name: reports/R-####_<target-with-dashes>.pdf */
+  const pdf = document.getElementById("pdfLink");
+  const href = rep.pdf || pdfHref(rep, row);
+  if (href) { pdf.hidden = false; pdf.href = href; }
+  else pdf.hidden = true;
+
+  /* F5 — Approve is two-step armed; Redo/Reject already require a reason */
+  disarmApprove();
+  approve.onclick = () => {
+    if (approveArmed()) { disarmApprove(); decide(id, "approve"); }
+    else armApprove();
+  };
+  document.getElementById("btnRedo").onclick = () => decide(id, "redo");
+  reject.onclick = () => decide(id, "reject");
+}
+/* T2-5 — "N decided · M remaining": session-local decisions + live needs-decision count */
+function updateGateProgress() {
+  const el = document.getElementById("gateProgress");
+  if (!el) return;
+  const remaining = state.index.filter(r => groupOf(r) === "decision").length;
+  el.textContent = `${state.sessionDecided} decided · ${remaining} remaining`;
+}
+
+/* ---------- F5: two-step armed Approve ---------- */
+let approveTimer = null;
+function approveArmed() { return approveTimer !== null; }
+function armApprove() {
+  const b = document.getElementById("btnApprove");
+  if (!b) return;
+  b.classList.add("armed");
+  b.textContent = "Confirm approve?";
+  approveTimer = setTimeout(disarmApprove, 5000);
+}
+function disarmApprove() {
+  if (approveTimer) { clearTimeout(approveTimer); approveTimer = null; }
+  const b = document.getElementById("btnApprove");
+  if (b) { b.classList.remove("armed"); b.textContent = "Approve"; }
+}
+/* any interaction that isn't the Approve button itself disarms it */
+document.addEventListener("click", (e) => {
+  if (approveArmed() && !(e.target.closest && e.target.closest("#btnApprove"))) disarmApprove();
+}, true);
+document.getElementById("reason").addEventListener("input", disarmApprove);
+function pdfHref(rep, row) {
+  const rno = rep.run_no || row.run_no;
+  const target = rep.target || row.target;
+  if (!rno || !target) return null;
+  const dashed = String(target).replace(/\s+/g, "-");
+  return "../reports/" + encodeURIComponent(rno + "_" + dashed) + ".pdf";
+}
+
+async function decide(id, action) {
+  const reasonEl = document.getElementById("reason");
+  const reason = reasonEl.value.trim();
+  if ((action === "reject" || action === "redo") && !reason) {
+    reasonEl.focus();
+    reasonEl.style.borderColor = "var(--crit)";
+    document.getElementById("gateState").innerHTML =
+      `<span style="color:var(--crit)">A reason is required to ${esc(action)}.</span>`;
+    return;
+  }
+  reasonEl.style.borderColor = "";
+  setGateBusy(true);
+  try {
+    const r = await fetch(REVIEW_API + "/api/decision", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ record: id, decision: action, reason }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || ("http " + r.status));
+    state.apiOnline = true; setOffline(false);
+    /* optimistic update: record the new state + refresh rail + header */
+    state.decisions[id] = data.status || statusFor(action);
+    state.sessionDecided += 1;   // T2-5
+    reasonEl.value = "";
+    renderQueue();
+    updateHeaderPill(id);
+
+    /* T2-7 — auto-advance: after deciding a needs-decision item, load the next one
+       (if any). For an archive/spot-check Redo we stay put and confirm in place. */
+    const wasDecisionLane = laneOf(state.index.find(x => x.id === id) || {}) === "decision";
+    const next = wasDecisionLane ? firstNeedsDecision() : null;
+    if (next && next.id !== id) {
+      loadBundle(next.id);
+    } else {
+      const row = state.index.find(x => x.id === id) || {};
+      renderGate(id, state.report || {}, row);
+      document.getElementById("gateState").innerHTML =
+        `<span style="color:var(--good)">Recorded:</span> ${decisionPill(state.decisions[id])}`;
+    }
+  } catch (e) {
+    const offlineLike = /Failed to fetch|NetworkError|load failed/i.test(String(e.message));
+    if (offlineLike) { state.apiOnline = false; setOffline(true); }
+    document.getElementById("gateState").innerHTML =
+      `<span style="color:var(--crit)">Could not record decision: ${esc(e.message)}</span>`;
+  } finally {
+    setGateBusy(false);
+  }
+}
+function statusFor(a) { return a === "approve" ? "approved" : a === "reject" ? "rejected" : "redo-requested"; }
+function setGateBusy(b) {
+  ["btnApprove","btnRedo","btnReject"].forEach(i => { document.getElementById(i).disabled = b; });
+}
+function updateHeaderPill(id) {
+  const band = document.querySelector(".header-band");
+  if (!band) return;
+  const pill = band.querySelector(".pill");
+  if (pill) pill.outerHTML = decisionPill(state.decisions[id]);
+}
+
+/* ---------- lightbox ---------- */
+const lb = document.getElementById("lightbox");
+function openLightbox(src, cap) {
+  document.getElementById("lbImg").src = src;
+  document.getElementById("lbCap").textContent = cap || "";
+  if (typeof lb.showModal === "function") lb.showModal();
+}
+document.getElementById("lbClose").addEventListener("click", () => lb.close());
+lb.addEventListener("click", (e) => { if (e.target === lb) lb.close(); });   /* backdrop click */
+lb.addEventListener("close", () => { document.getElementById("lbImg").src = ""; });
+
+/* ---------- explainers (Page 1 .why/.explain pattern) ---------- */
+const EXPLAIN = {
+  corner: `The corner (triangle) plot shows the nested-sampling posterior for the four free
+    parameters — Rp/R*, mid-time, inclination and the airmass coefficient. Each off-diagonal
+    panel is a 2-D joint density: round, single-peaked blobs mean the parameters are well
+    constrained and independent, while tilted ellipses reveal covariance (e.g. depth trading
+    against inclination). A skewed or multi-modal mid-time marginal is the warning sign that the
+    transit time — the number we submit — is not cleanly determined, so read this before trusting σ.`,
+  rms: `Real photometry is not pure white noise: seeing, airmass and background drift correlate
+    point-to-point. The RMS-vs-bin plot bins the residuals and compares their scatter to the
+    ideal 1/√N white-noise fall-off. When binned scatter stays above that line, the ratio β
+    (Pont 2006) exceeds 1, and we multiply the mid-time error by β (and by a χ²≈1 rescale). This
+    turns EXOTIC's optimistic posterior σ into an honest uncertainty — the value that actually
+    carries into an AAVSO ephemeris weight.`,
+  oc: `The O−C ("observed minus calculated") diagram plots how far our measured mid-transit time
+    falls from the published ephemeris prediction, in minutes. A point near zero confirms the
+    ephemeris; a growing trend can signal period drift or a transit-timing variation. But an O−C
+    is only meaningful against its combined uncertainty — the red-noise-inflated fit error added
+    in quadrature with the forward-propagated ephemeris error. We flag an anomaly only when
+    |O−C| beats that honest combined σ, so a stale prior can't masquerade as a discovery.`,
+  pgood: `p_good is the champion grader's calibrated probability that this fit is usable — the
+    model's read on the evidence, not a verdict. Bands: pass ≥ 0.60, watch 0.40–0.60, fail < 0.40
+    (the grader's calibration error is ≈ 0.05, so these probabilities are honest, not vibes). It
+    orders the review queue and pre-fills the evidence; it never decides. Every submission stays a
+    human call.`,
+};
+function wireExplainers() {
+  document.querySelectorAll(".why[data-explain]").forEach(w => {
+    w.addEventListener("click", () => {
+      const el = document.getElementById("explain-" + w.dataset.explain);
+      if (el) el.classList.toggle("open");
+    });
+  });
+}
+/* F1 — keyboard: Enter/Space on a focused ".why" toggle fires its click handler
+   (mirrors the Page-1 status pattern) */
+document.addEventListener("keydown", (e) => {
+  if ((e.key === "Enter" || e.key === " ") && document.activeElement &&
+      document.activeElement.classList.contains("why")) {
+    e.preventDefault();
+    document.activeElement.click();
+  }
+});
+
+/* ---------- keyboard shortcuts (T2-6) ----------
+   j/k move through the current rail order; a arms/confirms Approve; r Redo; x
+   Reject; "/" focuses the reason box; Escape blurs it. Every key is ignored while
+   focus is in an input/textarea, so typing a reason never fires a decision. */
+document.addEventListener("keydown", (e) => {
+  const el = document.activeElement;
+  const typing = !!el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
+
+  /* Escape blurs the reason box — the one key allowed to act while typing */
+  if (e.key === "Escape") {
+    const reason = document.getElementById("reason");
+    if (el === reason) { e.preventDefault(); reason.blur(); }
+    return;
+  }
+  if (typing) return;                              // ignore everything else while typing
+  if (e.metaKey || e.ctrlKey || e.altKey) return;  // leave browser/OS combos alone
+
+  switch (e.key) {
+    case "j": e.preventDefault(); navRow(1);  break;
+    case "k": e.preventDefault(); navRow(-1); break;
+    case "a": e.preventDefault(); keyClick("btnApprove"); break;
+    case "r": e.preventDefault(); keyClick("btnRedo");    break;
+    case "x": e.preventDefault(); keyClick("btnReject");  break;
+    case "/": e.preventDefault(); focusReason(); break;
+  }
+});
+function gateVisible() {
+  const g = document.getElementById("gate");
+  return !!g && !g.hidden;
+}
+/* click a gate button from the keyboard, but only when it is actually actionable
+   (present, not hidden by lane/snapshot, not busy). Reuses the button handlers so
+   Approve keeps its two-step arming. */
+function keyClick(btnId) {
+  if (!gateVisible() || !state.currentId) return;
+  const b = document.getElementById(btnId);
+  if (!b || b.hidden || b.disabled) return;
+  b.click();
+}
+function focusReason() {
+  if (!gateVisible()) return;
+  const r = document.getElementById("reason");
+  if (r) r.focus();
+}
+/* move the selection by delta rows through state.railOrder (clamped at the ends) */
+function navRow(delta) {
+  const order = state.railOrder || [];
+  if (!order.length) return;
+  const i = order.indexOf(state.currentId);
+  const ni = i + delta;
+  if (ni < 0 || ni >= order.length) return;
+  const id = order[ni];
+  const row = state.index.find(r => r.id === id);
+  if (row && groupOf(row) === "archive") state.archiveOpen = true;   // reveal a collapsed archive row
+  loadBundle(id);
+  /* loadBundle re-renders the rail synchronously before it awaits, so .sel exists now */
+  requestAnimationFrame(() => {
+    /* the working queue's row, not the same record's Worked-examples twin */
+    const sel = document.querySelector(".queue-row.sel:not(.ex-row)")
+             || document.querySelector(".queue-row.sel");
+    if (sel && sel.scrollIntoView) sel.scrollIntoView({ block: "nearest" });
+  });
+}
+
+/* ---------- empty state ---------- */
+function renderEmptyState() {
+  document.getElementById("queue").innerHTML = "";
+  document.getElementById("queueCount").textContent = "";
+  document.getElementById("gate").hidden = true;
+  document.getElementById("main").innerHTML = `<div class="placeholder">
+    <h2>No reviewable runs yet</h2>
+    <div class="empty-dev">
+      <p>The review index <code>./index.json</code> is missing or empty.</p>
+      <p>Build the review bundles with:</p>
+      <p><code>report_bundle.py --all-reviewable</code></p>
+    </div>
+    <div class="empty-snapshot">
+      <p>No review dossiers were bundled into this static weekly snapshot.
+      The live review queue runs locally alongside the pipeline.</p>
+    </div>
+  </div>`;
+}
+
+/* ---------- theme toggle + rail ---------- */
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const root = document.documentElement;
+  const cur = root.getAttribute("data-theme")
+    || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const next = cur === "dark" ? "light" : "dark";
+  root.setAttribute("data-theme", next);
+  try { localStorage.setItem("theater-theme", next); } catch (e) {}
+});
+document.getElementById("railToggle").addEventListener("click", () => {
+  document.getElementById("rail").classList.toggle("open");
+});
+function closeRailMobile() {
+  if (matchMedia("(max-width: 820px)").matches)
+    document.getElementById("rail").classList.remove("open");
+}
+
+/* deep-link when the hash changes */
+window.addEventListener("hashchange", () => {
+  const id = decodeURIComponent((location.hash || "").replace(/^#/, ""));
+  if (id && id !== state.currentId && state.index.find(r => r.id === id)) loadBundle(id);
+});
+
+/* ---------- static-snapshot detection (F8) ----------
+   The weekly publisher stamps progress.json with published_utc; localhost live
+   copies lack it. Presence => show the snapshot ribbon/badge, silence the local
+   decision-API offline banner, and switch the snapshot-safe empty state on.
+   Path is ../status/progress.json from /review/. */
+(function detectSnapshot() {
+  fetch("../status/progress.json", { cache: "no-store" })
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (!d || !d.published_utc) return;
+      document.documentElement.setAttribute("data-snapshot", "1");
+      /* T2-8 — a snapshot has no live decision API: hide the gate entirely and
+         let the rail read as a portfolio (renderGate also honours state.snapshot). */
+      state.snapshot = true;
+      const gate = document.getElementById("gate");
+      if (gate) gate.hidden = true;
+      const el = document.getElementById("snapshot-date");
+      if (el) el.textContent = String(d.published_utc).slice(0, 10);
+    })
+    .catch(() => {});
+})();
+
+boot();
+</script>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__label">Behind the scenes</p>
+    <nav class="site-footer__links" aria-label="Appendix">
+      <a href="../docs/EVAL-PROTOCOL-V2.md">EVAL protocol</a>
+      <a href="../eval/#model-card">Model card</a>
+      <a href="https://github.com/contactabhishekbasu/night-theater" target="_blank" rel="noopener">GitHub repo ↗</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>
