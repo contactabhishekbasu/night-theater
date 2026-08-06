@@ -1,0 +1,32 @@
+# Custom Pages deployment. The managed pages-build-deployment workflow aborts at a
+# fixed 10-minute status-poll timeout, which a ~20k-file site exceeds (2026-08-06:
+# two deployments died mid-flight after the review archive doubled). This workflow
+# skips the pointless Jekyll pass (the site is prebuilt static files) and gives the
+# deploy a 30-minute budget.
+name: deploy-pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          timeout: 1800000
