@@ -1,0 +1,205 @@
+{
+  "id": "deep-bench_Qatar-1_130716",
+  "target": "Qatar-1b",
+  "night": "2013-07-15",
+  "verdict": "NOISY-CONSISTENT",
+  "run_no": "R-2829",
+  "disposition": "Benchmark / validation run \u2014 automated verdict NOISY-CONSISTENT. Not submitted to any science database; shown for pipeline transparency.",
+  "params": [
+    {
+      "name": "Mid-transit time (Tc)",
+      "fit": "2456489.707586",
+      "sigma": "8e-05",
+      "unit": "BJD_TDB",
+      "prior": null,
+      "published": null,
+      "is_midtime": true,
+      "sigma_inflated_min": 0.115
+    },
+    {
+      "name": "Rp/R*",
+      "fit": "0.19",
+      "sigma": "0.056",
+      "prior": "0.1540454 \u00b1 6.8e-06",
+      "published": 0.1463
+    },
+    {
+      "name": "Inclination",
+      "fit": "82.78",
+      "sigma": "2.85",
+      "unit": "\u00b0",
+      "prior": "84.08 \u00b1 0.15",
+      "published": 84.08
+    },
+    {
+      "name": "a/R*",
+      "fit": null,
+      "sigma": null,
+      "prior": "6.25 \u00b1 0.07",
+      "published": null
+    },
+    {
+      "name": "Period",
+      "fit": null,
+      "sigma": null,
+      "unit": "d",
+      "prior": "1.420024443 \u00b1 4.9e-08",
+      "published": 1.420024447
+    },
+    {
+      "name": "Airmass a1",
+      "fit": "0.089",
+      "sigma": "0.048"
+    },
+    {
+      "name": "Airmass a2",
+      "fit": "1.68",
+      "sigma": "0.78"
+    }
+  ],
+  "metrics": {
+    "scatter_pct": 50.52,
+    "depth_snr": 3.4,
+    "rprs_z": 0.78,
+    "dur_z": 0.47,
+    "oc_minutes": 0.1,
+    "oc_sigma": 0.57,
+    "beta_rednoise": 1.0,
+    "chi2_rescale": 1.0
+  },
+  "limb_darkening": [
+    {
+      "coeff": "u0",
+      "value": "1.707",
+      "err": "0.012",
+      "source": "LDTk"
+    },
+    {
+      "coeff": "u1",
+      "value": "-2.92",
+      "err": "0.051",
+      "source": "LDTk"
+    },
+    {
+      "coeff": "u2",
+      "value": "3.384",
+      "err": "0.066",
+      "source": "LDTk"
+    },
+    {
+      "coeff": "u3",
+      "value": "-1.172",
+      "err": "0.028",
+      "source": "LDTk"
+    }
+  ],
+  "observation": {
+    "frames": 66,
+    "exposure_s": 60.0,
+    "binning": "1x1",
+    "filter": "CV",
+    "aperture": "1.46",
+    "annulus": "7.25",
+    "comps": 3,
+    "telescope": "MicroObservatory (MObs)",
+    "cadence_s": 180,
+    "airmass_range": "1.23\u20131.60"
+  },
+  "crosscheck": {
+    "coord_sep_arcsec": 2.5,
+    "flags": [],
+    "in_oec": true,
+    "period_oec": 1.42002504,
+    "period_rel_diff": 0.0,
+    "rprs_oec": 0.1462
+  },
+  "provenance": {
+    "seed": 614747850,
+    "dataset_sha256": "6282dc21f9cd09f875d8eb328a3e212b0f9b5ce25d0147717a0093c54ebb0c63",
+    "audit_head": "bbf82b7112defbb648351da2aa489fb8683c4d9b04c8e40ab45a8250dee01848",
+    "exotic": "4.3.1",
+    "ultranest": "3.6.5",
+    "inits_sha256": "fbd9d45ee91975727da175a0123ba37eac28f91695caa9db26a3b8c5581b14a6",
+    "config_snapshot_sha256": "a7e225c9d2e630a844d2de4a2f21a47be7cb64465294b6aac8c25145faef1991",
+    "runtime_s": 151.0,
+    "host": "mac-mini-m1-8gb"
+  },
+  "aavso": {
+    "name": "AAVSO_Qatar-1 b_2013-07-15.txt",
+    "text": "#TYPE=EXOPLANET\n#OBSCODE=ABGA\n#SECONDARY_OBSCODES=MOBS\n#SOFTWARE=EXOTIC v4.3.1\n#DELIM=,\n#DATE_TYPE=BJD_TDB\n#OBSTYPE=CCD\n#STAR_NAME=Qatar-1\n#EXOPLANET_NAME=Qatar-1 b\n#BINNING=2x2\n#EXPOSURE_TIME=60.0\n#COMP_STAR-XC={\"ra\": null, \"dec\": null, \"x\": \"551\", \"y\": \"426\"}\n#NOTES=MicroObservatory Cecilia public archive; pipeline test \u2014 not for submission\n#DETREND_PARAMETERS=AIRMASS, AIRMASS CORRECTION FUNCTION\n#MEASUREMENT_TYPE=Rnflux\n#FILTER=CV\n#FILTER-XC={\"name\": \"CV\", \"desc\": \"MObs CV\", \"fwhm\": [{\"value\": \"350.0\", \"units\": \"nm\"}, {\"value\": \"850.0\", \"units\": \"nm\"}]}\n#PRIORS=Period=1.420024443 +/- 4.9e-08,Rp/R*=0.1540454 +/- 6.8e-06,a/R*=6.25 +/- 0.07,inc=84.08 +/- 0.15,ecc=0.012,u0=1.707 +/- 0.012,u1=-2.92 +/- 0.051,u2=3.384 +/- 0.066,u3=-1.172 +/- 0.028\n#PRIORS-XC={\"Period\": {\"value\": \"1.420024443\", \"uncertainty\": \"4.9e-08\", \"units\": \"days\"}, \"Rp/R*\": {\"value\": \"0.1540454\", \"uncertainty\": \"6.8e-06\"}, \"a/R*\": {\"value\": \"6.25\", \"uncertainty\": \"0.07\"}, \"inc\": {\"value\": \"84.08\", \"uncertainty\": \"0.15\", \"units\": \"degrees\"}, \"ecc\": {\"value\": \"0.012\", \"uncertainty\": null}, \"u0\": {\"value\": \"1.707\", \"uncertainty\": \"0.012\"}, \"u1\": {\"value\": \"-2.92\", \"uncertainty\": \"0.051\"}, \"u2\": {\"value\": \"3.384\", \"uncertainty\": \"0.066\"}, \"u3\": {\"value\": \"-1.172\", \"uncertainty\": \"0.028\"}}\n#RESULTS=Tc=2456489.707586 +/- 8e-05,Rp/R*=0.19 +/- 0.056,inc=82.78 +/- 2.85,Am1=0.089 +/- 0.048,Am2=1.68 +/- 0.78\n#RESULTS-XC={\"Tc\": {\"value\": \"2456489.707586\", \"uncertainty\": \"8e-05\", \"units\": \"BJD_TDB\"}, \"Rp/R*\": {\"value\": \"0.19\", \"uncertainty\": \"0.056\"}, \"inc\": {\"value\": \"82.78\", \"uncertainty\": \"2.85\"}, \"Am1\": {\"value\": \"0.089\", \"uncertainty\": \"0.048\"}, \"Am2\": {\"value\": \"1.68\", \"uncertainty\": \"0.78\"}, \"Duration\": {\"value\": \"0.058\", \"uncertainty\": \"0.024\", \"units\": \"days\"}}\n# EXOTIC is developed by Exoplanet Watch (exoplanets.nasa.gov/exoplanet-watch/), a citizen science project managed by NASA's Jet Propulsion Laboratory on behalf of NASA's Universe of Learning. This work is supported by NASA under award number NNX16AC65A to the Space Telescope Science Institute.\n# Use of this data is governed by the AAVSO Data Usage Guidelines: aavso.org/data-usage-guidelines\n#DATE,DIFF,ERR,DETREND_1,DETREND_2\n2456489.65368042,1.3290491,0.600782,1.5986478,1.3024978\n2456489.65576388,1.5408747,0.5944537,1.5878524,1.2790977\n2456489.65784684,1.8032001,0.5883218,1.5772822,1.2565931\n2456489.6599304,0.3139439,0.5823783,1.566931,1.2349384\n2456489.66201283,2.0752214,0.576597,1.5567603,1.214025\n2456489.67243551,0.3463676,0.5501328,1.5088629,1.1201989\n2456489.67660249,0.2812001,0.5405834,1.4910116,1.087116\n2456489.68077227,0.9447695,0.5315615,1.4738544,1.0562404\n2456489.68285656,1.0535524,0.5272573,1.4655662,1.0416409\n2456489.68494138,1.2577636,0.523056,1.4574104,1.0274717\n2456489.68701369,1.3614742,0.5190082,1.4494906,1.0138969\n2456489.69534639,1.7639685,0.503802,1.4191761,0.9635735\n2456489.6974306,0.4019248,0.5002668,1.4119973,0.952027\n2456489.70160095,0.3658231,0.4934843,1.3980813,0.9300366\n2456489.70369089,0.9606255,0.4902075,1.3912897,0.9194894\n2456489.70784824,0.5140626,0.483991,1.3782789,0.8996172\n2456489.70993213,0.4493486,0.4810102,1.3719811,0.8901529\n2456489.71618841,0.5267589,0.472523,1.3538329,0.8634333\n2456489.71827182,1.1843216,0.4698602,1.3480717,0.85512\n2456489.72035479,0.0839596,0.4672675,1.3424308,0.8470578\n2456489.72243807,0.3327077,0.464752,1.336928,0.8392662\n2456489.72452287,1.003457,0.4623017,1.331539,0.8317053\n2456489.72660612,1.3251309,0.4599237,1.3262815,0.8243944\n2456489.73285559,1.068781,0.453198,1.3112636,0.8038633\n2456489.74118669,0.8702123,0.4451169,1.2929216,0.7794801\n2456489.74744085,0.1859452,0.4396736,1.280378,0.7632324\n2456489.74952045,1.2891113,0.4379678,1.2764153,0.7581702\n2456489.75160082,0.4053038,0.4363248,1.2725837,0.7533074\n2456489.75577552,0.1700446,0.4331677,1.2651806,0.7440001\n2456489.75785862,0.9883749,0.4316727,1.2616561,0.7396096\n2456489.7620325,0.4137817,0.4288272,1.2549138,0.7312826\n2456489.76410062,1.6307108,0.4274876,1.2517242,0.7273761\n2456489.77243426,0.4740785,0.4225578,1.2398997,0.7130749\n2456489.77451971,1.069769,0.4214331,1.2371828,0.7098289\n2456489.77660039,1.043074,0.4203595,1.2345824,0.7067359\n2456489.7807666,1.0116251,0.4183348,1.2296602,0.7009181\n2456489.78284855,0.870319,0.4173877,1.2273498,0.6982039\n2456489.78494098,0.6708705,0.4164746,1.2251171,0.6955909\n"
+  },
+  "film": {
+    "path": "../status/film/130716/",
+    "n": 66
+  },
+  "model": {
+    "p_good": 0.006,
+    "model_version": "quality-model-n2845",
+    "ts": "2026-09-05T23:27:39+00:00",
+    "agree": "agree"
+  },
+  "recommend_line": "RECOMMEND: AUDIT \u2014 auto-filed spot-check sample; confirm the automated verdict NOISY-CONSISTENT independently.",
+  "lane": "spotcheck",
+  "decision_required": false,
+  "checklist": [
+    {
+      "key": "verdict",
+      "label": "Benchmark verdict",
+      "value": "NOISY-CONSISTENT",
+      "status": "fail",
+      "note": "fails benchmark gates"
+    },
+    {
+      "key": "model",
+      "label": "Model grade",
+      "value": 0.01,
+      "status": "fail",
+      "note": "champion vquality-model-n2845, calibrated"
+    },
+    {
+      "key": "depth_snr",
+      "label": "Depth SNR",
+      "value": 3.4,
+      "status": "pass",
+      "note": "detection floor SNR 3"
+    },
+    {
+      "key": "scatter",
+      "label": "Residual scatter",
+      "value": 50.52,
+      "unit": "%",
+      "status": "warn",
+      "note": "benchmark noise gate 5%"
+    },
+    {
+      "key": "rednoise",
+      "label": "\u03b2 red noise",
+      "value": 1.0,
+      "status": "pass",
+      "note": "Pont-2006 factor; >2 flags time-correlated noise"
+    },
+    {
+      "key": "oc",
+      "label": "O\u2212C significance",
+      "value": 0.57,
+      "unit": "\u03c3",
+      "status": "pass",
+      "note": "vs inflated combined \u03c3"
+    },
+    {
+      "key": "crosscheck",
+      "label": "Catalog cross-check",
+      "value": "agrees",
+      "status": "pass",
+      "note": "OEC"
+    },
+    {
+      "key": "coverage",
+      "label": "Frames",
+      "value": 66,
+      "status": "pass",
+      "note": "benchmark minimum 30 frames"
+    }
+  ],
+  "pdf": "deep-bench_Qatar-1_130716/report.pdf"
+}
